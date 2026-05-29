@@ -97,6 +97,7 @@ def test_ecosystem_endpoints():
     data = response.get_json()
     assert data["project"].startswith("Análise Evolutiva")
     assert "leite_web3" in data["modules"]
+    assert "manejo_agropecuario" not in data["modules"]
 
     evidence_response = client.post("/api/ecosystem/evidence", json={"scenario": "normal", "seed": 42})
     assert evidence_response.status_code == 200
@@ -118,7 +119,8 @@ def test_site_meta_endpoint():
     assert response.status_code == 200
     data = response.get_json()
     assert data["official_site"] == "https://www.analise-evolutiva.ia.br/"
-    assert data["integration_mode"] == "embedded_webview_with_external_fallback"
+    assert data["integration_mode"] == "local_institutional_view_with_external_direct_link"
+    assert "iframe" not in data["purpose"].lower()
 
 
 

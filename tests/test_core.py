@@ -91,6 +91,7 @@ def test_complete_ecosystem_simulation():
     eco = build_complete_evolutionary_analysis(scenario="integrated_risk", seed=42)
     assert "bioinsumos_goticulas" in eco["modules"]
     assert "leite_web3" in eco["modules"]
+    assert "manejo_agropecuario" not in eco["modules"]
     assert "ecosystem_evidence_hash" in eco["web3_layer"]
     ev = build_complete_ecosystem_evidence(eco)
     assert ev["evidence_type"] == "complete_ecosystem_simulation"

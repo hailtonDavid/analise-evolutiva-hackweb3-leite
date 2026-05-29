@@ -1024,7 +1024,7 @@ def build_investor_impact_model(
                 "conectar equipamento físico ESP32/AS7341 ao backend",
                 "deploy do smart contract em testnet e geração de QR Code público",
                 "piloto com produtor/cooperativa/laticínio e relatório de economia operacional",
-                "treinar modelos com histórico de amostras e ampliar para solo, folha, hortifrúti e bioinsumos",
+                "treinar modelos com histórico de amostras e ampliar para solo, pastagem, alimentação, água e bioinsumos",
             ],
         },
         "process_snapshot": process,
@@ -1196,24 +1196,6 @@ def _simulate_irrigation_roi(rng: random.Random, soil: Mapping[str, Any], root_y
     }
 
 
-def _simulate_hortifruti_module(rng: random.Random, scenario: str) -> Dict[str, Any]:
-    reference = {str(w): _bounded(0.28 + (i * 0.035) + rng.uniform(-0.025, 0.025), 0.08, 0.92) for i, w in enumerate(WAVELENGTHS_NM)}
-    spectral = simulate_wave_capture(reference, scenario, "hortifruti", seed=rng.randint(1, 10_000))
-    chlorophyll = round(_bounded(0.68 + rng.uniform(-0.12, 0.12) - (0.10 if scenario == "integrated_risk" else 0), 0.20, 0.96), 3)
-    maturity = round(_bounded(0.52 + rng.uniform(-0.14, 0.18), 0.10, 0.94), 3)
-    defect = round(_bounded(0.12 + rng.uniform(-0.06, 0.11) + (0.10 if scenario == "integrated_risk" else 0), 0, 0.50), 3)
-    score = round(_bounded(chlorophyll * 0.32 + (1-defect)*0.34 + (1-abs(maturity-0.58))*0.20 + (sum(ch.get("snr_db", 0) for ch in spectral["channels"]) / max(1, len(spectral["channels"])) / 180) * 0.14, 0, 1), 3)
-    return {
-        "module": "Hortifrúti",
-        "objective": "Triagem óptica, classificação de lotes e apoio ao controle de qualidade.",
-        "capture": "Reflectância portátil em folha/fruto + classificação por IA",
-        "spectral_capture": spectral,
-        "metrics": {"chlorophyll_proxy": chlorophyll, "maturity_index": maturity, "defect_risk": defect, "technical_score": score},
-        "classification": _risk_label(score),
-        "recommendation": "Separar lote para inspeção complementar" if score < 0.68 else "Lote apto para fluxo operacional demonstrativo",
-        "data_products": ["classe do lote", "histórico de qualidade", "priorização laboratorial", "rastreio de origem"],
-    }
-
 
 def _simulate_reports_and_governance(ecosystem_modules: List[Mapping[str, Any]], scenario: str) -> Dict[str, Any]:
     average_score = round(sum(m.get("metrics", {}).get("technical_score", m.get("metrics", {}).get("water_efficiency_score", 0.72)) for m in ecosystem_modules if isinstance(m.get("metrics"), Mapping)) / max(1, len(ecosystem_modules)), 3)
@@ -1254,8 +1236,7 @@ def build_complete_evolutionary_analysis(scenario: str = "normal", seed: int | N
     soil = _simulate_soil_module(rng, scenario)
     root_yield = _simulate_root_and_yield(rng, soil, scenario)
     irrigation = _simulate_irrigation_roi(rng, soil, root_yield, scenario)
-    hortifruti = _simulate_hortifruti_module(rng, scenario)
-    modules = [droplet, soil, root_yield, irrigation, hortifruti]
+    modules = [droplet, soil, root_yield, irrigation]
     governance = _simulate_reports_and_governance(modules, scenario)
     evidence_core = {
         "scenario": scenario,
@@ -1272,7 +1253,7 @@ def build_complete_evolutionary_analysis(scenario: str = "normal", seed: int | N
         "scenario_label": SCENARIO_LABELS[scenario],
         "thesis": {
             "positioning": "Plataforma de IA óptica aplicada ao agro e aos alimentos, com rastreabilidade Web3 por evidência.",
-            "core_problem": "Análises de solo, leite, hortifrúti e aplicação de bioinsumos ainda são lentas, caras e pouco integradas ao histórico operacional.",
+            "core_problem": "Análises de solo, leite, alimentação, água, pastagem e aplicação de bioinsumos ainda são lentas, caras e pouco integradas ao histórico operacional.",
             "investment_case": "SaaS + hardware + taxa por análise + consultoria técnica, formando base proprietária de dados ópticos por lote.",
             "moat": ["base própria de imagens/espectros", "calibração contra métodos de referência", "histórico por lote", "integração edge/cloud", "trilha Web3 de evidências"],
         },
@@ -1305,7 +1286,6 @@ def build_complete_evolutionary_analysis(scenario: str = "normal", seed: int | N
                 "spectrophotometer_session": milk_chain["spectrophotometer_session"],
                 "evidence_preview": {"hash": milk_chain_evidence["evidence_hash"], "evidence_id": milk_chain_evidence["evidence_id"]},
             },
-            "hortifruti": hortifruti,
             "dashboards_governanca": governance,
         },
         "web3_layer": {

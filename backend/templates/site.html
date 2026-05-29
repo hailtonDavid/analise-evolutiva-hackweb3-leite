@@ -4,67 +4,118 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Site institucional — Análise Evolutiva</title>
-  <style>
-    :root { --bg:#071827; --card:#0d253a; --line:#1d4a68; --text:#eaf8ff; --muted:#a9c8d8; --accent:#41d3bd; --accent2:#74b7ff; --warn:#ffd166; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: Arial, Helvetica, sans-serif; background: radial-gradient(circle at top left, #123a55, var(--bg)); color:var(--text); }
-    header, main { max-width: 1180px; margin: auto; padding: 24px; }
-    header { padding-top: 34px; }
-    h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 48px); }
-    p { color: var(--muted); line-height: 1.6; }
-    a { color: var(--accent); }
-    .nav { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
-    .nav strong { color: var(--text); }
-    .nav a, .button { display:inline-block; margin-left: 8px; padding:10px 13px; border-radius: 12px; border:1px solid var(--line); text-decoration:none; color: var(--text); background: rgba(13,37,58,.8); }
-    .button.primary { color:#062033; font-weight:800; border:0; background:linear-gradient(90deg,var(--accent),var(--accent2)); }
-    .card { background: rgba(13,37,58,.90); border:1px solid var(--line); border-radius:22px; padding:20px; box-shadow:0 16px 40px rgba(0,0,0,.25); margin-bottom:18px; }
-    .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
-    .badge { display:inline-block; border:1px solid var(--line); color:var(--accent); padding:8px 12px; border-radius:999px; font-weight:700; margin-bottom:12px; }
-    .frame-wrap { height: 76vh; min-height: 560px; overflow:hidden; border-radius: 18px; border: 1px solid var(--line); background: #061523; }
-    iframe { width: 100%; height: 100%; border: 0; background: white; }
-    .warning { border-left:4px solid var(--warn); padding-left:14px; }
-    code { background:#061523; padding:2px 6px; border-radius:6px; color:#d9fff8; }
-  </style>
   <link rel="stylesheet" href="{{ url_for('static', filename='ae-theme.css') }}">
+  <style>
+    .site-hero{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:stretch;margin-bottom:18px}
+    .site-hero h1{font-size:clamp(2.2rem,5vw,4.5rem)!important;letter-spacing:-.055em!important}
+    .site-visual{position:relative;min-height:320px;overflow:hidden}
+    .orb{position:absolute;border-radius:999px;filter:blur(.2px);opacity:.9}.orb.one{width:220px;height:220px;background:radial-gradient(circle,#38d5ff,transparent 68%);right:18px;top:30px}.orb.two{width:180px;height:180px;background:radial-gradient(circle,#5ee2a0,transparent 66%);left:28px;bottom:24px}.orb.three{width:95px;height:95px;background:radial-gradient(circle,#ffd166,transparent 65%);right:130px;bottom:54px}
+    .site-device{position:absolute;inset:62px 54px 46px 54px;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.025));box-shadow:0 26px 90px rgba(0,0,0,.32);padding:22px;display:flex;flex-direction:column;justify-content:space-between}
+    .site-device .line{height:9px;border-radius:999px;background:rgba(255,255,255,.14);margin:9px 0}.site-device .line.w1{width:86%}.site-device .line.w2{width:64%}.site-device .line.w3{width:76%}.site-device .pulse{height:74px;border-radius:20px;border:1px solid rgba(56,213,255,.28);background:linear-gradient(90deg,rgba(56,213,255,.12),rgba(94,226,160,.08));display:flex;align-items:center;justify-content:center;color:#5ee2a0;font-weight:900;text-align:center;padding:10px}
+    .site-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0}.site-grid.two{grid-template-columns:repeat(2,1fr)}
+    .mini-title{font-size:.86rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ae-cyan);font-weight:900;margin-bottom:7px}.card ul{margin:10px 0 0;padding-left:18px;color:var(--ae-muted);line-height:1.62}.site-flow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px}.site-flow div{padding:12px;border:1px solid var(--ae-line);border-radius:16px;background:rgba(255,255,255,.035);text-align:center;color:var(--ae-muted);font-size:.9rem}.site-flow b{display:block;color:var(--ae-text);margin-bottom:4px}
+    .external-strip{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.external-strip code{background:#061424;color:#d9fff8;padding:7px 10px;border-radius:9px;word-break:break-all}
+    @media(max-width:960px){.site-hero,.site-grid,.site-grid.two{grid-template-columns:1fr}.site-flow{grid-template-columns:1fr 1fr}.site-device{inset:40px 20px}.site-visual{min-height:280px}}
+    @media(max-width:560px){.site-flow{grid-template-columns:1fr}.external-strip{align-items:stretch}.external-strip .ae-actions{width:100%}}
+  </style>
 </head>
 <body>
-  <header>
-    <nav class="nav">
-      <strong>Análise Evolutiva Web3</strong>
-      <div>
-        <a href="/">Início</a>
-        <a href="/simulador">Simulador</a>
-        <a href="/ecossistema">Ecossistema</a>
-        <a href="/casos-leite">Casos do leite</a>
-        <a href="/investidor">Investidor</a>
-        <a href="/site">Site institucional</a>
-      </div>
-    </nav>
-    <div class="badge">Site oficial integrado ao MVP</div>
-    <h1>Site institucional da Análise Evolutiva dentro do sistema</h1>
-    <p>Esta área disponibiliza o site público da Análise Evolutiva no próprio MVP, para que avaliadores e investidores naveguem pela proposta institucional sem sair do fluxo de demonstração do HackWeb 3.0.</p>
-  </header>
+  <nav class="ae-nav">
+    <strong>Análise Evolutiva Web3</strong>
+    <div class="ae-link-list">
+      <a href="/">Início</a>
+      <a href="/simulador">Simulador</a>
+      <a href="/ecossistema">Ecossistema</a>
+      <a href="/casos-leite">Casos do leite</a>
+      <a href="/investidor">Investidor</a>
+      <a href="/site">Site institucional</a>
+    </div>
+  </nav>
 
   <main>
-    <section class="card toolbar">
+    <section class="site-hero">
+      <div class="card">
+        <span class="badge">Institucional</span>
+        <h1>Análise Evolutiva</h1>
+        <p class="lead">Plataforma de inteligência aplicada à cadeia produtiva do leite e ao manejo agropecuário, integrando espectrofotometria, visão computacional, IA, laudos técnicos e rastreabilidade Web3.</p>
+        <div class="ae-actions">
+          <a class="btn" href="{{ site_url }}" target="_blank" rel="noopener noreferrer">Abrir site oficial</a>
+          <a class="btn secondary" href="/ecossistema">Ver ecossistema Web3</a>
+          <a class="btn secondary" href="/simulador">Executar simulação</a>
+        </div>
+      </div>
+      <div class="card site-visual" aria-label="Representação visual da plataforma Análise Evolutiva">
+        <div class="orb one"></div><div class="orb two"></div><div class="orb three"></div>
+        <div class="site-device">
+          <div>
+            <div class="mini-title">AE Optical Intelligence</div>
+            <div class="line w1"></div><div class="line w2"></div><div class="line w3"></div>
+          </div>
+          <div class="pulse">Espectro → IA → Evidência → Web3</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card external-strip">
       <div>
         <strong>Endereço oficial:</strong>
         <code>{{ site_url }}</code>
       </div>
-      <div>
-        <a class="button primary" href="{{ site_url }}" target="_blank" rel="noopener noreferrer">Abrir em nova aba</a>
-        <a class="button" href="/ecossistema">Ver ecossistema Web3</a>
+      <div class="ae-actions" style="margin-top:0!important">
+        <a class="btn" href="{{ site_url }}" target="_blank" rel="noopener noreferrer">Abrir em nova aba</a>
+        <a class="btn secondary" href="/investidor">Visão do investidor</a>
       </div>
     </section>
 
-    <section class="card warning">
-      <p>O site é carregado por visualização incorporada. Caso o navegador ou o provedor do site bloqueie exibição em iframe, use o botão <strong>Abrir em nova aba</strong>. O acesso direto continua disponível para apresentação.</p>
+    <section class="site-grid">
+      <article class="card">
+        <div class="mini-title">O que a plataforma faz</div>
+        <h3>Diagnóstico técnico com IA</h3>
+        <p>Transforma leituras ópticas, imagens, dados de campo e informações da cadeia produtiva em análises técnicas para apoiar decisão produtiva e auditoria.</p>
+        <ul><li>Leite</li><li>Solo e pastagem</li><li>Alimentação do rebanho</li><li>Água e bioinsumos</li></ul>
+      </article>
+      <article class="card">
+        <div class="mini-title">Diferencial físico-digital</div>
+        <h3>Espectrofotômetro + software</h3>
+        <p>O MVP simula a captura óptica com LEDs UV/VIS/NIR, corrente escura, referência, ADC, absorbância e envio do pacote técnico para análise.</p>
+        <ul><li>365 nm a 910 nm</li><li>Controle de qualidade da captura</li><li>Pacote técnico rastreável</li></ul>
+      </article>
+      <article class="card">
+        <div class="mini-title">Camada HackWeb 3.0</div>
+        <h3>Rastreabilidade Web3</h3>
+        <p>Cada análise gera uma evidência digital com hash SHA-256, permitindo verificar integridade, origem e histórico do lote sem expor dados sensíveis.</p>
+        <ul><li>Hash da evidência</li><li>Smart contract</li><li>Verificação pública</li></ul>
+      </article>
     </section>
 
     <section class="card">
-      <div class="frame-wrap">
-        <iframe src="{{ site_url }}" title="Site oficial da Análise Evolutiva" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="mini-title">Jornada demonstrável no MVP</div>
+      <h2>Da captura óptica à evidência auditável</h2>
+      <div class="site-flow">
+        <div><b>1</b>Solo</div>
+        <div><b>2</b>Pastagem</div>
+        <div><b>3</b>Água</div>
+        <div><b>4</b>Leite</div>
+        <div><b>5</b>IA</div>
+        <div><b>6</b>Web3</div>
       </div>
+    </section>
+
+    <section class="site-grid two">
+      <article class="card">
+        <div class="mini-title">Valor comercial</div>
+        <h3>Produto vendável e escalável</h3>
+        <p>A Análise Evolutiva pode operar como SaaS com hardware, taxa por análise, certificação, auditoria, laudos e licenciamento para cooperativas, laticínios e cadeias agroalimentares.</p>
+      </article>
+      <article class="card">
+        <div class="mini-title">Demonstração recomendada</div>
+        <h3>Mostrar o sistema funcionando</h3>
+        <p>Após apresentar esta página institucional, a sequência ideal é abrir os casos comerciais do leite e executar o simulador completo do espectrofotômetro.</p>
+        <div class="ae-actions">
+          <a class="btn" href="/casos-leite">Ver casos do leite</a>
+          <a class="btn secondary" href="/simulador">Ir para simulador</a>
+        </div>
+      </article>
     </section>
   </main>
 </body>

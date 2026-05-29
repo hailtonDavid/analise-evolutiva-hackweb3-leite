@@ -31,7 +31,7 @@ Parâmetros principais:
 
 1. Primeiro abrir `/simulador` e mostrar a origem física da evidência: LEDs, ADC, referência, amostra, absorbância e pacote JSON.
 2. Depois abrir `/investidor` e explicar o retorno potencial: redução de perdas, bônus por qualidade, menor custo de auditoria e receita recorrente.
-3. Fechar com a tese defensável: base proprietária de curvas espectrais, integração hardware + IA + Web3, pilotos com cooperativas/laticínios e expansão para solo, folha, hortifrúti e bioinsumos.
+3. Fechar com a tese defensável: base proprietária de curvas espectrais, integração hardware + IA + Web3, pilotos com cooperativas/laticínios e expansão para solo, pastagem, alimentação, água e bioinsumos.
 
 ## Observação
 

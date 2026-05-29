@@ -244,28 +244,19 @@ O código-fonte deste repositório está sob a licença **Apache License 2.0**.
 A marca **Análise Evolutiva**, identidade visual, calibrações reais, bases laboratoriais, dados de produtores, modelos proprietários e metodologia comercial não estão licenciados para uso sem autorização expressa.
 
 
-## Visão completa da Análise Evolutiva V11
+## Visão completa da Análise Evolutiva
 
-Além do fluxo central do leite, esta versão inclui uma página para investidor e banca em `/ecossistema`. Ela simula todos os blocos estratégicos da Análise Evolutiva: bioinsumos/gotículas, solo e pastagem, raiz e predição, irrigação/ROI, leite Web3, hortifrúti, dashboards, laudos, governança e topologia IoT.
+Além do fluxo central do leite, o MVP apresenta uma página de ecossistema em `/ecossistema`. Ela concentra os blocos estratégicos definidos para esta entrega: bioinsumos/gotículas, solo e pastagem, raiz e predição produtiva, irrigação/ROI, alimentação, água, leite Web3, dashboards, laudos, governança e topologia IoT.
 
-Endpoints adicionais:
-
-```http
-POST /api/ecosystem/simulation
-POST /api/ecosystem/evidence
-```
-
-A estratégia é manter o leite como demonstração Web3 central e, ao mesmo tempo, mostrar que a plataforma tem expansão comercial para AgriTech/FoodTech em múltiplas matrizes de análise.
-
+A estratégia é manter a cadeia produtiva do leite como demonstração Web3 central e mostrar que a plataforma pode ser expandida para manejo agropecuário, controle de qualidade e auditoria técnica.
 
 ## Site institucional
 
-Acesse `/site` para visualizar o site oficial da Análise Evolutiva dentro do MVP.
-
+Acesse `/site` para visualizar a página institucional da Análise Evolutiva integrada ao MVP. A página apresenta a proposta do projeto, o valor da análise óptica, a camada Web3 e os caminhos de demonstração para avaliadores e investidores. O endereço oficial permanece disponível em nova aba: `https://www.analise-evolutiva.ia.br/`.
 
 ## Casos comerciais da cadeia do leite
 
-A rota `/casos-leite` consolida os casos de uso comerciais extraídos do posicionamento institucional da Análise Evolutiva: Leite A2A2 Certificado, Leite Orgânico, Leite de Raça Específica, Detecção de Fraude, Rastreamento de Contaminação e Rastreabilidade de Lote. Essa tela foi adicionada para que avaliadores e investidores vejam claramente como a captura espectrofotométrica, a IA e a Web3 se convertem em produtos com potencial de retorno.
+A rota `/casos-leite` consolida os casos de uso comerciais: Leite A2A2 Certificado, Leite Orgânico, Leite de Raça Específica, Detecção de Fraude, Rastreamento de Contaminação e Rastreabilidade de Lote. A tela demonstra como a captura espectrofotométrica, a IA e a Web3 se convertem em produtos com potencial de retorno.
 
 Endpoint correspondente:
 
@@ -273,7 +264,6 @@ Endpoint correspondente:
 GET /api/use-cases/milk
 ```
 
+## Impacto comercial
 
-## Atualização de layout e impacto comercial
-
-Todas as telas principais do MVP usam a mesma identidade visual escura da Análise Evolutiva Web3, com navegação padronizada, cards consistentes e linguagem voltada ao avaliador/investidor. A tela `/ecossistema` agora apresenta o bloco **Impacto comercial** preenchido com receita protegida, perdas evitáveis, benefício operacional, payback, ROI, MRR, ARR e defensibilidade do negócio.
+As telas principais mantêm identidade visual profissional e linguagem voltada a avaliador/investidor. A visão de ecossistema apresenta receita protegida, perdas evitáveis, benefício operacional, payback, ROI, MRR, ARR e defensibilidade do negócio.

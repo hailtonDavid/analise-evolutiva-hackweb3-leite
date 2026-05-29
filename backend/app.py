@@ -70,8 +70,8 @@ def api_site_meta():
     return jsonify({
         "name": "Análise Evolutiva",
         "official_site": "https://www.analise-evolutiva.ia.br/",
-        "integration_mode": "embedded_webview_with_external_fallback",
-        "purpose": "Disponibilizar o site institucional dentro do MVP HackWeb 3.0 e manter acesso direto à presença pública da Análise Evolutiva.",
+        "integration_mode": "local_institutional_view_with_external_direct_link",
+        "purpose": "Apresentar a proposta institucional da Análise Evolutiva dentro do MVP e manter acesso direto ao site oficial em nova aba.",
     })
 
 

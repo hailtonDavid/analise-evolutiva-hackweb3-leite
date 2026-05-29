@@ -1,17 +1,18 @@
-# Site institucional integrado
+# Site institucional da Análise Evolutiva
 
-O MVP disponibiliza o site oficial da Análise Evolutiva em `/site`, mantendo o avaliador dentro do fluxo de demonstração do sistema.
+A rota `/site` apresenta uma página institucional integrada ao MVP, com o mesmo padrão visual do sistema e foco exclusivo na proposta do projeto.
 
-## Objetivo
+## Conteúdo apresentado
 
-- apresentar a presença pública da Análise Evolutiva;
-- permitir que investidores naveguem pela proposta institucional;
-- conectar a visão do site com o simulador técnico, ecossistema completo e visão de retorno.
+- posicionamento da Análise Evolutiva;
+- cadeia produtiva do leite;
+- análise óptica por espectrofotometria;
+- IA aplicada ao diagnóstico técnico;
+- evidência digital e rastreabilidade Web3;
+- caminhos de demonstração para avaliadores e investidores.
 
-## URL oficial
+## Endereço oficial
 
 https://www.analise-evolutiva.ia.br/
 
-## Observação técnica
-
-A tela usa iframe com fallback por botão de abertura em nova aba. Se o provedor do site bloquear incorporação, a apresentação continua funcionando pelo link externo.
+A página mantém um botão para abertura do endereço oficial em nova aba.

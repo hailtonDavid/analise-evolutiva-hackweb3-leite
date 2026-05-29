@@ -110,7 +110,7 @@ Retorno principal:
 
 ### POST /api/ecosystem/simulation
 
-Gera a simulação completa da Análise Evolutiva V11, incluindo módulos de gotículas, solo, raiz, predição, irrigação, leite Web3, hortifrúti, dashboards e governança.
+Gera a simulação completa da Análise Evolutiva, incluindo módulos de gotículas/bioinsumos, solo, pastagem, raiz, predição produtiva, irrigação, alimentação, água, leite Web3, dashboards e governança.
 
 ### POST /api/ecosystem/evidence
 
@@ -121,13 +121,13 @@ Gera uma evidência digital do ecossistema completo com hash SHA-256 e registro 
 
 ### `GET /site`
 
-Disponibiliza o site oficial da Análise Evolutiva dentro do MVP, com visualização incorporada e botão de abertura em nova aba.
+Disponibiliza a página institucional da Análise Evolutiva integrada ao MVP, com acesso direto ao site oficial em nova aba.
 
 ### `GET /api/site/meta`
 
 Retorna metadados da integração do site institucional.
 
 
-## Impacto comercial corrigido
+## Impacto comercial
 
-O endpoint `POST /api/ecosystem/simulation` retorna `investor_impact` com os objetos `client_value_simulation`, `business_model_simulation` e `investment_thesis`. A página `/ecossistema` renderiza esses campos no card **Impacto comercial**, evitando cards vazios e mantendo coerência com a visão para investidores.
+O endpoint `POST /api/ecosystem/simulation` retorna `investor_impact` com os objetos `client_value_simulation`, `business_model_simulation` e `investment_thesis`, permitindo demonstrar valor operacional, retorno potencial e defensibilidade do produto.

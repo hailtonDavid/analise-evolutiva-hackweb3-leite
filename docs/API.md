@@ -79,3 +79,28 @@ GET /verify/<evidence_hash>
 ```http
 GET /api/verify/<evidence_hash>
 ```
+
+
+## POST /api/spectrometer/session
+
+Executa somente a simulação da sessão do espectrofotômetro.
+
+Payload:
+
+```json
+{
+  "scenario": "normal",
+  "seed": 42
+}
+```
+
+Retorno principal:
+
+- `session_id`;
+- `equipment`;
+- `telemetry`;
+- `self_test`;
+- `workflow`;
+- `sample_cycles` com solo, alimentação, água e leite;
+- `led_sweep` por comprimento de onda;
+- `quality_control` por matriz.

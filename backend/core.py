@@ -911,6 +911,127 @@ def build_chain_evidence(process: Mapping[str, Any]) -> Dict[str, Any]:
     return payload
 
 
+
+def build_investor_impact_model(
+    scenario: str = "normal",
+    seed: int | None = 42,
+    *,
+    monthly_liters: float = 450000,
+    milk_price_brl: float = 2.40,
+    baseline_loss_pct: float = 0.018,
+    loss_reduction_pct: float = 0.42,
+    quality_bonus_pct: float = 0.012,
+    audits_per_month: int = 24,
+    audit_cost_brl: float = 180.0,
+    audit_efficiency_gain_pct: float = 0.45,
+    hardware_kit_brl: float = 18500.0,
+    onboarding_brl: float = 7500.0,
+    monthly_saas_brl: float = 1490.0,
+    analysis_fee_brl: float = 0.35,
+    analyses_per_month: int = 900,
+) -> Dict[str, Any]:
+    """Modelo demonstrativo de impacto para investidor e cliente.
+
+    O objetivo não é prometer resultado financeiro, mas mostrar a lógica de valor:
+    redução de perdas, bônus por rastreabilidade/qualidade, menor custo de auditoria
+    e receita recorrente para a Análise Evolutiva.
+    """
+    process = build_full_chain_process(scenario=scenario, seed=seed)
+    integrated = process["integrated_analysis"]
+    milk = process["milk_analysis"]
+
+    monthly_revenue_protected = max(monthly_liters, 0) * max(milk_price_brl, 0)
+    estimated_loss_without_traceability = monthly_revenue_protected * max(baseline_loss_pct, 0)
+
+    status_factor = {"APROVADO": 1.0, "ATENÇÃO": 0.82, "REPROVADO": 0.55}.get(integrated["status"], 0.75)
+    effective_loss_reduction_pct = _bounded(loss_reduction_pct * status_factor, 0, 0.95)
+    avoided_loss = estimated_loss_without_traceability * effective_loss_reduction_pct
+
+    quality_bonus = monthly_revenue_protected * max(quality_bonus_pct, 0) if integrated["status"] in {"APROVADO", "ATENÇÃO"} else 0
+    audit_savings = max(audits_per_month, 0) * max(audit_cost_brl, 0) * _bounded(audit_efficiency_gain_pct, 0, 1)
+    monthly_operational_benefit = avoided_loss + quality_bonus + audit_savings
+    annual_operational_benefit = monthly_operational_benefit * 12
+
+    first_year_cost_for_client = max(hardware_kit_brl, 0) + max(onboarding_brl, 0) + max(monthly_saas_brl, 0) * 12 + max(analysis_fee_brl, 0) * max(analyses_per_month, 0) * 12
+    payback_months = None if monthly_operational_benefit <= 0 else first_year_cost_for_client / monthly_operational_benefit
+    first_year_roi_pct = None if first_year_cost_for_client <= 0 else ((annual_operational_benefit - first_year_cost_for_client) / first_year_cost_for_client) * 100
+
+    vendor_mrr = max(monthly_saas_brl, 0) + max(analysis_fee_brl, 0) * max(analyses_per_month, 0)
+    vendor_arr = vendor_mrr * 12
+    hardware_margin_proxy = max(hardware_kit_brl, 0) * 0.35
+
+    return {
+        "scenario": scenario,
+        "scenario_label": process["scenario_label"],
+        "process_id": process["process_id"],
+        "status": integrated["status"],
+        "integrated_score": integrated["integrated_score"],
+        "technical_risks": {
+            "water_adulteration_risk": milk["water_adulteration_risk"],
+            "temperature_risk": milk["temperature_risk"],
+            "soil_moisture_risk": process["soil"]["analysis"]["moisture_risk"],
+            "feed_risk": process["feed"]["analysis"]["fermentation_or_mold_risk"],
+            "water_turbidity_risk": process["water"]["analysis"]["turbidity_risk"],
+        },
+        "client_value_simulation": {
+            "monthly_liters": round(monthly_liters, 2),
+            "milk_price_brl": round(milk_price_brl, 2),
+            "monthly_revenue_protected_brl": round(monthly_revenue_protected, 2),
+            "baseline_loss_pct": round(baseline_loss_pct, 4),
+            "estimated_loss_without_traceability_brl": round(estimated_loss_without_traceability, 2),
+            "effective_loss_reduction_pct": round(effective_loss_reduction_pct, 4),
+            "avoided_loss_brl_month": round(avoided_loss, 2),
+            "quality_bonus_brl_month": round(quality_bonus, 2),
+            "audit_savings_brl_month": round(audit_savings, 2),
+            "monthly_operational_benefit_brl": round(monthly_operational_benefit, 2),
+            "annual_operational_benefit_brl": round(annual_operational_benefit, 2),
+            "first_year_cost_for_client_brl": round(first_year_cost_for_client, 2),
+            "payback_months": None if payback_months is None else round(payback_months, 1),
+            "first_year_roi_pct": None if first_year_roi_pct is None else round(first_year_roi_pct, 1),
+        },
+        "business_model_simulation": {
+            "hardware_kit_brl": round(hardware_kit_brl, 2),
+            "onboarding_brl": round(onboarding_brl, 2),
+            "monthly_saas_brl": round(monthly_saas_brl, 2),
+            "analysis_fee_brl": round(analysis_fee_brl, 2),
+            "analyses_per_month": analyses_per_month,
+            "vendor_mrr_brl_per_client": round(vendor_mrr, 2),
+            "vendor_arr_brl_per_client": round(vendor_arr, 2),
+            "hardware_margin_proxy_brl": round(hardware_margin_proxy, 2),
+            "revenue_streams": [
+                "venda/locação do kit espectrofotométrico",
+                "assinatura SaaS para dashboards, laudos e rastreabilidade",
+                "taxa por análise registrada e evidência verificável",
+                "licenciamento para cooperativas, laticínios e laboratórios",
+                "contratos de integração com sensores, ERP e auditoria",
+            ],
+        },
+        "investment_thesis": {
+            "why_now": [
+                "cadeias agroalimentares precisam provar origem, qualidade e integridade dos laudos",
+                "hardware óptico reduz dependência de coleta manual e cria dado técnico próprio",
+                "Web3 transforma laudos e medições em evidências verificáveis por terceiros",
+                "a base histórica de curvas espectrais pode virar ativo defensável de IA",
+            ],
+            "defensibility": [
+                "curvas espectrais calibradas por matriz e região",
+                "base proprietária de leite, solo, alimentação, água e histórico de transporte",
+                "integração hardware + IA + laudo + blockchain em uma única trilha",
+                "relacionamento com cooperativas/laticínios e possibilidade de rede de verificação",
+            ],
+            "next_milestones": [
+                "validar protótipo com amostras reais e curva laboratorial",
+                "conectar equipamento físico ESP32/AS7341 ao backend",
+                "deploy do smart contract em testnet e geração de QR Code público",
+                "piloto com produtor/cooperativa/laticínio e relatório de economia operacional",
+                "treinar modelos com histórico de amostras e ampliar para solo, folha, hortifrúti e bioinsumos",
+            ],
+        },
+        "process_snapshot": process,
+        "disclaimer": "Simulação financeira e técnica para apresentação do MVP. Não representa promessa de retorno; os parâmetros devem ser validados em piloto real.",
+    }
+
+
 def build_demo_evidence(scenario: str = "normal", seed: int | None = 42) -> Dict[str, Any]:
     sample = sample_to_dict(simulate_spectral_reading(scenario=scenario, seed=seed))
     analysis = analyze_milk_sample(sample)

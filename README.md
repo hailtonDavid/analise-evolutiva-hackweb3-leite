@@ -6,7 +6,7 @@
 
 A **Análise Evolutiva Web3** é um MVP criado para o HackWeb 3.0 com foco na cadeia produtiva do leite. A proposta é demonstrar como a própria Análise Evolutiva pode analisar o contexto produtivo e a amostra de leite usando um fluxo espectrofotométrico multiespectral e, depois, transformar esse resultado em uma evidência digital verificável.
 
-Esta versão inclui um **simulador completo para usuário, investidor e banca avaliadora** na rota `/simulador`. O simulador mostra o processo de ponta a ponta:
+Esta versão inclui um **simulador completo para usuário, investidor e banca avaliadora** na rota `/simulador`. O simulador agora reproduz a captura do espectrofotômetro em modo operacional: energização do ESP32, auto-teste, corrente escura, branco de referência, acionamento sequencial dos LEDs UV/VIS/NIR, leitura ADC, correção do sinal, absorbância, pacote JSON e registro Web3. O fluxo geral é:
 
 ```text
 Propriedade → Solo/Pastagem → Alimentação do rebanho → Água → Coleta do leite
@@ -55,10 +55,14 @@ http://127.0.0.1:5000/simulador
 O simulador apresenta:
 
 - cenários de cadeia em conformidade, adulteração, quebra de frio, risco alimentar, estresse de solo e risco integrado;
+- simulação viva do espectrofotômetro, com LEDs acionando em sequência;
 - captura das ondas de 365 nm a 910 nm;
+- corrente escura com LEDs desligados;
+- captura do branco/referência;
+- integração por canal óptico com corrente do LED e tempo de exposição;
+- leitura ADC da amostra, sinal corrigido, sinal normalizado e absorbância;
 - seleção visual entre leite, solo/pastagem, alimentação e água;
 - tabela de leitura por canal óptico;
-- corrente escura, referência, ADC da amostra, sinal normalizado e absorbância;
 - diagnóstico técnico da Análise Evolutiva;
 - score integrado da cadeia;
 - recomendações técnicas;
@@ -86,6 +90,28 @@ O diferencial está em transformar uma análise técnica completa da cadeia do l
 ├── LICENSE                  # Apache-2.0
 └── NOTICE                   # Avisos de propriedade intelectual
 ```
+
+
+
+## Simulador do espectrofotômetro
+
+Além da simulação da cadeia produtiva, esta versão inclui uma camada visual e técnica do espectrofotômetro da Análise Evolutiva. O painel `/simulador` demonstra o funcionamento da bancada óptica como se o equipamento estivesse executando a captura: auto-teste, câmara escura, LEDs UV/VIS/NIR acionados um a um, cubeta/porta-amostra, detector, ADC, normalização, absorbância, controle de qualidade por SNR/saturação e envio do pacote JSON para gerar a evidência Web3.
+
+Endpoints disponíveis:
+
+```http
+POST /api/spectrometer/session
+```
+
+Retorna a sessão do equipamento com telemetria, auto-teste, workflow, ciclos de amostra e varredura por canal para solo, alimentação, água e leite.
+
+```http
+POST /api/spectrometer/live-sequence
+```
+
+Retorna a sequência operacional da captura, com eventos de energia, auto-teste, calibração, acionamento dos LEDs, leitura ADC, processamento do sinal, pacote JSON e preparação para Web3.
+
+Documentação complementar: `docs/SIMULADOR_ESPECTROFOTOMETRO.md`.
 
 ## Como executar localmente
 

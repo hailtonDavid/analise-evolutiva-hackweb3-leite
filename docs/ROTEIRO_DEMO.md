@@ -48,3 +48,19 @@ Diga:
 Finalize com:
 
 > O MVP demonstra como a cadeia produtiva do leite pode ganhar confiança, rastreabilidade e auditabilidade com análise espectrofotométrica, IA/regras técnicas e Web3.
+
+
+## Demonstração do espectrofotômetro
+
+Durante a apresentação, abra `/simulador` e destaque a área "Espectrofotômetro simulado". Mostre que o MVP não apresenta somente um resultado final, mas sim a cadeia de captura da evidência:
+
+1. Auto-teste do ESP32, sensor, LEDs e câmara escura.
+2. Captura da corrente escura e branco de referência.
+3. Inserção da amostra em cubeta ou porta-amostra.
+4. Varredura UV/VIS/NIR entre 365 nm e 910 nm.
+5. Leitura do ADC bruto e correção por canal.
+6. Normalização, absorbância e controle de qualidade por SNR/saturação.
+7. Envio do pacote JSON para a Análise Evolutiva.
+8. Geração da evidência digital e registro Web3.
+
+Esse trecho torna a proposta mais tangível para investidor e avaliador, porque aproxima o MVP do funcionamento físico do equipamento.

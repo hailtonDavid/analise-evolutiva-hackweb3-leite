@@ -51,3 +51,40 @@ def test_simulator_page_available():
     response = client.get("/simulador")
     assert response.status_code == 200
     assert "Simulador da Análise Evolutiva Web3" in response.get_data(as_text=True)
+
+
+def test_spectrometer_session_endpoint():
+    client = app.test_client()
+    response = client.post("/api/spectrometer/session", json={"scenario": "normal", "seed": 12})
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["equipment"]["equipment_id"].startswith("AE-SPEC")
+    assert len(payload["sample_cycles"]) == 4
+    assert payload["sample_cycles"][-1]["kind"] == "milk"
+    assert payload["sample_cycles"][-1]["led_sweep"]
+
+
+def test_spectrometer_live_sequence_endpoint():
+    client = app.test_client()
+    response = client.post("/api/spectrometer/live-sequence", json={"scenario": "normal", "seed": 12})
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["session_id"].startswith("AE-SPEC-SESSION")
+    assert payload["live_sequence"]
+    assert any(event["phase"] == "CHANNEL_CAPTURE" for event in payload["live_sequence"])
+
+
+def test_investor_impact_endpoint():
+    client = app.test_client()
+    response = client.post("/api/investor/impact", json={"scenario": "normal", "monthly_liters": 100000})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["client_value_simulation"]["monthly_liters"] == 100000
+    assert "business_model_simulation" in data
+    assert "investment_thesis" in data
+
+def test_investor_page():
+    client = app.test_client()
+    response = client.get("/investidor")
+    assert response.status_code == 200
+    assert b"Vis" in response.data

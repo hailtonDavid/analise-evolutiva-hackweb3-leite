@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Análise Evolutiva Web3 — Visão do Investidor</title>
+  <style>
+    :root{--bg:#061524;--panel:#0f2d45;--panel2:#071c2d;--line:#1e4b69;--text:#ecfbff;--muted:#a9c8d8;--accent:#42dcc6;--good:#63e6a4;--warn:#ffd166;--bad:#ff6b6b}
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top left,#164866 0,#061524 42%,#04101d 100%);color:var(--text)}
+    header,main{max-width:1220px;margin:auto;padding:24px 18px} a{color:var(--accent);text-decoration:none} h1{font-size:clamp(32px,4vw,58px);line-height:1.02;margin:14px 0 10px} h2{margin:0 0 12px} h3{margin:12px 0 8px;color:#eaffff} p{color:var(--muted);line-height:1.55}.badge{display:inline-flex;background:linear-gradient(135deg,var(--accent),#b1fff3);color:#042019;padding:8px 12px;border-radius:999px;font-weight:800}.panel{background:linear-gradient(180deg,rgba(15,45,69,.98),rgba(9,30,48,.98));border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 20px 48px rgba(0,0,0,.22)}
+    .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.controls{display:grid;grid-template-columns:1.2fr repeat(4,.6fr) .7fr;gap:10px;align-items:end}label{font-size:12px;font-weight:800;color:#dffaff}input,select,button{width:100%;border-radius:14px;padding:12px;border:1px solid #255875;background:#061a2a;color:var(--text)}button{background:linear-gradient(135deg,var(--accent),#91fff0);color:#032017;border:0;font-weight:900;cursor:pointer}.kpi{background:#071c2d;border:1px solid #1d4a68;border-radius:18px;padding:15px;min-height:120px}.kpi span{display:block;color:var(--muted);font-size:13px;margin-bottom:8px}.kpi strong{font-size:28px}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid #1d4a68;padding:9px;text-align:left;vertical-align:top}th{color:#dffaff}.pill{display:inline-block;margin:4px 4px 0 0;padding:8px 10px;border-radius:999px;background:#071c2d;border:1px solid #1d4a68;color:#d7faff;font-size:12px}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.flow div{background:#071c2d;border:1px solid #1d4a68;border-radius:16px;padding:12px;min-height:118px}.flow b{display:inline-flex;width:28px;height:28px;border-radius:50%;align-items:center;justify-content:center;background:var(--accent);color:#042019;margin-bottom:8px}.note{font-size:13px;color:#bde7f5}.money{font-family:Consolas,monospace}.moat li,.milestones li{margin:8px 0;color:#d5eef7}.heroBox{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;align-items:stretch}.bigClaim{font-size:20px;color:#eaffff;margin-top:0}@media(max-width:980px){.grid4,.grid3,.grid2,.controls,.flow,.heroBox{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <a href="/">← voltar ao painel</a> • <a href="/simulador">abrir simulador técnico</a>
+  <div style="margin-top:18px"><span class="badge">Visão do investidor • Análise Evolutiva Web3</span></div>
+  <h1>Do dado óptico ao ativo rastreável da cadeia do leite</h1>
+  <p class="bigClaim">O MVP demonstra uma tese comercial: transformar espectrofotometria, IA e Web3 em uma plataforma recorrente de qualidade, auditoria e rastreabilidade para produtores, cooperativas, laticínios e laboratórios.</p>
+</header>
+<main>
+  <section class="heroBox">
+    <div class="panel">
+      <h2>Por que isso pode interessar ao investidor</h2>
+      <p>A Análise Evolutiva não está vendendo apenas uma tela de laudo. A proposta combina equipamento, captura multiespectral, base própria de dados, análise técnica, evidência digital e registro Web3. Isso cria uma trilha difícil de copiar: dado físico + inteligência + auditoria + rede de validação.</p>
+      <div class="flow">
+        <div><b>1</b><strong>Hardware</strong><p>Captura UV/VIS/NIR em leite, solo, água e alimentação.</p></div>
+        <div><b>2</b><strong>IA técnica</strong><p>Classifica risco, qualidade e coerência produtiva.</p></div>
+        <div><b>3</b><strong>Laudo digital</strong><p>Gera evidência verificável e histórico por lote.</p></div>
+        <div><b>4</b><strong>Web3</strong><p>Registra hash e cria prova de integridade.</p></div>
+        <div><b>5</b><strong>Receita recorrente</strong><p>SaaS, taxa por análise, licenciamento e hardware.</p></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Simulação comercial</h2>
+      <p class="note">Parâmetros ajustáveis para demonstrar retorno potencial ao cliente. São valores de simulação, não promessa de resultado.</p>
+      <div class="controls" style="grid-template-columns:1fr 1fr;margin-top:10px">
+        <div><label>Cenário</label><select id="scenario"><option value="normal">Cadeia em conformidade</option><option value="water_adulteration">Suspeita de adição de água</option><option value="temperature_break">Quebra da cadeia fria</option><option value="feed_risk">Risco na alimentação</option><option value="soil_moisture_stress">Estresse de solo/pastagem</option><option value="integrated_risk">Risco integrado</option></select></div>
+        <div><label>Litros/mês</label><input id="liters" type="number" value="450000"></div>
+        <div><label>Preço/litro R$</label><input id="price" type="number" step="0.01" value="2.40"></div>
+        <div><label>Perda base %</label><input id="loss" type="number" step="0.1" value="1.8"></div>
+        <div><label>Assinatura R$/mês</label><input id="saas" type="number" value="1490"></div>
+        <button id="run">Calcular impacto</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid4" style="margin-top:16px">
+    <div class="kpi"><span>Status técnico</span><strong id="status">—</strong></div>
+    <div class="kpi"><span>Receita protegida/mês</span><strong class="money" id="protected">—</strong></div>
+    <div class="kpi"><span>Benefício operacional/mês</span><strong class="money" id="benefit">—</strong></div>
+    <div class="kpi"><span>Payback simulado</span><strong id="payback">—</strong></div>
+  </section>
+
+  <section class="grid2" style="margin-top:16px">
+    <div class="panel"><h2>Valor para o cliente</h2><table><tbody id="clientTable"><tr><th>Simulação</th><td>Execute o cálculo.</td></tr></tbody></table></div>
+    <div class="panel"><h2>Valor para a Análise Evolutiva</h2><table><tbody id="vendorTable"><tr><th>Modelo</th><td>Execute o cálculo.</td></tr></tbody></table></div>
+  </section>
+
+  <section class="grid3" style="margin-top:16px">
+    <div class="panel moat"><h2>Tese de defesa</h2><ul id="moat"><li>Execute a simulação.</li></ul></div>
+    <div class="panel milestones"><h2>Próximos marcos</h2><ul id="milestones"><li>Execute a simulação.</li></ul></div>
+    <div class="panel"><h2>Riscos técnicos detectados</h2><div id="risks"><span class="pill">aguardando</span></div><p class="note">A força do produto está em mostrar risco antes que ele vire perda, contestação ou bloqueio do lote.</p></div>
+  </section>
+
+  <section class="panel" style="margin-top:16px">
+    <h2>Mensagem para pitch</h2>
+    <p><strong>“A Análise Evolutiva transforma cada leitura do espectrofotômetro em uma evidência técnica rastreável. O produtor ganha controle, a cooperativa ganha auditoria, o laticínio ganha confiança e o investidor enxerga uma plataforma escalável de dados, hardware e receita recorrente.”</strong></p>
+    <p class="note">Esta página complementa o simulador técnico. Primeiro mostre /simulador; depois use esta visão para explicar retorno, modelo de negócio e defensibilidade.</p>
+  </section>
+</main>
+<script>
+const brl = v => (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const pct = v => ((v||0)*100).toFixed(1)+'%';
+const cls = s => s==='APROVADO'?'good':s==='ATENÇÃO'?'warn':'bad';
+function row(k,v){return `<tr><th>${k}</th><td>${v}</td></tr>`}
+async function run(){
+  const payload={scenario:document.getElementById('scenario').value,seed:42,monthly_liters:+document.getElementById('liters').value,milk_price_brl:+document.getElementById('price').value,baseline_loss_pct:+document.getElementById('loss').value/100,monthly_saas_brl:+document.getElementById('saas').value};
+  const res=await fetch('/api/investor/impact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const data=await res.json();
+  if(data.error){alert(data.error);return}
+  const c=data.client_value_simulation,b=data.business_model_simulation;
+  document.getElementById('status').className=cls(data.status);document.getElementById('status').textContent=data.status;
+  document.getElementById('protected').textContent=brl(c.monthly_revenue_protected_brl);
+  document.getElementById('benefit').textContent=brl(c.monthly_operational_benefit_brl);
+  document.getElementById('payback').textContent=c.payback_months?c.payback_months+' meses':'—';
+  document.getElementById('clientTable').innerHTML=[row('Cenário',data.scenario_label),row('Litros analisados/mês',c.monthly_liters.toLocaleString('pt-BR')),row('Perda estimada sem rastreabilidade',brl(c.estimated_loss_without_traceability_brl)),row('Redução efetiva de perda',pct(c.effective_loss_reduction_pct)),row('Perda evitada/mês',brl(c.avoided_loss_brl_month)),row('Bônus de qualidade/rastreabilidade/mês',brl(c.quality_bonus_brl_month)),row('Economia de auditoria/mês',brl(c.audit_savings_brl_month)),row('Benefício anual simulado',brl(c.annual_operational_benefit_brl)),row('Custo do 1º ano para cliente',brl(c.first_year_cost_for_client_brl)),row('ROI do 1º ano',c.first_year_roi_pct!==null?c.first_year_roi_pct+'%':'—')].join('');
+  document.getElementById('vendorTable').innerHTML=[row('Kit espectrofotométrico',brl(b.hardware_kit_brl)),row('Onboarding',brl(b.onboarding_brl)),row('Assinatura SaaS/mês',brl(b.monthly_saas_brl)),row('Taxa por análise',brl(b.analysis_fee_brl)),row('Análises/mês',b.analyses_per_month),row('MRR por cliente',brl(b.vendor_mrr_brl_per_client)),row('ARR por cliente',brl(b.vendor_arr_brl_per_client)),row('Streams de receita',b.revenue_streams.map(x=>`<span class="pill">${x}</span>`).join(''))].join('');
+  document.getElementById('moat').innerHTML=data.investment_thesis.defensibility.map(x=>`<li>${x}</li>`).join('');
+  document.getElementById('milestones').innerHTML=data.investment_thesis.next_milestones.map(x=>`<li>${x}</li>`).join('');
+  const r=data.technical_risks;
+  document.getElementById('risks').innerHTML=Object.entries(r).map(([k,v])=>`<span class="pill">${k.replaceAll('_',' ')}: ${(v*100).toFixed(1)}%</span>`).join('');
+}
+document.getElementById('run').onclick=run;run();
+</script>
+</body>
+</html>

@@ -55,3 +55,32 @@ def test_chain_evidence_hash_is_valid():
     assert len(evidence["evidence_hash"]) == 64
     assert evidence["chain_process"]["soil"]["analysis"]
     assert tamper_check(evidence) is True
+
+
+def test_spectrophotometer_session_contains_qc_and_workflow():
+    process = build_full_chain_process("normal", seed=15)
+    session = process["spectrophotometer_session"]
+
+    assert session["overall_qc"]["status"] in {"APTO PARA ANÁLISE", "REVISAR LEITURA"}
+    assert len(session["workflow"]) >= 8
+    assert all(cycle["quality_control"]["mean_snr_db"] > 0 for cycle in session["sample_cycles"])
+    assert all(cycle["led_sweep"] for cycle in session["sample_cycles"])
+
+
+def test_live_spectrometer_sequence_simulates_led_activation():
+    process = build_full_chain_process("normal", seed=21)
+    sequence = process["spectrophotometer_session"]["live_sequence"]
+
+    assert sequence
+    assert any(event["phase"] == "DARK_CAPTURE" and event["led_state"] == "OFF" for event in sequence)
+    assert any(event["phase"] == "CHANNEL_CAPTURE" and event["led_state"] == "ON" and event["wavelength_nm"] == 365 for event in sequence)
+    assert any(event["phase"] == "CHANNEL_CAPTURE" and event["led_bank"] == "NIR" and event["wavelength_nm"] == 910 for event in sequence)
+    assert sequence[-1]["phase"] == "WEB3_REGISTER"
+
+
+def test_investor_impact_model():
+    from backend.core import build_investor_impact_model
+    impact = build_investor_impact_model(scenario="normal", seed=42, monthly_liters=120000)
+    assert impact["client_value_simulation"]["monthly_liters"] == 120000
+    assert impact["business_model_simulation"]["vendor_mrr_brl_per_client"] > 0
+    assert len(impact["investment_thesis"]["defensibility"]) >= 3

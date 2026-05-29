@@ -6,11 +6,11 @@ from typing import Any, Dict
 from flask import Flask, jsonify, render_template, request
 
 try:
-    from .core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, sample_to_dict, simulate_spectral_reading, tamper_check
+    from .core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_investor_impact_model, sample_to_dict, simulate_spectral_reading, tamper_check
     from .db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
     from .web3_client import register_evidence
 except ImportError:  # permite executar com: cd backend && python app.py
-    from core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, sample_to_dict, simulate_spectral_reading, tamper_check
+    from core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_investor_impact_model, sample_to_dict, simulate_spectral_reading, tamper_check
     from db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
     from web3_client import register_evidence
 
@@ -31,6 +31,41 @@ def health():
 @app.get("/simulador")
 def simulator_page():
     return render_template("simulator.html")
+
+
+
+
+@app.get("/investidor")
+def investor_page():
+    return render_template("investor.html")
+
+
+@app.post("/api/investor/impact")
+def api_investor_impact():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    try:
+        impact = build_investor_impact_model(
+            scenario=data.get("scenario", "normal"),
+            seed=data.get("seed", 42),
+            monthly_liters=float(data.get("monthly_liters", 450000)),
+            milk_price_brl=float(data.get("milk_price_brl", 2.40)),
+            baseline_loss_pct=float(data.get("baseline_loss_pct", 0.018)),
+            loss_reduction_pct=float(data.get("loss_reduction_pct", 0.42)),
+            quality_bonus_pct=float(data.get("quality_bonus_pct", 0.012)),
+            audits_per_month=int(data.get("audits_per_month", 24)),
+            audit_cost_brl=float(data.get("audit_cost_brl", 180)),
+            audit_efficiency_gain_pct=float(data.get("audit_efficiency_gain_pct", 0.45)),
+            hardware_kit_brl=float(data.get("hardware_kit_brl", 18500)),
+            onboarding_brl=float(data.get("onboarding_brl", 7500)),
+            monthly_saas_brl=float(data.get("monthly_saas_brl", 1490)),
+            analysis_fee_brl=float(data.get("analysis_fee_brl", 0.35)),
+            analyses_per_month=int(data.get("analyses_per_month", 900)),
+        )
+        return jsonify(impact)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": str(exc)}), 500
 
 
 @app.post("/api/samples/simulate")

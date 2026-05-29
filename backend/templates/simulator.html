@@ -54,9 +54,23 @@
     .device-part strong { display:block; color:#e8fdff; margin-bottom:7px; }
     .device-part small { color:var(--muted); line-height:1.35; }
     .beam { height:8px; border-radius:999px; background:linear-gradient(90deg,#ad7cff,#42dcc6,#ffd166,#ff8a65); box-shadow:0 0 18px rgba(66,220,198,.5); margin:18px 0; }
-    .chamber { background:linear-gradient(180deg,#020b12,#071c2d); border:1px solid #2b688b; border-radius:18px; padding:15px; min-height:150px; }
-    .cuvette { margin:8px auto 0; width:72px; height:92px; border:2px solid #99e9ff; border-radius:8px; background:linear-gradient(180deg,rgba(160,245,255,.18),rgba(66,220,198,.35)); position:relative; }
+    .chamber { background:linear-gradient(180deg,#020b12,#071c2d); border:1px solid #2b688b; border-radius:18px; padding:15px; min-height:170px; }
+    .chamber-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:16px; align-items:center; margin-top:10px; }
+    .sample-preview { background:#041321; border:1px solid #1d4a68; border-radius:16px; padding:12px; min-height:136px; }
+    .sample-preview strong { display:block; margin-bottom:8px; color:#dffaff; font-size:13px; }
+    .sample-preview-image { position:relative; height:88px; border-radius:12px; overflow:hidden; border:1px solid rgba(153,233,255,.26); background:radial-gradient(circle at 30% 35%, rgba(255,255,255,.18), transparent 22%), linear-gradient(135deg, #163a52, #0a2135); }
+    .sample-preview-image::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 34px), repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 28px); }
+    .sample-preview-image::after { content:''; position:absolute; inset:14px 18px; border-radius:10px; background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.75), rgba(224,245,255,.34) 35%, rgba(66,220,198,.14) 65%, rgba(4,19,33,.02) 100%); opacity:.92; box-shadow:0 0 26px rgba(170,235,255,.18); }
+    .sample-preview-image.milk::after { background:radial-gradient(circle at 50% 48%, rgba(255,255,255,.9), rgba(241,249,255,.78) 28%, rgba(181,224,255,.34) 58%, rgba(7,28,45,.10) 100%); }
+    .sample-preview-image.soil::after { background:radial-gradient(circle at 52% 52%, rgba(186,140,96,.92), rgba(120,78,42,.88) 28%, rgba(63,43,24,.66) 58%, rgba(7,28,45,.16) 100%); }
+    .sample-preview-image.feed::after { background:radial-gradient(circle at 50% 50%, rgba(206,187,92,.92), rgba(142,123,48,.88) 28%, rgba(94,76,20,.62) 58%, rgba(7,28,45,.16) 100%); }
+    .sample-preview-image.water::after { background:radial-gradient(circle at 50% 50%, rgba(199,244,255,.92), rgba(122,212,240,.70) 30%, rgba(53,121,145,.44) 60%, rgba(7,28,45,.10) 100%); }
+    .sample-preview-meta { display:flex; justify-content:space-between; gap:10px; margin-top:8px; color:#a9c8d8; font-size:11px; }
+    .sample-preview-meta b { color:#eaffff; font-size:12px; }
+    .cuvette-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .cuvette { margin:0 auto; width:72px; height:92px; border:2px solid #99e9ff; border-radius:8px; background:linear-gradient(180deg,rgba(160,245,255,.18),rgba(66,220,198,.35)); position:relative; }
     .cuvette::after { content:'amostra'; position:absolute; bottom:8px; left:8px; right:8px; text-align:center; color:#eaffff; font-size:11px; }
+    .cuvette-note { color:#a9c8d8; font-size:11px; text-align:center; max-width:120px; line-height:1.35; }
     .workflow { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
     .workflow-item { background:#071c2d; border:1px solid #1d4a68; border-radius:14px; padding:10px; color:#dffaff; font-size:12px; }
     .qc-ok { color:var(--good); font-weight:800; }
@@ -85,6 +99,7 @@
     .packet { height:170px; overflow:auto; background:#041321; border:1px solid #1d4a68; border-radius:14px; padding:10px; font-family:Consolas,monospace; font-size:11px; color:#c9f7ff; white-space:pre-wrap; }
     #liveScope { height:180px; }
     @media(max-width:980px){ .live-console,.live-metrics { grid-template-columns:1fr; } .led-rack{grid-template-columns:repeat(3,1fr);} }
+    @media(max-width:780px){ .chamber-grid{grid-template-columns:1fr;} .sample-preview{order:2;} .cuvette-wrap{order:1;} }
 
     @media(max-width:980px){ .grid-4,.grid-3,.grid-2,.controls,.timeline,.device,.workflow { grid-template-columns:1fr; } canvas{height:280px;} }
   </style>
@@ -152,7 +167,21 @@
         </div>
         <div class="chamber">
           <strong>Câmara escura / cubeta / porta-amostra</strong>
-          <div class="cuvette"></div>
+          <div class="chamber-grid">
+            <div class="sample-preview">
+              <strong>Simulação da imagem capturada</strong>
+              <div id="samplePreviewImage" class="sample-preview-image milk"></div>
+              <div class="sample-preview-meta">
+                <div><span>Matriz</span><br><b id="samplePreviewKind">Leite</b></div>
+                <div><span>Temp.</span><br><b id="samplePreviewTemp">—</b></div>
+                <div><span>Status</span><br><b id="samplePreviewStatus">Pronto</b></div>
+              </div>
+            </div>
+            <div class="cuvette-wrap">
+              <div class="cuvette"></div>
+              <div class="cuvette-note">Geometria de leitura em cubeta ou porta-amostra com controle óptico e temperatura registrada.</div>
+            </div>
+          </div>
           <p class="notice" id="deviceSample">Aguardando amostra.</p>
         </div>
         <div class="device-part">
@@ -273,7 +302,7 @@
     status: document.getElementById('kpiStatus'), score: document.getElementById('kpiScore'), adulteration: document.getElementById('kpiAdulteration'), temp: document.getElementById('kpiTemp'),
     timeline: document.getElementById('timeline'), diagnosis: document.getElementById('diagnosisText'), pills: document.getElementById('riskPills'), equipment: document.getElementById('equipmentTable'),
     channelTable: document.getElementById('channelTable'), summary: document.getElementById('summaryTable'), matrix: document.getElementById('matrixTable'), hash: document.getElementById('hashBox'), verify: document.getElementById('verifyLink'),
-    telemetry: document.getElementById('telemetryTable'), workflow: document.getElementById('workflowBox'), deviceLeds: document.getElementById('deviceLeds'), deviceSample: document.getElementById('deviceSample'), deviceDetector: document.getElementById('deviceDetector'), deviceQc: document.getElementById('deviceQc'),
+    telemetry: document.getElementById('telemetryTable'), workflow: document.getElementById('workflowBox'), deviceLeds: document.getElementById('deviceLeds'), deviceSample: document.getElementById('deviceSample'), deviceDetector: document.getElementById('deviceDetector'), deviceQc: document.getElementById('deviceQc'), samplePreviewImage: document.getElementById('samplePreviewImage'), samplePreviewKind: document.getElementById('samplePreviewKind'), samplePreviewTemp: document.getElementById('samplePreviewTemp'), samplePreviewStatus: document.getElementById('samplePreviewStatus'),
     ledRack: document.getElementById('ledRack'), liveBeam: document.getElementById('liveBeam'), liveProgressBar: document.getElementById('liveProgressBar'), liveProgressText: document.getElementById('liveProgressText'),
     livePhase: document.getElementById('livePhase'), liveMatrix: document.getElementById('liveMatrix'), liveLed: document.getElementById('liveLed'), liveAdc: document.getElementById('liveAdc'), liveNorm: document.getElementById('liveNorm'), livePacket: document.getElementById('livePacket'), liveEvents: document.getElementById('liveEvents'), liveScope: document.getElementById('liveScope'),
     log: document.getElementById('log'), chart: document.getElementById('waveChart')
@@ -285,6 +314,15 @@
   function getCapture(process, kind){ return kind === 'milk' ? process.milk_sample.spectrometer_capture : process[kind].capture; }
   function getAnalysis(process, kind){ return kind === 'milk' ? process.milk_analysis : process[kind].analysis; }
 
+  function renderSamplePreview(kind, cycle, session){
+    const klass = ['milk','soil','feed','water'].includes(kind) ? kind : 'milk';
+    els.samplePreviewImage.className = `sample-preview-image ${klass}`;
+    els.samplePreviewKind.textContent = cycle.matrix || kind;
+    const temp = session?.telemetry?.chamber_temperature_celsius;
+    els.samplePreviewTemp.textContent = temp ? `${Number(temp).toFixed(1)} °C` : '—';
+    const qc = cycle?.quality_control?.qc_label || session?.overall_qc?.status || 'Pronto';
+    els.samplePreviewStatus.textContent = qc;
+  }
 
   function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
 
@@ -413,6 +451,7 @@
     els.deviceDetector.textContent = `${eq.detector} • ${eq.microcontroller} • ${eq.firmware}`;
     els.deviceSample.textContent = `${cycle.matrix}: ${cycle.sample_preparation}`;
     els.deviceQc.innerHTML = `QC: <span class="${session.overall_qc.valid ? 'qc-ok' : 'qc-warn'}">${session.overall_qc.status}</span>`;
+    renderSamplePreview(selectedKind, cycle, session);
     els.telemetry.innerHTML = `
       <tr><th>Sessão</th><td>${session.session_id}</td></tr>
       <tr><th>Equipamento</th><td>${eq.equipment_id} • ${eq.serial_number}</td></tr>
@@ -521,7 +560,7 @@
     els.timeline.innerHTML=''; els.diagnosis.textContent='Execute a simulação para gerar o diagnóstico integrado.'; els.pills.innerHTML='';
     initLedRack(); els.liveProgressBar.style.width='0%'; els.liveProgressText.textContent='0% do processo executado.'; els.livePhase.textContent='Aguardando início da captura'; els.liveMatrix.textContent='—'; els.liveLed.textContent='—'; els.liveAdc.textContent='—'; els.liveNorm.textContent='—'; els.livePacket.textContent='Execute a simulação para ver o pacote enviado pelo ESP32 ao backend.'; els.liveEvents.innerHTML='<div>Aguardando acionamento do equipamento.</div>'; els.liveBeam.className='live-beam';
     els.equipment.innerHTML='<tr><th>Equipamento</th><td>—</td></tr>'; els.channelTable.innerHTML='<tr><td colspan="9">Execute uma simulação.</td></tr>';
-    els.telemetry.innerHTML='<tr><th>Sessão</th><td>—</td></tr>'; els.workflow.innerHTML='<div class="workflow-item">Execute a simulação para visualizar o ciclo.</div>'; els.deviceSample.textContent='Aguardando amostra.'; els.deviceQc.textContent='QC: —';
+    els.telemetry.innerHTML='<tr><th>Sessão</th><td>—</td></tr>'; els.workflow.innerHTML='<div class="workflow-item">Execute a simulação para visualizar o ciclo.</div>'; els.deviceSample.textContent='Aguardando amostra.'; els.deviceQc.textContent='QC: —'; els.samplePreviewImage.className='sample-preview-image milk'; els.samplePreviewKind.textContent='Leite'; els.samplePreviewTemp.textContent='—'; els.samplePreviewStatus.textContent='Pronto';
     els.summary.innerHTML='<tr><th>Lote</th><td>—</td></tr>'; els.matrix.innerHTML='<tr><th>Matriz</th><td>—</td></tr>'; els.hash.textContent='Hash ainda não gerado.'; els.verify.innerHTML='';
     els.log.innerHTML='<div>Pronto para iniciar o processo.</div>';
     const ctx=els.chart.getContext('2d'); ctx.clearRect(0,0,els.chart.width,els.chart.height); ctx.fillStyle='#041321'; ctx.fillRect(0,0,els.chart.width,els.chart.height); ctx.fillStyle='#a9c8d8'; ctx.fillText('Execute a simulação para visualizar a captura das ondas.',40,40);

@@ -102,13 +102,71 @@
     @media(max-width:780px){ .chamber-grid{grid-template-columns:1fr;} .sample-preview{order:2;} .cuvette-wrap{order:1;} }
 
     @media(max-width:980px){ .grid-4,.grid-3,.grid-2,.controls,.timeline,.device,.workflow { grid-template-columns:1fr; } canvas{height:280px;} }
+
+    .hero-sim { display:grid; grid-template-columns:1.08fr .92fr; gap:16px; margin-top:18px; align-items:stretch; }
+    .hero-sim-copy, .hero-sim-side { padding:24px; }
+    .hero-lead { font-size:1.04rem; max-width:72ch; margin-top:10px; }
+    .hero-note { margin-top:12px; }
+    .summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%; }
+    .summary-card { background:#071c2d; border:1px solid #1d4a68; border-radius:18px; padding:16px; }
+    .summary-card span { display:block; color:#8acbdf; font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; font-weight:700; }
+    .summary-card strong { display:block; font-size:1.15rem; color:#ecfbff; margin-bottom:8px; }
+    .summary-card p { margin:0; font-size:13px; line-height:1.45; }
+    .hero-actions, .section-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+    .btn-link { display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:12px 16px; border-radius:14px; font-weight:800; border:1px solid rgba(255,255,255,.12); background:linear-gradient(135deg,var(--accent),#91fff0); color:#032017 !important; text-decoration:none !important; }
+    .btn-link.secondary { background:#0a1c2c; color:var(--text) !important; }
+    .action-panel { position:relative; overflow:hidden; }
+    .action-panel::before { content:''; position:absolute; inset:auto auto -40px -40px; width:180px; height:180px; border-radius:50%; background:radial-gradient(circle, rgba(66,220,198,.18), transparent 70%); pointer-events:none; }
+    .section-kicker { color:#8acbdf; font-size:12px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:8px; display:block; }
+    .panel h2 { line-height:1.2; }
+    .device { align-items:stretch; }
+    .device-part, .chamber { min-height:100%; }
+    .chamber-grid { margin-top:12px; }
+    .sample-preview { box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+    .live-card, .device-part, .chamber, .panel, .kpi { backdrop-filter: blur(2px); }
+    
+    .sample-preview-image { --scan-color: rgba(66,220,198,.55); --sample-glow: rgba(66,220,198,.25); }
+    .sample-preview-image.scanning::before { animation: aeScanLine 1s linear infinite; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.04) 35%, var(--scan-color) 48%, rgba(255,255,255,.08) 52%, transparent 66%), repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 34px), repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 28px); background-size: 180px 100%, auto, auto; }
+    .sample-preview-image.scanning { box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 0 26px var(--sample-glow); }
+    .optical-path { margin-top:14px; background:#041321; border:1px solid #1d4a68; border-radius:16px; padding:12px; }
+    .optical-path strong { display:block; color:#dffaff; margin-bottom:8px; font-size:13px; }
+    .optical-path-row { display:grid; grid-template-columns:auto 1fr auto 1fr auto; gap:10px; align-items:center; }
+    .optical-node { min-width:84px; text-align:center; border:1px solid #245a78; border-radius:12px; padding:10px 8px; background:#071c2d; color:#dffaff; font-size:11px; }
+    .optical-node b { display:block; font-size:12px; margin-bottom:2px; }
+    .optical-track { position:relative; height:18px; border-radius:999px; background:#0b2133; border:1px solid #1d4a68; overflow:hidden; }
+    .optical-track::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,.04) 50%, transparent 100%); }
+    .optical-beam { position:absolute; left:-20%; top:0; height:100%; width:18%; opacity:0; border-radius:999px; background:linear-gradient(90deg, rgba(255,255,255,0), rgba(66,220,198,.15) 12%, rgba(66,220,198,.95) 50%, rgba(255,255,255,.95) 72%, rgba(255,255,255,0)); box-shadow:0 0 24px rgba(66,220,198,.55); }
+    .optical-track.active .optical-beam { opacity:1; animation: beamTravel 1.35s linear infinite; }
+    .optical-track.uv .optical-beam { background:linear-gradient(90deg, rgba(255,255,255,0), rgba(173,124,255,.16) 12%, rgba(173,124,255,.92) 50%, rgba(240,229,255,.95) 72%, rgba(255,255,255,0)); box-shadow:0 0 24px rgba(173,124,255,.55); }
+    .optical-track.vis .optical-beam { background:linear-gradient(90deg, rgba(255,255,255,0), rgba(66,220,198,.16) 12%, rgba(66,220,198,.95) 50%, rgba(234,255,255,.95) 72%, rgba(255,255,255,0)); box-shadow:0 0 24px rgba(66,220,198,.55); }
+    .optical-track.nir .optical-beam { background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,184,107,.16) 12%, rgba(255,184,107,.95) 50%, rgba(255,242,217,.95) 72%, rgba(255,255,255,0)); box-shadow:0 0 24px rgba(255,184,107,.55); }
+    .optical-sample-window { position:relative; min-width:98px; text-align:center; border:1px solid #2b688b; border-radius:14px; padding:12px 10px; background:linear-gradient(180deg,#0a2436,#0f344b); color:#eaffff; overflow:hidden; }
+    .optical-sample-window::before { content:''; position:absolute; inset:0; background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,.10) 48%, transparent 100%); opacity:.2; }
+    .optical-sample-window.active::after { content:''; position:absolute; top:0; bottom:0; width:22px; left:-24px; background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.9), rgba(255,255,255,0)); filter:blur(2px); animation: passSample 1.35s linear infinite; }
+    .optical-sample-window small { display:block; color:#a9c8d8; margin-top:4px; }
+    .optical-readout { display:flex; justify-content:space-between; gap:8px; margin-top:8px; color:#a9c8d8; font-size:11px; }
+    .optical-readout b { color:#eaffff; }
+    @keyframes beamTravel { 0% { left:-20%; } 100% { left:102%; } }
+    @keyframes passSample { 0% { left:-24px; } 100% { left:110%; } }
+    @keyframes aeScanLine { 0% { background-position:-180px 0, 0 0, 0 0; } 100% { background-position:180px 0, 0 0, 0 0; } }
+    @media(max-width:820px){ .optical-path-row{ grid-template-columns:1fr; } .optical-node, .optical-sample-window { min-width:0; } }
+
+    @media(max-width:1080px){ .hero-sim { grid-template-columns:1fr; } }
+    @media(max-width:780px){ .summary-grid { grid-template-columns:1fr; } .hero-actions{flex-direction:column;} .btn-link{width:100%;} }
+
   </style>
   <link rel="stylesheet" href="{{ url_for('static', filename='ae-theme.css') }}">
 </head>
 <body>
   <header>
     <nav class="nav">
-      <a class="ae-brand" href="/"><img class="ae-logo" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva"><span class="ae-brand-text">Web3</span></a>
+      <a class="ae-brand ae-brand--header" href="/">
+        <img class="ae-logo" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva">
+        <span class="ae-brand-copy">
+          <strong>Análise Evolutiva</strong>
+          <small>HackWeb 3.0 • ImpactLedger • Cadeia do Leite</small>
+        </span>
+      </a>
       <div>
         <a href="/">Início</a>
         <a href="/simulador">Simulador</a>
@@ -118,15 +176,34 @@
         <a href="/site">Site institucional</a>
       </div>
     </nav>
-    <div style="margin-top:18px;"><span class="badge">MVP HackWeb 3.0 • Simulação completa da cadeia do leite</span></div>
-    <h1>Simulador da Análise Evolutiva Web3</h1>
-    <p>Esta tela demonstra, para avaliadores e investidores, como a Análise Evolutiva pode operar como plataforma integrada: captura multiespectral do solo, alimentação, água e leite; processamento óptico; diagnóstico técnico; geração de evidência digital; hash SHA-256; e registro Web3 para rastreabilidade.</p>
-    <p class="notice">Os dados são sintéticos e servem para demonstração do MVP. A versão produtiva exige calibração real do espectrofotômetro, curvas laboratoriais e validação metrológica.</p>
+
+    <section class="hero-sim">
+      <div class="hero-sim-copy panel">
+        <span class="badge">MVP HackWeb 3.0 • Simulação completa da cadeia do leite</span>
+        <h1>Simulador técnico Web3 da cadeia do leite</h1>
+        <p class="hero-lead">Capture espectros, analise solo, alimentação, água e leite, gere uma evidência digital e registre a integridade do lote em uma camada Web3 auditável.</p>
+        <div class="hero-actions">
+          <a href="#execucao" class="btn-link">Executar demonstração</a>
+          <a href="/investidor" class="btn-link secondary">Visão do investidor</a>
+          <a href="/casos-leite" class="btn-link secondary">Casos do leite</a>
+        </div>
+      </div>
+      <div class="hero-sim-side panel">
+        <div class="summary-grid">
+          <div class="summary-card"><span>Faixa óptica</span><strong>365–910 nm</strong><p>UV, VIS e NIR com varredura sequencial por comprimento de onda.</p></div>
+          <div class="summary-card"><span>Matrizes monitoradas</span><strong>4 matrizes</strong><p>Solo, alimentação, água e leite com diagnóstico integrado.</p></div>
+          <div class="summary-card"><span>Camada de confiança</span><strong>Hash + Web3</strong><p>Evidência digital off-chain com prova de integridade on-chain.</p></div>
+          <div class="summary-card"><span>Valor de negócio</span><strong>Antifraude</strong><p>Rastreabilidade, certificação, auditoria e transparência de lote.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="notice hero-note">Demonstração com dados simulados para validação do fluxo técnico, comercial e Web3.</p>
   </header>
 
   <main>
-    <section class="panel">
-      <div class="controls">
+    <section id="execucao" class="panel action-panel">
+      <p class="notice" style="margin:0 0 14px;">Selecione um cenário e acompanhe a cadeia completa: captura física simulada, análise técnica, criação da evidência digital e rastreabilidade Web3.</p><div class="controls">
         <div>
           <label>Cenário da cadeia produtiva</label>
           <select id="scenario">
@@ -156,7 +233,7 @@
     </section>
 
     <section class="panel" style="margin-top:16px;">
-      <h2>Espectrofotômetro simulado — captura realista da Análise Evolutiva</h2>
+      <span class="section-kicker">Bancada óptica</span><h2>Espectrofotômetro simulado — captura realista da Análise Evolutiva</h2>
       <p>Esta área representa a bancada óptica: auto-teste, câmara escura, LEDs UV/VIS/NIR, cubeta ou porta-amostra, detector, ADC, controle de qualidade e envio do pacote JSON ao backend.</p>
       <div class="device">
         <div class="device-part">
@@ -182,6 +259,21 @@
               <div class="cuvette-note">Geometria de leitura em cubeta ou porta-amostra com controle óptico e temperatura registrada.</div>
             </div>
           </div>
+          <div class="optical-path">
+            <strong>Passagem do espectro pela amostra</strong>
+            <div class="optical-path-row">
+              <div class="optical-node"><b>Fonte</b><span id="opticalSourceLabel">LEDs</span></div>
+              <div id="opticalTrackIn" class="optical-track"><div class="optical-beam"></div></div>
+              <div id="opticalSampleWindow" class="optical-sample-window"><b>Amostra</b><small id="opticalSampleLabel">Cubeta 10 mm</small></div>
+              <div id="opticalTrackOut" class="optical-track"><div class="optical-beam"></div></div>
+              <div class="optical-node"><b>Detector</b><span id="opticalDetectorLabel">ADC 16 bits</span></div>
+            </div>
+            <div class="optical-readout">
+              <div>λ ativo: <b id="opticalWavelength">—</b></div>
+              <div>Transmissão: <b id="opticalTransmission">—</b></div>
+              <div>Absorbância: <b id="opticalAbsorbance">—</b></div>
+            </div>
+          </div>
           <p class="notice" id="deviceSample">Aguardando amostra.</p>
         </div>
         <div class="device-part">
@@ -205,7 +297,7 @@
 
 
     <section class="panel" style="margin-top:16px;">
-      <h2>Simulação viva da captura óptica</h2>
+      <span class="section-kicker">Captura em execução</span><h2>Simulação viva da captura óptica</h2>
       <p>Aqui o MVP simula o equipamento trabalhando como em bancada: cada LED é acionado, o detector lê corrente escura, referência e amostra, o ADC gera o valor bruto, o sinal é corrigido e a Análise Evolutiva recebe o pacote técnico da captura.</p>
       <div class="live-console">
         <div class="live-card">
@@ -235,13 +327,13 @@
     </section>
 
     <section class="panel" style="margin-top:16px;">
-      <h2>Jornada rastreável da cadeia produtiva</h2>
+      <span class="section-kicker">Rastreabilidade do processo</span><h2>Jornada rastreável da cadeia produtiva</h2>
       <div id="timeline" class="timeline"></div>
     </section>
 
     <section class="grid-2" style="margin-top:16px;">
       <div class="panel">
-        <h2>Captura das ondas pelo espectrofotômetro</h2>
+        <span class="section-kicker">Análise espectral</span><h2>Captura das ondas pelo espectrofotômetro</h2>
         <p>Selecione a matriz analisada para visualizar a curva normalizada por comprimento de onda. O simulador calcula corrente escura, branco de referência, ADC bruto, sinal corrigido, normalização e absorbância.</p>
         <div class="tabs">
           <button class="tab active" data-kind="milk">Leite</button>
@@ -262,7 +354,7 @@
 
     <section class="grid-2" style="margin-top:16px;">
       <div class="panel">
-        <h2>Leituras por canal óptico</h2>
+        <span class="section-kicker">Dados da captura</span><h2>Leituras por canal óptico</h2>
         <table>
           <thead>
             <tr><th>nm</th><th>Fonte</th><th>Corrente</th><th>Dark ADC</th><th>Referência</th><th>Amostra</th><th>Normalizado</th><th>Absorbância</th><th>SNR/QC</th></tr>
@@ -271,7 +363,7 @@
         </table>
       </div>
       <div class="panel">
-        <h2>Resumo da amostra e Web3</h2>
+        <span class="section-kicker">Evidência digital</span><h2>Resumo da amostra e Web3</h2>
         <table><tbody id="summaryTable"><tr><th>Lote</th><td>—</td></tr></tbody></table>
         <h3>Hash da evidência</h3>
         <div class="hash" id="hashBox">Hash ainda não gerado.</div>
@@ -281,13 +373,13 @@
 
     <section class="grid-2" style="margin-top:16px;">
       <div class="panel">
-        <h2>Indicadores por matriz analisada</h2>
+        <span class="section-kicker">Visão integrada</span><h2>Indicadores por matriz analisada</h2>
         <table>
           <tbody id="matrixTable"><tr><th>Matriz</th><td>—</td></tr></tbody>
         </table>
       </div>
       <div class="panel">
-        <h2>Log operacional</h2>
+        <span class="section-kicker">Auditoria operacional</span><h2>Log operacional</h2>
         <div id="log" class="log"><div>Pronto para iniciar o processo.</div></div>
       </div>
     </section>
@@ -302,7 +394,7 @@
     status: document.getElementById('kpiStatus'), score: document.getElementById('kpiScore'), adulteration: document.getElementById('kpiAdulteration'), temp: document.getElementById('kpiTemp'),
     timeline: document.getElementById('timeline'), diagnosis: document.getElementById('diagnosisText'), pills: document.getElementById('riskPills'), equipment: document.getElementById('equipmentTable'),
     channelTable: document.getElementById('channelTable'), summary: document.getElementById('summaryTable'), matrix: document.getElementById('matrixTable'), hash: document.getElementById('hashBox'), verify: document.getElementById('verifyLink'),
-    telemetry: document.getElementById('telemetryTable'), workflow: document.getElementById('workflowBox'), deviceLeds: document.getElementById('deviceLeds'), deviceSample: document.getElementById('deviceSample'), deviceDetector: document.getElementById('deviceDetector'), deviceQc: document.getElementById('deviceQc'), samplePreviewImage: document.getElementById('samplePreviewImage'), samplePreviewKind: document.getElementById('samplePreviewKind'), samplePreviewTemp: document.getElementById('samplePreviewTemp'), samplePreviewStatus: document.getElementById('samplePreviewStatus'),
+    telemetry: document.getElementById('telemetryTable'), workflow: document.getElementById('workflowBox'), deviceLeds: document.getElementById('deviceLeds'), deviceSample: document.getElementById('deviceSample'), deviceDetector: document.getElementById('deviceDetector'), deviceQc: document.getElementById('deviceQc'), samplePreviewImage: document.getElementById('samplePreviewImage'), samplePreviewKind: document.getElementById('samplePreviewKind'), samplePreviewTemp: document.getElementById('samplePreviewTemp'), samplePreviewStatus: document.getElementById('samplePreviewStatus'), opticalTrackIn: document.getElementById('opticalTrackIn'), opticalTrackOut: document.getElementById('opticalTrackOut'), opticalSampleWindow: document.getElementById('opticalSampleWindow'), opticalSourceLabel: document.getElementById('opticalSourceLabel'), opticalDetectorLabel: document.getElementById('opticalDetectorLabel'), opticalWavelength: document.getElementById('opticalWavelength'), opticalTransmission: document.getElementById('opticalTransmission'), opticalAbsorbance: document.getElementById('opticalAbsorbance'), opticalSampleLabel: document.getElementById('opticalSampleLabel'),
     ledRack: document.getElementById('ledRack'), liveBeam: document.getElementById('liveBeam'), liveProgressBar: document.getElementById('liveProgressBar'), liveProgressText: document.getElementById('liveProgressText'),
     livePhase: document.getElementById('livePhase'), liveMatrix: document.getElementById('liveMatrix'), liveLed: document.getElementById('liveLed'), liveAdc: document.getElementById('liveAdc'), liveNorm: document.getElementById('liveNorm'), livePacket: document.getElementById('livePacket'), liveEvents: document.getElementById('liveEvents'), liveScope: document.getElementById('liveScope'),
     log: document.getElementById('log'), chart: document.getElementById('waveChart')
@@ -322,6 +414,35 @@
     els.samplePreviewTemp.textContent = temp ? `${Number(temp).toFixed(1)} °C` : '—';
     const qc = cycle?.quality_control?.qc_label || session?.overall_qc?.status || 'Pronto';
     els.samplePreviewStatus.textContent = qc;
+    els.opticalSampleLabel.textContent = kind === 'milk' ? 'Cubeta 10 mm' : (cycle.measurement_type || 'Porta-amostra');
+  }
+
+  function spectrumPalette(kind){
+    if(kind === 'uv') return {scan:'rgba(173,124,255,.58)', glow:'rgba(173,124,255,.25)'};
+    if(kind === 'nir') return {scan:'rgba(255,184,107,.62)', glow:'rgba(255,184,107,.22)'};
+    return {scan:'rgba(66,220,198,.58)', glow:'rgba(66,220,198,.22)'};
+  }
+
+  function setOpticalState(mode, band=null, data={}){
+    const tracks = [els.opticalTrackIn, els.opticalTrackOut];
+    const sample = els.opticalSampleWindow;
+    tracks.forEach(t => { t.className = 'optical-track'; if(mode==='active'){ t.classList.add('active'); if(band) t.classList.add(band); }});
+    sample.className = 'optical-sample-window' + (mode==='active' ? ' active' : '');
+    const pal = spectrumPalette(band);
+    els.samplePreviewImage.style.setProperty('--scan-color', pal.scan);
+    els.samplePreviewImage.style.setProperty('--sample-glow', pal.glow);
+    els.samplePreviewImage.classList.toggle('scanning', mode==='active');
+    if(mode==='active'){
+      els.opticalSourceLabel.textContent = data.source || 'LED ativo';
+      els.opticalWavelength.textContent = data.wavelength ? `${data.wavelength} nm` : '—';
+      els.opticalTransmission.textContent = data.transmission != null ? Number(data.transmission).toFixed(4) : '—';
+      els.opticalAbsorbance.textContent = data.absorbance != null ? Number(data.absorbance).toFixed(4) : '—';
+    } else {
+      els.opticalSourceLabel.textContent = 'LEDs';
+      els.opticalWavelength.textContent = '—';
+      els.opticalTransmission.textContent = '—';
+      els.opticalAbsorbance.textContent = '—';
+    }
   }
 
   function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
@@ -372,9 +493,18 @@
     document.querySelectorAll('.led-dot').forEach(dot => dot.classList.remove('active'));
     els.liveBeam.className = 'live-beam';
     if(event.led_state === 'ON' && event.wavelength_nm){
+      const band = ledClass(event.wavelength_nm);
       const dot = document.querySelector(`.led-dot[data-wl="${event.wavelength_nm}"]`);
       if(dot) dot.classList.add('active');
-      els.liveBeam.classList.add('on', ledClass(event.wavelength_nm));
+      els.liveBeam.classList.add('on', band);
+      setOpticalState('active', band, {
+        source: `${event.led_bank} ${event.led_current_ma ? '('+event.led_current_ma+' mA)' : ''}`.trim(),
+        wavelength: event.wavelength_nm,
+        transmission: event.normalized_signal,
+        absorbance: event.absorbance
+      });
+    } else {
+      setOpticalState('idle');
     }
     const packet = {
       event_id: event.event_id,
@@ -410,6 +540,7 @@
     }
     document.querySelectorAll('.led-dot').forEach(dot => dot.classList.remove('active'));
     els.liveBeam.className = 'live-beam';
+    setOpticalState('idle');
     addLiveEvent('Ciclo finalizado: dados ópticos enviados, analisados e preparados para rastreabilidade Web3.');
   }
 
@@ -558,7 +689,7 @@
     currentPayload = null;
     els.status.textContent='—'; els.status.className=''; els.score.textContent='—'; els.adulteration.textContent='—'; els.temp.textContent='—';
     els.timeline.innerHTML=''; els.diagnosis.textContent='Execute a simulação para gerar o diagnóstico integrado.'; els.pills.innerHTML='';
-    initLedRack(); els.liveProgressBar.style.width='0%'; els.liveProgressText.textContent='0% do processo executado.'; els.livePhase.textContent='Aguardando início da captura'; els.liveMatrix.textContent='—'; els.liveLed.textContent='—'; els.liveAdc.textContent='—'; els.liveNorm.textContent='—'; els.livePacket.textContent='Execute a simulação para ver o pacote enviado pelo ESP32 ao backend.'; els.liveEvents.innerHTML='<div>Aguardando acionamento do equipamento.</div>'; els.liveBeam.className='live-beam';
+    initLedRack(); els.liveProgressBar.style.width='0%'; els.liveProgressText.textContent='0% do processo executado.'; els.livePhase.textContent='Aguardando início da captura'; els.liveMatrix.textContent='—'; els.liveLed.textContent='—'; els.liveAdc.textContent='—'; els.liveNorm.textContent='—'; els.livePacket.textContent='Execute a simulação para ver o pacote enviado pelo ESP32 ao backend.'; els.liveEvents.innerHTML='<div>Aguardando acionamento do equipamento.</div>'; els.liveBeam.className='live-beam'; setOpticalState('idle');
     els.equipment.innerHTML='<tr><th>Equipamento</th><td>—</td></tr>'; els.channelTable.innerHTML='<tr><td colspan="9">Execute uma simulação.</td></tr>';
     els.telemetry.innerHTML='<tr><th>Sessão</th><td>—</td></tr>'; els.workflow.innerHTML='<div class="workflow-item">Execute a simulação para visualizar o ciclo.</div>'; els.deviceSample.textContent='Aguardando amostra.'; els.deviceQc.textContent='QC: —'; els.samplePreviewImage.className='sample-preview-image milk'; els.samplePreviewKind.textContent='Leite'; els.samplePreviewTemp.textContent='—'; els.samplePreviewStatus.textContent='Pronto';
     els.summary.innerHTML='<tr><th>Lote</th><td>—</td></tr>'; els.matrix.innerHTML='<tr><th>Matriz</th><td>—</td></tr>'; els.hash.textContent='Hash ainda não gerado.'; els.verify.innerHTML='';

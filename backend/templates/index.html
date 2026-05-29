@@ -31,7 +31,7 @@
 <body>
   <header>
     <nav class="nav">
-      <strong>Análise Evolutiva Web3</strong>
+      <a class="ae-brand" href="/"><img class="ae-logo" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva"><span class="ae-brand-text">Web3</span></a>
       <div>
         <a href="/">Início</a>
         <a href="/simulador">Simulador</a>
@@ -42,6 +42,7 @@
       </div>
     </nav>
     <div class="badge">HackWeb 3.0 • Web3 • Blockchain • Cadeia do Leite</div>
+    <img class="ae-hero-logo" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva">
     <h1>Análise Evolutiva Web3</h1>
     <p>Rastreabilidade inteligente da cadeia produtiva do leite com espectrofotometria, análise automatizada, hash criptográfico e smart contract.</p>
     <div class="ae-actions">
@@ -64,7 +65,6 @@
       <div class="card">
         <h2>Executar demonstração rápida</h2>
         <p class="ae-section-text">Escolha um cenário simulado. O sistema gera a leitura espectrofotométrica, analisa o lote, cria a evidência digital e registra o hash em modo Web3 simulado.</p>
-        <p class="ae-section-text">Para apresentação comercial, utilize o simulador completo e a visão do investidor em uma navegação separada, sem botões dentro do texto.</p>
         <div class="ae-actions">
           <a href="/simulador" class="btn secondary">Simulador completo</a>
           <a href="/investidor" class="btn secondary">Visão do investidor</a>

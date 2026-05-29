@@ -109,3 +109,50 @@ p .btn { margin:6px 4px!important; }
   .ae-actions,.hero-actions,.action-row,.toolbar-actions{align-items:stretch!important;flex-direction:column!important;}
   .ae-actions .btn,.hero-actions .btn,.action-row .btn,.toolbar-actions .btn{width:100%!important;}
 }
+
+
+/* --- Marca Análise Evolutiva --- */
+.ae-brand{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  min-width:220px!important;
+  color:var(--ae-text)!important;
+  text-decoration:none!important;
+}
+.ae-logo{
+  height:46px!important;
+  width:auto!important;
+  max-width:270px!important;
+  object-fit:contain!important;
+  display:block!important;
+  filter:drop-shadow(0 10px 24px rgba(56,213,255,.18));
+}
+.ae-brand-text{
+  font-weight:900!important;
+  letter-spacing:.01em!important;
+}
+.ae-hero-logo{
+  max-width:min(520px,100%)!important;
+  width:100%!important;
+  height:auto!important;
+  display:block!important;
+  margin:0 0 18px!important;
+  filter:drop-shadow(0 20px 42px rgba(56,213,255,.18));
+}
+.ae-logo-card{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:210px!important;
+  padding:24px!important;
+}
+.ae-logo-card img{
+  max-width:min(520px,100%)!important;
+  height:auto!important;
+}
+@media(max-width:700px){
+  .ae-logo{height:38px!important;max-width:220px!important;}
+  .ae-brand{min-width:0!important;}
+  .ae-brand-text{display:none!important;}
+}

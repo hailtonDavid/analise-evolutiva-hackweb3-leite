@@ -2,6 +2,10 @@
 
 > Rastreabilidade Web3 da cadeia produtiva do leite com espectrofotometria multiespectral, análise da própria Análise Evolutiva, geração de evidência digital, hash criptográfico e smart contract.
 
+## Desafio escolhido no HackWeb
+
+Este projeto foi estruturado para o **Desafio 3 - ImpactLedger**, na trilha **Blockchain + Smart Contracts**. A solução registra e certifica evidências de impacto ambiental, produtivo e sanitário da cadeia produtiva do leite, transformando análises técnicas em histórico verificável e auditável.
+
 ## Visão geral
 
 A **Análise Evolutiva Web3** é um MVP criado para o HackWeb 3.0 com foco na cadeia produtiva do leite. A proposta é demonstrar como a própria Análise Evolutiva pode analisar o contexto produtivo e a amostra de leite usando um fluxo espectrofotométrico multiespectral e, depois, transformar esse resultado em uma evidência digital verificável.
@@ -237,6 +241,14 @@ Documentos úteis:
 
 Este repositório usa dados simulados para demonstração. O uso produtivo exige calibração real do espectrofotômetro, validação laboratorial, política de privacidade, governança de dados, proteção de dados sensíveis e integração com hardware real.
 
+## Declaração de uso de IA
+
+Ferramentas de inteligência artificial generativa foram utilizadas como apoio na organização textual, documentação, revisão de requisitos e estruturação de partes do MVP. A ferramenta declarada é: **ChatGPT**.
+
+O projeto usa dados simulados/sintéticos para demonstração. Não há uso de dados reais de produtores, cooperativas, laboratórios ou consumidores. A autoria intelectual, a supervisão humana e a decisão final sobre problema, escopo, arquitetura e narrativa da solução permanecem sob responsabilidade do participante/equipe.
+
+Mais detalhes em [`docs/USO_DE_IA.md`](docs/USO_DE_IA.md).
+
 ## Licença
 
 O código-fonte deste repositório está sob a licença **Apache License 2.0**.
@@ -267,3 +279,20 @@ GET /api/use-cases/milk
 ## Impacto comercial
 
 As telas principais mantêm identidade visual profissional e linguagem voltada a avaliador/investidor. A visão de ecossistema apresenta receita protegida, perdas evitáveis, benefício operacional, payback, ROI, MRR, ARR e defensibilidade do negócio.
+
+## Entrega HackWeb
+
+Artefatos preparados no repositório:
+
+- código-fonte completo;
+- backend Flask;
+- simulador do espectrofotômetro;
+- smart contract Solidity;
+- testes Python;
+- testes Hardhat;
+- documentação técnica;
+- PDF de slides em `docs/Apresentacao_HackWeb_Analise_Evolutiva.pdf`;
+- checklist de conformidade em `docs/CONFORMIDADE_HACKWEB.md`;
+- checklist de submissão em `docs/CHECKLIST_SUBMISSAO_FINAL.md`.
+
+Pendências que dependem da submissão externa: inserir o link do vídeo-pitch não listado no YouTube, o link do repositório público no formulário oficial e, se houver deploy em testnet, o endereço do contrato.

@@ -6,11 +6,11 @@ from typing import Any, Dict
 from flask import Flask, jsonify, render_template, request
 
 try:
-    from .core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_investor_impact_model, build_milk_chain_use_cases, sample_to_dict, simulate_spectral_reading, tamper_check
+    from .core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_investor_impact_model, build_milk_chain_use_cases, sample_to_dict, simulate_spectral_reading, tamper_check
     from .db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
     from .web3_client import register_evidence
 except ImportError:  # permite executar com: cd backend && python app.py
-    from core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_investor_impact_model, build_milk_chain_use_cases, sample_to_dict, simulate_spectral_reading, tamper_check
+    from core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_investor_impact_model, build_milk_chain_use_cases, sample_to_dict, simulate_spectral_reading, tamper_check
     from db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
     from web3_client import register_evidence
 

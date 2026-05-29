@@ -21,7 +21,7 @@
 </head>
 <body>
   <nav class="ae-nav">
-    <strong>Análise Evolutiva Web3</strong>
+    <a class="ae-brand" href="/"><img class="ae-logo" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva"><span class="ae-brand-text">Web3</span></a>
     <div class="ae-link-list">
       <a href="/">Início</a>
       <a href="/simulador">Simulador</a>
@@ -43,6 +43,9 @@
           <a class="btn secondary" href="/ecossistema">Ver ecossistema Web3</a>
           <a class="btn secondary" href="/simulador">Executar simulação</a>
         </div>
+      </div>
+      <div class="card site-visual ae-logo-card" aria-label="Logomarca da Análise Evolutiva">
+        <img src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Logomarca Análise Evolutiva">
       </div>
       <div class="card site-visual" aria-label="Representação visual da plataforma Análise Evolutiva">
         <div class="orb one"></div><div class="orb two"></div><div class="orb three"></div>

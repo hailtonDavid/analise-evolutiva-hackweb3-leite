@@ -21,6 +21,20 @@ describe("AnaliseEvolutivaLeiteTrace", function () {
     const evidence = await registry.getEvidence(evidenceHash);
     expect(evidence.batchId).to.equal("LEITE-20260529-0001");
     expect(evidence.status).to.equal("APROVADO");
+    expect(evidence.certified).to.equal(false);
+  });
+
+  it("emite certificacao digital para evidencia registrada", async function () {
+    const registry = await deployRegistry();
+    const evidenceHash = ethers.keccak256(ethers.toUtf8Bytes("evidencia-certificada"));
+
+    await registry.registerEvidence(evidenceHash, "LOTE-A2A2-1", "PROD-A", "ipfs://laudo", "APROVADO");
+    await expect(registry.certifyEvidence(evidenceHash, "ipfs://certificado-a2a2"))
+      .to.emit(registry, "EvidenceCertified");
+
+    expect(await registry.isCertified(evidenceHash)).to.equal(true);
+    const evidence = await registry.getEvidence(evidenceHash);
+    expect(evidence.certificateURI).to.equal("ipfs://certificado-a2a2");
   });
 
   it("bloqueia duplicidade de hash", async function () {

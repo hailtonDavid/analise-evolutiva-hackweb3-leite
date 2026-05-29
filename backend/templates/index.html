@@ -4,34 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Análise Evolutiva Web3 — Leite</title>
-  <style>
-    :root { --bg:#071827; --card:#0d253a; --line:#1d4a68; --text:#eaf8ff; --muted:#a9c8d8; --accent:#41d3bd; --accent2:#74b7ff; --warn:#ffd166; --bad:#ff6b6b; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: Arial, Helvetica, sans-serif; background: radial-gradient(circle at top left, #123a55, var(--bg)); color:var(--text); }
-    header { padding: 40px 24px 20px; max-width: 1100px; margin:auto; }
-    main { max-width:1100px; margin:auto; padding:24px; display:grid; gap:22px; }
-    h1 { font-size: clamp(30px, 5vw, 56px); line-height:1.02; margin:0 0 14px; }
-    h2 { margin:0 0 12px; }
-    p { color:var(--muted); line-height:1.6; }
-    .badge { display:inline-block; border:1px solid var(--line); color:var(--accent); padding:8px 12px; border-radius:999px; font-weight:700; margin-bottom:16px; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px; }
-    .card { background: rgba(13,37,58,.88); border:1px solid var(--line); border-radius:22px; padding:20px; box-shadow:0 16px 40px rgba(0,0,0,.25); }
-    .flow { display:flex; flex-wrap:wrap; gap:8px; }
-    .flow span { padding:10px 12px; border:1px solid var(--line); border-radius:12px; color:var(--muted); background:#091f31; }
-    button, select { border:0; border-radius:14px; padding:14px 16px; font-weight:700; }
-    button { background:linear-gradient(90deg, var(--accent), var(--accent2)); color:#062033; cursor:pointer; }
-    select { background:#071827; color:var(--text); border:1px solid var(--line); }
-    table { width:100%; border-collapse:collapse; }
-    th,td { text-align:left; padding:10px; border-bottom:1px solid var(--line); font-size:14px; }
-    a { color:var(--accent); }
-    code { background:#061523; padding:2px 6px; border-radius:6px; color:#d9fff8; }
-  </style>
   <link rel="stylesheet" href="{{ url_for('static', filename='ae-theme.css') }}">
 </head>
 <body>
   <header>
     <nav class="nav">
-      <a class="ae-brand" href="/"><img class="ae-logo" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva"><span class="ae-brand-text">Web3</span></a>
+      <a class="ae-brand ae-brand--header" href="/">
+        <img class="ae-logo" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva">
+        <span class="ae-brand-copy">
+          <strong>Análise Evolutiva</strong>
+          <small>HackWeb 3.0 • ImpactLedger</small>
+        </span>
+      </a>
       <div>
         <a href="/">Início</a>
         <a href="/simulador">Simulador</a>
@@ -41,23 +25,64 @@
         <a href="/site">Site institucional</a>
       </div>
     </nav>
-    <div class="badge">HackWeb 3.0 • Web3 • Blockchain • Cadeia do Leite</div>
-    <img class="ae-hero-logo" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva">
-    <h1>Análise Evolutiva Web3</h1>
-    <p>Rastreabilidade inteligente da cadeia produtiva do leite com espectrofotometria, análise automatizada, hash criptográfico e smart contract.</p>
-    <div class="ae-actions">
-      <a href="/simulador" class="btn">Abrir simulador completo</a>
-      <a href="/investidor" class="btn secondary">Visão do investidor</a>
-      <a href="/ecossistema" class="btn secondary">Ecossistema completo</a>
-      <a href="/casos-leite" class="btn secondary">Casos do leite</a>
-      <a href="/site" class="btn secondary">Site institucional</a>
-    </div>
   </header>
+
   <main>
+    <section class="hero-grid">
+      <div class="card hero-copy">
+        <div class="badge">HackWeb 3.0 • Web3 • Blockchain • Cadeia do Leite</div>
+        <h1>Rastreabilidade inteligente da cadeia do leite com evidência digital auditável</h1>
+        <p class="hero-lead">A Análise Evolutiva Web3 integra espectrofotometria, análise automatizada e smart contracts para registrar, validar e comprovar ações de impacto ambiental e produtivo em toda a cadeia do leite.</p>
+
+        <ul class="feature-list">
+          <li><strong>Captura técnica simulada:</strong> LEDs UV/VIS/NIR, leitura ADC, referência, absorbância e análise espectral.</li>
+          <li><strong>Evidência verificável:</strong> geração de laudo digital com hash criptográfico e histórico auditável.</li>
+          <li><strong>Aplicação real:</strong> combate à fraude, rastreabilidade de lote, certificação e transparência para produtor, cooperativa e laticínio.</li>
+          <li><strong>Camada Web3:</strong> smart contract funcional para registro verificável e confiança distribuída.</li>
+        </ul>
+
+        <div class="ae-actions">
+          <a href="/simulador" class="btn">Abrir simulador completo</a>
+          <a href="/investidor" class="btn secondary">Visão do investidor</a>
+          <a href="/casos-leite" class="btn secondary">Casos do leite</a>
+        </div>
+      </div>
+
+      <aside class="card hero-panel">
+        <div class="hero-logo-wrap">
+          <img class="ae-hero-logo ae-hero-logo--compact" src="{{ url_for('static', filename='logo-analise-evolutiva.png') }}" alt="Análise Evolutiva">
+        </div>
+
+        <div class="stat-grid">
+          <div class="value">
+            <span class="kicker">Problema</span>
+            <h3>Baixa confiança e pouca rastreabilidade</h3>
+            <p>Fraude, perda de histórico, dificuldade de auditoria e baixa transparência na cadeia do leite.</p>
+          </div>
+          <div class="value">
+            <span class="kicker">Solução</span>
+            <h3>ImpactLedger aplicado ao agro</h3>
+            <p>Registros técnicos off-chain com prova de integridade on-chain e histórico auditável.</p>
+          </div>
+        </div>
+
+        <div class="hero-mini-grid">
+          <div class="panel compact">
+            <span class="kicker">Casos de uso</span>
+            <p>A2A2, orgânico, raça, fraude, contaminação e rastreabilidade de lote.</p>
+          </div>
+          <div class="panel compact">
+            <span class="kicker">Tecnologia</span>
+            <p>Espectrofotometria, IA aplicada, blockchain, smart contracts e evidências verificáveis.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
     <section class="card">
       <h2>Fluxo demonstrado pelo MVP</h2>
       <div class="flow">
-        <span>Produtor</span><span>Coleta</span><span>Transporte resfriado</span><span>Cooperativa</span><span>Espectrofotômetro</span><span>Análise Evolutiva</span><span>Hash</span><span>Smart Contract</span><span>Verificação pública</span>
+        <span>Solo e pastagem</span><span>Alimentação</span><span>Água</span><span>Coleta do leite</span><span>Espectrofotômetro</span><span>Análise Evolutiva</span><span>Evidência digital</span><span>Hash</span><span>Smart Contract</span><span>Verificação pública</span>
       </div>
     </section>
 
@@ -65,23 +90,19 @@
       <div class="card">
         <h2>Executar demonstração rápida</h2>
         <p class="ae-section-text">Escolha um cenário simulado. O sistema gera a leitura espectrofotométrica, analisa o lote, cria a evidência digital e registra o hash em modo Web3 simulado.</p>
-        <div class="ae-actions">
-          <a href="/simulador" class="btn secondary">Simulador completo</a>
-          <a href="/investidor" class="btn secondary">Visão do investidor</a>
-        </div>
-        <form method="post" action="/demo/run">
-          <p><select name="scenario">
+        <form method="post" action="/demo/run" class="demo-form">
+          <select name="scenario">
             <option value="normal">Leite normal</option>
             <option value="water_adulteration">Suspeita de adição de água</option>
             <option value="temperature_break">Quebra de temperatura</option>
             <option value="high_solids">Sólidos elevados</option>
-          </select></p>
+          </select>
           <button type="submit">Gerar evidência rastreável</button>
         </form>
       </div>
       <div class="card">
         <h2>Diferencial Web3</h2>
-        <p>A evidência completa fica off-chain. A blockchain registra o hash da análise, permitindo comprovar integridade sem expor dados sensíveis de produtor, laboratório ou lote.</p>
+        <p>A evidência completa fica off-chain. A blockchain registra o hash da análise, permitindo comprovar integridade sem expor dados sensíveis do produtor, do laboratório ou do lote.</p>
         <p><code>off-chain evidence + on-chain hash</code></p>
       </div>
     </section>

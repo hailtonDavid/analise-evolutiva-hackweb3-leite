@@ -48,7 +48,20 @@
     .pill { display:inline-block; margin:4px 4px 0 0; padding:7px 10px; border-radius:999px; background:#071c2d; border:1px solid #1d4a68; color:#d7faff; font-size:12px; }
     .log { background:#041321; border:1px solid #1d4a68; border-radius:16px; padding:12px; height:250px; overflow:auto; font-family:Consolas,monospace; font-size:12px; color:#c9f7ff; }
     .notice { color:#bde7f5; font-size:13px; margin-top:8px; }
-    @media(max-width:980px){ .grid-4,.grid-3,.grid-2,.controls,.timeline { grid-template-columns:1fr; } canvas{height:280px;} }
+
+    .device { display:grid; grid-template-columns:1fr 1.6fr 1fr; gap:12px; align-items:center; margin-top:10px; }
+    .device-part { background:#061a2a; border:1px solid #1d4a68; border-radius:18px; padding:14px; min-height:118px; position:relative; }
+    .device-part strong { display:block; color:#e8fdff; margin-bottom:7px; }
+    .device-part small { color:var(--muted); line-height:1.35; }
+    .beam { height:8px; border-radius:999px; background:linear-gradient(90deg,#ad7cff,#42dcc6,#ffd166,#ff8a65); box-shadow:0 0 18px rgba(66,220,198,.5); margin:18px 0; }
+    .chamber { background:linear-gradient(180deg,#020b12,#071c2d); border:1px solid #2b688b; border-radius:18px; padding:15px; min-height:150px; }
+    .cuvette { margin:8px auto 0; width:72px; height:92px; border:2px solid #99e9ff; border-radius:8px; background:linear-gradient(180deg,rgba(160,245,255,.18),rgba(66,220,198,.35)); position:relative; }
+    .cuvette::after { content:'amostra'; position:absolute; bottom:8px; left:8px; right:8px; text-align:center; color:#eaffff; font-size:11px; }
+    .workflow { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
+    .workflow-item { background:#071c2d; border:1px solid #1d4a68; border-radius:14px; padding:10px; color:#dffaff; font-size:12px; }
+    .qc-ok { color:var(--good); font-weight:800; }
+    .qc-warn { color:var(--warn); font-weight:800; }
+    @media(max-width:980px){ .grid-4,.grid-3,.grid-2,.controls,.timeline,.device,.workflow { grid-template-columns:1fr; } canvas{height:280px;} }
   </style>
 </head>
 <body>
@@ -92,6 +105,39 @@
     </section>
 
     <section class="panel" style="margin-top:16px;">
+      <h2>Espectrofotômetro simulado — captura realista da Análise Evolutiva</h2>
+      <p>Esta área representa a bancada óptica: auto-teste, câmara escura, LEDs UV/VIS/NIR, cubeta ou porta-amostra, detector, ADC, controle de qualidade e envio do pacote JSON ao backend.</p>
+      <div class="device">
+        <div class="device-part">
+          <strong>Bancos de luz</strong>
+          <small id="deviceLeds">UV 365/395 nm • VIS • NIR</small>
+          <div class="beam"></div>
+          <small>varredura sequencial por comprimento de onda</small>
+        </div>
+        <div class="chamber">
+          <strong>Câmara escura / cubeta / porta-amostra</strong>
+          <div class="cuvette"></div>
+          <p class="notice" id="deviceSample">Aguardando amostra.</p>
+        </div>
+        <div class="device-part">
+          <strong>Detector + ADC + ESP32</strong>
+          <small id="deviceDetector">fotodiodos multicanais • ADC 16 bits • HTTP/JSON</small>
+          <h3 id="deviceQc">QC: —</h3>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top:14px;">
+        <div>
+          <h3>Telemetria e auto-teste</h3>
+          <table><tbody id="telemetryTable"><tr><th>Sessão</th><td>—</td></tr></tbody></table>
+        </div>
+        <div>
+          <h3>Ciclo de medição do equipamento</h3>
+          <div id="workflowBox" class="workflow"><div class="workflow-item">Execute a simulação para visualizar o ciclo.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:16px;">
       <h2>Jornada rastreável da cadeia produtiva</h2>
       <div id="timeline" class="timeline"></div>
     </section>
@@ -122,9 +168,9 @@
         <h2>Leituras por canal óptico</h2>
         <table>
           <thead>
-            <tr><th>nm</th><th>Banco</th><th>Dark ADC</th><th>Referência</th><th>Amostra</th><th>Normalizado</th><th>Absorbância</th></tr>
+            <tr><th>nm</th><th>Fonte</th><th>Corrente</th><th>Dark ADC</th><th>Referência</th><th>Amostra</th><th>Normalizado</th><th>Absorbância</th><th>SNR/QC</th></tr>
           </thead>
-          <tbody id="channelTable"><tr><td colspan="7">Execute uma simulação.</td></tr></tbody>
+          <tbody id="channelTable"><tr><td colspan="9">Execute uma simulação.</td></tr></tbody>
         </table>
       </div>
       <div class="panel">
@@ -159,6 +205,7 @@
     status: document.getElementById('kpiStatus'), score: document.getElementById('kpiScore'), adulteration: document.getElementById('kpiAdulteration'), temp: document.getElementById('kpiTemp'),
     timeline: document.getElementById('timeline'), diagnosis: document.getElementById('diagnosisText'), pills: document.getElementById('riskPills'), equipment: document.getElementById('equipmentTable'),
     channelTable: document.getElementById('channelTable'), summary: document.getElementById('summaryTable'), matrix: document.getElementById('matrixTable'), hash: document.getElementById('hashBox'), verify: document.getElementById('verifyLink'),
+    telemetry: document.getElementById('telemetryTable'), workflow: document.getElementById('workflowBox'), deviceLeds: document.getElementById('deviceLeds'), deviceSample: document.getElementById('deviceSample'), deviceDetector: document.getElementById('deviceDetector'), deviceQc: document.getElementById('deviceQc'),
     log: document.getElementById('log'), chart: document.getElementById('waveChart')
   };
 
@@ -189,8 +236,33 @@
   function renderChannels(capture){
     els.channelTable.innerHTML = capture.channels.map(ch => `
       <tr>
-        <td>${ch.wavelength_nm}</td><td>${ch.led_bank}</td><td>${ch.dark_adc}</td><td>${ch.reference_adc}</td><td>${ch.sample_adc}</td><td>${ch.normalized_signal}</td><td>${ch.absorbance}</td>
+        <td>${ch.wavelength_nm}</td>
+        <td>${ch.light_source || ch.led_bank}</td>
+        <td>${ch.led_current_ma || '—'} mA<br><small>${ch.exposure_ms || '—'} ms</small></td>
+        <td>${ch.dark_adc}</td><td>${ch.reference_adc}</td><td>${ch.sample_adc}</td>
+        <td>${ch.normalized_signal}</td><td>${ch.absorbance}</td>
+        <td>${ch.snr_db || '—'} dB<br><span class="${ch.qc_label === 'OK' ? 'qc-ok' : 'qc-warn'}">${ch.qc_label || '—'}</span></td>
       </tr>`).join('');
+  }
+
+  function renderSpectrometerSession(session, selectedKind='milk'){
+    if(!session) return;
+    const eq = session.equipment;
+    const cycle = session.sample_cycles.find(c => c.kind === selectedKind) || session.sample_cycles[0];
+    els.deviceLeds.textContent = eq.light_banks.join(' • ');
+    els.deviceDetector.textContent = `${eq.detector} • ${eq.microcontroller} • ${eq.firmware}`;
+    els.deviceSample.textContent = `${cycle.matrix}: ${cycle.sample_preparation}`;
+    els.deviceQc.innerHTML = `QC: <span class="${session.overall_qc.valid ? 'qc-ok' : 'qc-warn'}">${session.overall_qc.status}</span>`;
+    els.telemetry.innerHTML = `
+      <tr><th>Sessão</th><td>${session.session_id}</td></tr>
+      <tr><th>Equipamento</th><td>${eq.equipment_id} • ${eq.serial_number}</td></tr>
+      <tr><th>Geometria óptica</th><td>${eq.optical_geometry}</td></tr>
+      <tr><th>Temperatura/Umidade</th><td>${session.telemetry.chamber_temperature_celsius} °C • ${session.telemetry.relative_humidity_pct}% UR</td></tr>
+      <tr><th>Tensão/Ruído</th><td>${session.telemetry.supply_voltage_v} V • dark noise ${session.telemetry.dark_noise_adc_mean} ADC</td></tr>
+      <tr><th>Deriva referência</th><td>${session.telemetry.reference_drift_pct}%</td></tr>
+      <tr><th>Auto-teste</th><td>${session.self_test.map(t => `${t.item}: ${t.status}`).join('<br>')}</td></tr>
+      <tr><th>Ciclo selecionado</th><td>${cycle.matrix} • ${cycle.measurement_type}<br>Captura: ${cycle.capture_id}<br>${cycle.quality_control.qc_label} • SNR médio ${cycle.quality_control.mean_snr_db} dB</td></tr>`;
+    els.workflow.innerHTML = session.workflow.map((w, i) => `<div class="workflow-item"><b>${String(i+1).padStart(2,'0')}</b><br>${w}</div>`).join('');
   }
 
   function renderTimeline(process, tx){
@@ -223,9 +295,10 @@
     document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.kind === kind));
     const process = currentPayload.process;
     const capture = getCapture(process, kind);
+    renderSpectrometerSession(process.spectrophotometer_session, kind);
     drawChart(capture);
     renderChannels(capture);
-    log(`Visualizando captura espectral: ${kind}.`);
+    log(`Visualizando captura espectral do espectrofotômetro: ${kind}.`);
   }
 
   async function runSimulation(){
@@ -235,10 +308,12 @@
       const seed = els.seed.value ? Number(els.seed.value) : null;
       const scenario = els.scenario.value;
       log('Iniciando cadastro da propriedade, rebanho e lote produtivo.');
+      log('Ligando AE-SPEC: auto-teste do ESP32, sensor, câmara escura e bancos de LED.');
+      log('Capturando corrente escura e branco de referência.');
       log('Capturando ondas do solo/pastagem com UV/VIS/NIR.');
       log('Capturando ondas da alimentação do rebanho.');
       log('Capturando sinal da água operacional.');
-      log('Capturando leite em cubeta de 10 mm com referência, dark current e normalização.');
+      log('Inserindo leite na cubeta de 10 mm, travando câmara óptica e executando varredura 365-910 nm.');
       const resp = await fetch('/api/evidence/full-process', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({scenario, seed})});
       const payload = await resp.json();
       if(!resp.ok) throw new Error(payload.error || 'Falha na simulação.');
@@ -282,7 +357,8 @@
     currentPayload = null;
     els.status.textContent='—'; els.status.className=''; els.score.textContent='—'; els.adulteration.textContent='—'; els.temp.textContent='—';
     els.timeline.innerHTML=''; els.diagnosis.textContent='Execute a simulação para gerar o diagnóstico integrado.'; els.pills.innerHTML='';
-    els.equipment.innerHTML='<tr><th>Equipamento</th><td>—</td></tr>'; els.channelTable.innerHTML='<tr><td colspan="7">Execute uma simulação.</td></tr>';
+    els.equipment.innerHTML='<tr><th>Equipamento</th><td>—</td></tr>'; els.channelTable.innerHTML='<tr><td colspan="9">Execute uma simulação.</td></tr>';
+    els.telemetry.innerHTML='<tr><th>Sessão</th><td>—</td></tr>'; els.workflow.innerHTML='<div class="workflow-item">Execute a simulação para visualizar o ciclo.</div>'; els.deviceSample.textContent='Aguardando amostra.'; els.deviceQc.textContent='QC: —';
     els.summary.innerHTML='<tr><th>Lote</th><td>—</td></tr>'; els.matrix.innerHTML='<tr><th>Matriz</th><td>—</td></tr>'; els.hash.textContent='Hash ainda não gerado.'; els.verify.innerHTML='';
     els.log.innerHTML='<div>Pronto para iniciar o processo.</div>';
     const ctx=els.chart.getContext('2d'); ctx.clearRect(0,0,els.chart.width,els.chart.height); ctx.fillStyle='#041321'; ctx.fillRect(0,0,els.chart.width,els.chart.height); ctx.fillStyle='#a9c8d8'; ctx.fillText('Execute a simulação para visualizar a captura das ondas.',40,40);

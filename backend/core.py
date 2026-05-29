@@ -28,15 +28,34 @@ MILK_WAVELENGTHS_NM = [415, 445, 480, 515, 555, 590, 630, 680, 730, 760, 810, 86
 
 SPECTROMETER_CONFIG: Dict[str, Any] = {
     "equipment_id": "AE-SPEC-V11-MVP-001",
+    "serial_number": "AE-SPEC-UVVISNIR-0001-MVP",
+    "firmware": "ae-spec-fw 0.9.7-mvp",
     "sensor_stack": "AS7341 11 canais + extensão UV/NIR simulada",
+    "optical_geometry": "transmitância em cubeta 10 mm + reflectância demonstrativa para solo/alimentação",
     "optical_path_mm": 10,
     "light_banks": ["UV 365/395 nm", "VIS 415-680 nm", "NIR 730-910 nm"],
+    "detector": "fotodiodos multicanais com ADC 16 bits",
+    "microcontroller": "ESP32 com envio HTTP/JSON",
     "integration_time_ms": 120,
     "gain": "64x",
     "adc_resolution_bits": 16,
+    "adc_full_scale": 65535,
     "communication": "ESP32/HTTP JSON para servidor Flask",
-    "calibration_strategy": "dark current + branco/referência + normalização por canal",
+    "calibration_strategy": "auto-teste + corrente escura + branco/referência + normalização por canal + QC por saturação/SNR",
+    "sample_handling": "gaveta/câmara escura simulada, cubeta para líquidos e suporte óptico para solo/alimentação",
 }
+
+SPECTROMETER_WORKFLOW = [
+    "Inicialização do ESP32, sensor óptico e bancos de LED",
+    "Auto-teste de comunicação, câmara escura, detector e alimentação",
+    "Estabilização térmica e verificação de ruído eletrônico",
+    "Captura de corrente escura com LEDs desligados",
+    "Captura do branco/referência óptica",
+    "Inserção da amostra e travamento da câmara",
+    "Varredura sequencial UV/VIS/NIR por comprimento de onda",
+    "Correção do ADC, normalização, absorbância/reflectância e controle de qualidade",
+    "Envio do pacote JSON para a Análise Evolutiva e geração da evidência",
+]
 
 # Perfil de transmitância de leite cru refrigerado em cenário demonstrativo.
 REFERENCE_PROFILE = {
@@ -267,16 +286,30 @@ def simulate_wave_capture(
 
         normalized[wl_str] = round(norm, 4)
         absorbance[wl_str] = round(abs_value, 4)
+        led_bank = "UV" if wl < 400 else "VIS" if wl < 700 else "NIR"
+        led_current_ma = rng.uniform(18, 28) if led_bank == "UV" else rng.uniform(10, 22) if led_bank == "VIS" else rng.uniform(24, 38)
+        exposure_ms = SPECTROMETER_CONFIG["integration_time_ms"] + rng.uniform(-8, 8)
+        adc_full_scale_pct = _bounded(sample_adc / SPECTROMETER_CONFIG["adc_full_scale"], 0, 1)
+        electronic_noise = rng.uniform(12, 42)
+        snr_db = 20 * math.log10(max(corrected, 1.0) / electronic_noise)
+        qc_label = "SATURADO" if sample_adc >= 65000 else "BAIXO SINAL" if snr_db < 38 else "OK"
         channels.append(
             {
                 "wavelength_nm": wl,
-                "led_bank": "UV" if wl < 400 else "VIS" if wl < 700 else "NIR",
+                "led_bank": led_bank,
+                "light_source": f"LED {led_bank} {wl} nm",
+                "led_current_ma": round(led_current_ma, 2),
+                "exposure_ms": round(exposure_ms, 2),
+                "detector_channel": f"CH-{wl}",
                 "dark_adc": round(dark_current, 2),
                 "reference_adc": round(reference_adc, 2),
                 "sample_adc": round(sample_adc, 2),
                 "corrected_adc": round(corrected, 2),
+                "adc_full_scale_pct": round(adc_full_scale_pct, 4),
                 "normalized_signal": round(norm, 4),
                 "absorbance": round(abs_value, 4),
+                "snr_db": round(snr_db, 2),
+                "qc_label": qc_label,
                 "saturation": sample_adc >= 65000,
             }
         )
@@ -487,6 +520,139 @@ def analyze_water(capture: Mapping[str, Any]) -> Dict[str, Any]:
     }
 
 
+
+def _capture_quality_summary(capture: Mapping[str, Any]) -> Dict[str, Any]:
+    channels = capture.get("channels", [])
+    saturated = sum(1 for ch in channels if ch.get("saturation"))
+    low_signal = sum(1 for ch in channels if ch.get("qc_label") == "BAIXO SINAL")
+    snr_values = [float(ch.get("snr_db", 0)) for ch in channels]
+    fs_values = [float(ch.get("adc_full_scale_pct", 0)) for ch in channels]
+    mean_snr = _mean(snr_values)
+    mean_full_scale = _mean(fs_values)
+    valid = saturated == 0 and low_signal == 0 and mean_snr >= 38
+    return {
+        "valid_capture": valid,
+        "saturated_channels": saturated,
+        "low_signal_channels": low_signal,
+        "mean_snr_db": round(mean_snr, 2),
+        "mean_adc_full_scale_pct": round(mean_full_scale, 4),
+        "qc_label": "CAPTURA VÁLIDA" if valid else "REVISAR CAPTURA",
+    }
+
+
+def build_spectrophotometer_session(
+    captures: Mapping[str, Mapping[str, Any]],
+    scenario: str,
+    seed: int | None = None,
+) -> Dict[str, Any]:
+    """Monta uma sessão completa do espectrofotômetro para demonstração do hardware.
+
+    A sessão simula a experiência que o avaliador/investidor precisa enxergar:
+    inicialização do equipamento, auto-teste, calibração, inserção de amostras,
+    varredura por LEDs, leitura ADC, controle de qualidade e envio do pacote JSON.
+    """
+    rng = _scenario_rng(seed, scenario, salt=909)
+    session_id = f"AE-SPEC-SESSION-{datetime.now().strftime('%Y%m%d')}-{rng.randint(10000,99999)}"
+    chamber_temp = rng.uniform(24.0, 28.5)
+    chamber_humidity = rng.uniform(42.0, 58.0)
+    supply_voltage = rng.uniform(4.86, 5.08)
+    dark_noise_adc = rng.uniform(95, 160)
+    drift_pct = rng.uniform(0.12, 0.68)
+
+    self_test = [
+        {"item": "ESP32 e comunicação HTTP", "status": "OK", "detail": "endpoint local Flask acessível"},
+        {"item": "Sensor multicanal", "status": "OK", "detail": "canais UV/VIS/NIR respondendo"},
+        {"item": "Bancos de LED", "status": "OK", "detail": "corrente e potência dentro da faixa simulada"},
+        {"item": "Câmara escura", "status": "OK", "detail": f"ruído escuro médio {dark_noise_adc:.1f} ADC"},
+        {"item": "Referência óptica", "status": "OK", "detail": f"deriva simulada {drift_pct:.2f}%"},
+    ]
+
+    matrix_labels = {
+        "soil": "Solo/Pastagem",
+        "feed": "Alimentação do rebanho",
+        "water": "Água de consumo/limpeza",
+        "milk": "Leite cru refrigerado",
+    }
+    preparation = {
+        "soil": "amostra homogeneizada em suporte de reflectância demonstrativo",
+        "feed": "silagem/ração triturada em porta-amostra óptico",
+        "water": "cubeta limpa com branco de referência",
+        "milk": "cubeta de 10 mm com leite homogeneizado e temperatura registrada",
+    }
+    measurement_type = {
+        "soil": "reflectância aproximada",
+        "feed": "reflectância aproximada",
+        "water": "transmitância",
+        "milk": "transmitância/absorbância",
+    }
+
+    sample_cycles = []
+    for order, kind in enumerate(["soil", "feed", "water", "milk"], start=1):
+        capture = captures[kind]
+        quality = _capture_quality_summary(capture)
+        led_sweep = []
+        for ch in capture["channels"]:
+            led_sweep.append({
+                "wavelength_nm": ch["wavelength_nm"],
+                "light_source": ch["light_source"],
+                "led_current_ma": ch["led_current_ma"],
+                "exposure_ms": ch["exposure_ms"],
+                "dark_adc": ch["dark_adc"],
+                "reference_adc": ch["reference_adc"],
+                "sample_adc": ch["sample_adc"],
+                "normalized_signal": ch["normalized_signal"],
+                "absorbance": ch["absorbance"],
+                "snr_db": ch["snr_db"],
+                "qc_label": ch["qc_label"],
+            })
+        sample_cycles.append({
+            "order": order,
+            "kind": kind,
+            "matrix": matrix_labels[kind],
+            "sample_preparation": preparation[kind],
+            "measurement_type": measurement_type[kind],
+            "container": "cubeta 10 mm" if kind in {"water", "milk"} else "porta-amostra de bancada",
+            "cycle_steps": [
+                "abrir gaveta/câmara óptica",
+                "posicionar amostra",
+                "travar câmara escura",
+                "capturar corrente escura",
+                "capturar branco/referência",
+                "executar varredura 365-910 nm",
+                "calcular sinal corrigido e absorbância",
+                "validar saturação, SNR e estabilidade",
+                "enviar JSON para a Análise Evolutiva",
+            ],
+            "led_sweep": led_sweep,
+            "quality_control": quality,
+            "capture_id": capture["capture_id"],
+        })
+
+    overall_valid = all(c["quality_control"]["valid_capture"] for c in sample_cycles)
+    return {
+        "session_id": session_id,
+        "started_at": utc_now(),
+        "scenario": scenario,
+        "equipment": SPECTROMETER_CONFIG,
+        "workflow": SPECTROMETER_WORKFLOW,
+        "telemetry": {
+            "chamber_temperature_celsius": round(chamber_temp, 2),
+            "relative_humidity_pct": round(chamber_humidity, 2),
+            "supply_voltage_v": round(supply_voltage, 3),
+            "dark_noise_adc_mean": round(dark_noise_adc, 2),
+            "reference_drift_pct": round(drift_pct, 3),
+            "operator_mode": "MVP demonstrativo para investidor/avaliador",
+        },
+        "self_test": self_test,
+        "sample_cycles": sample_cycles,
+        "overall_qc": {
+            "status": "APTO PARA ANÁLISE" if overall_valid else "REVISAR LEITURA",
+            "valid": overall_valid,
+            "note": "Sessão sintética: em produção, estes controles devem ser validados por calibração metrológica e curvas laboratoriais.",
+        },
+    }
+
+
 def build_full_chain_process(scenario: str = "normal", seed: int | None = None) -> Dict[str, Any]:
     """Simula o processo completo para demonstração do MVP/investidor."""
     if scenario not in SCENARIO_FACTORS:
@@ -497,6 +663,11 @@ def build_full_chain_process(scenario: str = "normal", seed: int | None = None) 
     feed_capture = simulate_wave_capture(_scenario_adjusted_profile("feed", scenario), scenario, "feed", seed)
     water_capture = simulate_wave_capture(_scenario_adjusted_profile("water", scenario), scenario, "water", seed)
     milk_capture = simulate_wave_capture(_scenario_adjusted_profile("milk", scenario), scenario, "milk", seed)
+    spectrophotometer_session = build_spectrophotometer_session(
+        {"soil": soil_capture, "feed": feed_capture, "water": water_capture, "milk": milk_capture},
+        scenario=scenario,
+        seed=seed,
+    )
 
     milk_sample = sample_to_dict(simulate_spectral_reading(scenario, seed))
     milk_sample["spectral_reading"] = {wl: milk_capture["normalized_signal"][wl] for wl in REFERENCE_PROFILE.keys()}
@@ -552,6 +723,7 @@ def build_full_chain_process(scenario: str = "normal", seed: int | None = None) 
             "pasture_plot": f"TL-{rng.randint(1, 8)}",
         },
         "spectrometer": SPECTROMETER_CONFIG,
+        "spectrophotometer_session": spectrophotometer_session,
         "soil": {"capture": soil_capture, "analysis": soil_analysis},
         "feed": {"capture": feed_capture, "analysis": feed_analysis},
         "water": {"capture": water_capture, "analysis": water_analysis},
@@ -591,7 +763,7 @@ def build_evidence(sample: Mapping[str, Any], analysis: AnalysisResult) -> Dict[
     payload = {
         "evidence_id": evidence_id,
         "project": "Análise Evolutiva Web3 — Cadeia Produtiva do Leite",
-        "version": "1.1.0-hackweb3-full-simulator",
+        "version": "1.2.0-hackweb3-spectrometer-simulator",
         "created_at": utc_now(),
         "sample": sample,
         "analysis": asdict(analysis),
@@ -613,7 +785,7 @@ def build_chain_evidence(process: Mapping[str, Any]) -> Dict[str, Any]:
     payload = {
         "evidence_id": evidence_id,
         "project": "Análise Evolutiva Web3 — Cadeia Produtiva do Leite",
-        "version": "1.1.0-hackweb3-full-simulator",
+        "version": "1.2.0-hackweb3-spectrometer-simulator",
         "created_at": utc_now(),
         "sample": milk_sample,
         "analysis": {

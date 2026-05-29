@@ -59,6 +59,18 @@ def api_full_process_simulation():
         return jsonify({"error": str(exc)}), 400
 
 
+
+@app.post("/api/spectrometer/session")
+def api_spectrometer_session():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    scenario = data.get("scenario", "normal")
+    seed = data.get("seed")
+    try:
+        process = build_full_chain_process(scenario=scenario, seed=seed)
+        return jsonify(process["spectrophotometer_session"])
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
 @app.post("/api/evidence/full-process")
 def api_create_full_process_evidence():
     data: Dict[str, Any] = request.get_json(silent=True) or {}

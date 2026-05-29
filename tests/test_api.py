@@ -137,3 +137,14 @@ def test_milk_use_cases_page():
     response = client.get("/casos-leite")
     assert response.status_code == 200
     assert b"Solu" in response.data
+
+
+def test_ecosystem_investor_impact_has_commercial_fields():
+    client = app.test_client()
+    response = client.post('/api/ecosystem/simulation', json={'scenario': 'normal', 'seed': 42})
+    assert response.status_code == 200
+    data = response.get_json()
+    impact = data['investor_impact']
+    assert impact['client_value_simulation']['monthly_operational_benefit_brl'] > 0
+    assert impact['business_model_simulation']['vendor_arr_brl_per_client'] > 0
+    assert len(impact['investment_thesis']['defensibility']) >= 3

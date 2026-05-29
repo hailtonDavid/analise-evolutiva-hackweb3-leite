@@ -26,16 +26,31 @@
     a { color:var(--accent); }
     code { background:#061523; padding:2px 6px; border-radius:6px; color:#d9fff8; }
   </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='ae-theme.css') }}">
 </head>
 <body>
   <header>
+    <nav class="nav">
+      <strong>Análise Evolutiva Web3</strong>
+      <div>
+        <a href="/">Início</a>
+        <a href="/simulador">Simulador</a>
+        <a href="/ecossistema">Ecossistema</a>
+        <a href="/casos-leite">Casos do leite</a>
+        <a href="/investidor">Investidor</a>
+        <a href="/site">Site institucional</a>
+      </div>
+    </nav>
     <div class="badge">HackWeb 3.0 • Web3 • Blockchain • Cadeia do Leite</div>
     <h1>Análise Evolutiva Web3</h1>
     <p>Rastreabilidade inteligente da cadeia produtiva do leite com espectrofotometria, análise automatizada, hash criptográfico e smart contract.</p>
-    <p><a href="/investidor" class="btn">Visão do investidor</a>
-        <a href="/simulador" style="display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#062033;padding:12px 16px;border-radius:14px;font-weight:800;text-decoration:none;">Abrir simulador completo para investidor</a>
-        <a href="/ecossistema" style="display:inline-block;border:1px solid var(--line);color:var(--text);padding:12px 16px;border-radius:14px;font-weight:800;text-decoration:none;margin-left:8px;">Ecossistema completo</a>
-        <a href="/site" style="display:inline-block;border:1px solid var(--line);color:var(--text);padding:12px 16px;border-radius:14px;font-weight:800;text-decoration:none;margin-left:8px;">Site institucional</a></p>
+    <div class="ae-actions">
+      <a href="/simulador" class="btn">Abrir simulador completo</a>
+      <a href="/investidor" class="btn secondary">Visão do investidor</a>
+      <a href="/ecossistema" class="btn secondary">Ecossistema completo</a>
+      <a href="/casos-leite" class="btn secondary">Casos do leite</a>
+      <a href="/site" class="btn secondary">Site institucional</a>
+    </div>
   </header>
   <main>
     <section class="card">
@@ -48,8 +63,12 @@
     <section class="grid">
       <div class="card">
         <h2>Executar demonstração rápida</h2>
-        <p>Escolha um cenário simulado. O sistema gera a leitura espectrofotométrica, analisa o lote, cria a evidência digital e registra o hash em modo Web3 simulado. Para apresentação comercial, use também o <a href="/investidor" class="btn">Visão do investidor</a>
-        <a href="/simulador">simulador completo</a>.</p>
+        <p class="ae-section-text">Escolha um cenário simulado. O sistema gera a leitura espectrofotométrica, analisa o lote, cria a evidência digital e registra o hash em modo Web3 simulado.</p>
+        <p class="ae-section-text">Para apresentação comercial, utilize o simulador completo e a visão do investidor em uma navegação separada, sem botões dentro do texto.</p>
+        <div class="ae-actions">
+          <a href="/simulador" class="btn secondary">Simulador completo</a>
+          <a href="/investidor" class="btn secondary">Visão do investidor</a>
+        </div>
         <form method="post" action="/demo/run">
           <p><select name="scenario">
             <option value="normal">Leite normal</option>

@@ -88,10 +88,21 @@
 
     @media(max-width:980px){ .grid-4,.grid-3,.grid-2,.controls,.timeline,.device,.workflow { grid-template-columns:1fr; } canvas{height:280px;} }
   </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='ae-theme.css') }}">
 </head>
 <body>
   <header>
-    <a href="/">← voltar ao painel</a> • <a href="/ecossistema">ecossistema completo</a> • <a href="/casos-leite">casos do leite</a> • <a href="/site">site institucional</a> • <a href="/casos-leite">casos do leite</a>
+    <nav class="nav">
+      <strong>Análise Evolutiva Web3</strong>
+      <div>
+        <a href="/">Início</a>
+        <a href="/simulador">Simulador</a>
+        <a href="/ecossistema">Ecossistema</a>
+        <a href="/casos-leite">Casos do leite</a>
+        <a href="/investidor">Investidor</a>
+        <a href="/site">Site institucional</a>
+      </div>
+    </nav>
     <div style="margin-top:18px;"><span class="badge">MVP HackWeb 3.0 • Simulação completa da cadeia do leite</span></div>
     <h1>Simulador da Análise Evolutiva Web3</h1>
     <p>Esta tela demonstra, para avaliadores e investidores, como a Análise Evolutiva pode operar como plataforma integrada: captura multiespectral do solo, alimentação, água e leite; processamento óptico; diagnóstico técnico; geração de evidência digital; hash SHA-256; e registro Web3 para rastreabilidade.</p>

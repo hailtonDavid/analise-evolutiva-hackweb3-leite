@@ -10,10 +10,21 @@
     header,main{max-width:1220px;margin:auto;padding:24px 18px} a{color:var(--accent);text-decoration:none} h1{font-size:clamp(32px,4vw,58px);line-height:1.02;margin:14px 0 10px} h2{margin:0 0 12px} h3{margin:12px 0 8px;color:#eaffff} p{color:var(--muted);line-height:1.55}.badge{display:inline-flex;background:linear-gradient(135deg,var(--accent),#b1fff3);color:#042019;padding:8px 12px;border-radius:999px;font-weight:800}.panel{background:linear-gradient(180deg,rgba(15,45,69,.98),rgba(9,30,48,.98));border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 20px 48px rgba(0,0,0,.22)}
     .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.controls{display:grid;grid-template-columns:1.2fr repeat(4,.6fr) .7fr;gap:10px;align-items:end}label{font-size:12px;font-weight:800;color:#dffaff}input,select,button{width:100%;border-radius:14px;padding:12px;border:1px solid #255875;background:#061a2a;color:var(--text)}button{background:linear-gradient(135deg,var(--accent),#91fff0);color:#032017;border:0;font-weight:900;cursor:pointer}.kpi{background:#071c2d;border:1px solid #1d4a68;border-radius:18px;padding:15px;min-height:120px}.kpi span{display:block;color:var(--muted);font-size:13px;margin-bottom:8px}.kpi strong{font-size:28px}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid #1d4a68;padding:9px;text-align:left;vertical-align:top}th{color:#dffaff}.pill{display:inline-block;margin:4px 4px 0 0;padding:8px 10px;border-radius:999px;background:#071c2d;border:1px solid #1d4a68;color:#d7faff;font-size:12px}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.flow div{background:#071c2d;border:1px solid #1d4a68;border-radius:16px;padding:12px;min-height:118px}.flow b{display:inline-flex;width:28px;height:28px;border-radius:50%;align-items:center;justify-content:center;background:var(--accent);color:#042019;margin-bottom:8px}.note{font-size:13px;color:#bde7f5}.money{font-family:Consolas,monospace}.moat li,.milestones li{margin:8px 0;color:#d5eef7}.heroBox{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;align-items:stretch}.bigClaim{font-size:20px;color:#eaffff;margin-top:0}@media(max-width:980px){.grid4,.grid3,.grid2,.controls,.flow,.heroBox{grid-template-columns:1fr}}
   </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='ae-theme.css') }}">
 </head>
 <body>
 <header>
-  <a href="/">← voltar ao painel</a> • <a href="/simulador">abrir simulador técnico</a> • <a href="/ecossistema">ecossistema completo</a> • <a href="/casos-leite">casos do leite</a> • <a href="/site">site institucional</a> • <a href="/casos-leite">casos do leite</a>
+  <nav class="nav">
+    <strong>Análise Evolutiva Web3</strong>
+    <div>
+      <a href="/">Início</a>
+      <a href="/simulador">Simulador</a>
+      <a href="/ecossistema">Ecossistema</a>
+      <a href="/casos-leite">Casos do leite</a>
+      <a href="/investidor">Investidor</a>
+      <a href="/site">Site institucional</a>
+    </div>
+  </nav>
   <div style="margin-top:18px"><span class="badge">Visão do investidor • Análise Evolutiva Web3</span></div>
   <h1>Do dado óptico ao ativo rastreável da cadeia do leite</h1>
   <p class="bigClaim">O MVP demonstra uma tese comercial: transformar espectrofotometria, IA e Web3 em uma plataforma recorrente de qualidade, auditoria e rastreabilidade para produtores, cooperativas, laticínios e laboratórios.</p>

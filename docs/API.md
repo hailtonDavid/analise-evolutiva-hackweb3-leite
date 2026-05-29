@@ -126,3 +126,8 @@ Disponibiliza o site oficial da Análise Evolutiva dentro do MVP, com visualiza�
 ### `GET /api/site/meta`
 
 Retorna metadados da integração do site institucional.
+
+
+## Impacto comercial corrigido
+
+O endpoint `POST /api/ecosystem/simulation` retorna `investor_impact` com os objetos `client_value_simulation`, `business_model_simulation` e `investment_thesis`. A página `/ecossistema` renderiza esses campos no card **Impacto comercial**, evitando cards vazios e mantendo coerência com a visão para investidores.

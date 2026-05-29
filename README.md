@@ -272,3 +272,8 @@ Endpoint correspondente:
 ```http
 GET /api/use-cases/milk
 ```
+
+
+## Atualização de layout e impacto comercial
+
+Todas as telas principais do MVP usam a mesma identidade visual escura da Análise Evolutiva Web3, com navegação padronizada, cards consistentes e linguagem voltada ao avaliador/investidor. A tela `/ecossistema` agora apresenta o bloco **Impacto comercial** preenchido com receita protegida, perdas evitáveis, benefício operacional, payback, ROI, MRR, ARR e defensibilidade do negócio.

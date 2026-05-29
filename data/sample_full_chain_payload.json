@@ -1,0 +1,1103 @@
+{
+  "process_id": "AE-CHAIN-20260529-17447",
+  "scenario": "integrated_risk",
+  "scenario_label": "Risco integrado na cadeia",
+  "created_at": "2026-05-29T18:19:56+00:00",
+  "producer": {
+    "producer_id": "PROD-226",
+    "name": "Produtor demonstrativo",
+    "property": "Fazenda Demonstrativa Análise Evolutiva",
+    "herd_lot": "RB-66",
+    "pasture_plot": "TL-5"
+  },
+  "spectrometer": {
+    "equipment_id": "AE-SPEC-V11-MVP-001",
+    "sensor_stack": "AS7341 11 canais + extensão UV/NIR simulada",
+    "optical_path_mm": 10,
+    "light_banks": [
+      "UV 365/395 nm",
+      "VIS 415-680 nm",
+      "NIR 730-910 nm"
+    ],
+    "integration_time_ms": 120,
+    "gain": "64x",
+    "adc_resolution_bits": 16,
+    "communication": "ESP32/HTTP JSON para servidor Flask",
+    "calibration_strategy": "dark current + branco/referência + normalização por canal"
+  },
+  "soil": {
+    "capture": {
+      "kind": "soil",
+      "scenario": "integrated_risk",
+      "capture_id": "CAP-2C572AC889AD",
+      "captured_at": "2026-05-29T18:19:56+00:00",
+      "spectrometer": {
+        "equipment_id": "AE-SPEC-V11-MVP-001",
+        "sensor_stack": "AS7341 11 canais + extensão UV/NIR simulada",
+        "optical_path_mm": 10,
+        "light_banks": [
+          "UV 365/395 nm",
+          "VIS 415-680 nm",
+          "NIR 730-910 nm"
+        ],
+        "integration_time_ms": 120,
+        "gain": "64x",
+        "adc_resolution_bits": 16,
+        "communication": "ESP32/HTTP JSON para servidor Flask",
+        "calibration_strategy": "dark current + branco/referência + normalização por canal"
+      },
+      "calibration": {
+        "dark_reference": "capturada antes da amostra",
+        "white_reference": "cubeta/referência óptica do ensaio",
+        "temperature_compensation": true,
+        "stray_light_correction": "simulada por canal"
+      },
+      "channels": [
+        {
+          "wavelength_nm": 365,
+          "led_bank": "UV",
+          "dark_adc": 153.76,
+          "reference_adc": 46377.59,
+          "sample_adc": 8495.03,
+          "corrected_adc": 8341.27,
+          "normalized_signal": 0.1805,
+          "absorbance": 0.7436,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 395,
+          "led_bank": "UV",
+          "dark_adc": 162.79,
+          "reference_adc": 44598.98,
+          "sample_adc": 7875.44,
+          "corrected_adc": 7712.65,
+          "normalized_signal": 0.1736,
+          "absorbance": 0.7605,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 415,
+          "led_bank": "VIS",
+          "dark_adc": 89.89,
+          "reference_adc": 46581.02,
+          "sample_adc": 9908.59,
+          "corrected_adc": 9818.69,
+          "normalized_signal": 0.2112,
+          "absorbance": 0.6753,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 445,
+          "led_bank": "VIS",
+          "dark_adc": 99.26,
+          "reference_adc": 45420.43,
+          "sample_adc": 10838.91,
+          "corrected_adc": 10739.66,
+          "normalized_signal": 0.237,
+          "absorbance": 0.6253,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 480,
+          "led_bank": "VIS",
+          "dark_adc": 117.77,
+          "reference_adc": 49586.48,
+          "sample_adc": 13921.17,
+          "corrected_adc": 13803.39,
+          "normalized_signal": 0.279,
+          "absorbance": 0.5543,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 515,
+          "led_bank": "VIS",
+          "dark_adc": 82.99,
+          "reference_adc": 46591.22,
+          "sample_adc": 14663.56,
+          "corrected_adc": 14580.57,
+          "normalized_signal": 0.3135,
+          "absorbance": 0.5038,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 555,
+          "led_bank": "VIS",
+          "dark_adc": 169.9,
+          "reference_adc": 53738.47,
+          "sample_adc": 18052.52,
+          "corrected_adc": 17882.63,
+          "normalized_signal": 0.3338,
+          "absorbance": 0.4765,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 590,
+          "led_bank": "VIS",
+          "dark_adc": 139.77,
+          "reference_adc": 50266.3,
+          "sample_adc": 18066.39,
+          "corrected_adc": 17926.62,
+          "normalized_signal": 0.3576,
+          "absorbance": 0.4466,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 630,
+          "led_bank": "VIS",
+          "dark_adc": 175.06,
+          "reference_adc": 46356.48,
+          "sample_adc": 19113.7,
+          "corrected_adc": 18938.64,
+          "normalized_signal": 0.4101,
+          "absorbance": 0.3871,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 680,
+          "led_bank": "VIS",
+          "dark_adc": 133.09,
+          "reference_adc": 49277.51,
+          "sample_adc": 19878.56,
+          "corrected_adc": 19745.48,
+          "normalized_signal": 0.4018,
+          "absorbance": 0.396,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 730,
+          "led_bank": "NIR",
+          "dark_adc": 82.22,
+          "reference_adc": 48730.98,
+          "sample_adc": 20368.18,
+          "corrected_adc": 20285.96,
+          "normalized_signal": 0.417,
+          "absorbance": 0.3799,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 760,
+          "led_bank": "NIR",
+          "dark_adc": 107.03,
+          "reference_adc": 42618.19,
+          "sample_adc": 19106.52,
+          "corrected_adc": 18999.49,
+          "normalized_signal": 0.4469,
+          "absorbance": 0.3498,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 810,
+          "led_bank": "NIR",
+          "dark_adc": 133.29,
+          "reference_adc": 40291.69,
+          "sample_adc": 18207.11,
+          "corrected_adc": 18073.82,
+          "normalized_signal": 0.4501,
+          "absorbance": 0.3467,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 860,
+          "led_bank": "NIR",
+          "dark_adc": 146.7,
+          "reference_adc": 39277.51,
+          "sample_adc": 19204.58,
+          "corrected_adc": 19057.88,
+          "normalized_signal": 0.487,
+          "absorbance": 0.3124,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 910,
+          "led_bank": "NIR",
+          "dark_adc": 124.71,
+          "reference_adc": 38475.51,
+          "sample_adc": 19527.92,
+          "corrected_adc": 19403.21,
+          "normalized_signal": 0.5059,
+          "absorbance": 0.2959,
+          "saturation": false
+        }
+      ],
+      "normalized_signal": {
+        "365": 0.1805,
+        "395": 0.1736,
+        "415": 0.2112,
+        "445": 0.237,
+        "480": 0.279,
+        "515": 0.3135,
+        "555": 0.3338,
+        "590": 0.3576,
+        "630": 0.4101,
+        "680": 0.4018,
+        "730": 0.417,
+        "760": 0.4469,
+        "810": 0.4501,
+        "860": 0.487,
+        "910": 0.5059
+      },
+      "absorbance": {
+        "365": 0.7436,
+        "395": 0.7605,
+        "415": 0.6753,
+        "445": 0.6253,
+        "480": 0.5543,
+        "515": 0.5038,
+        "555": 0.4765,
+        "590": 0.4466,
+        "630": 0.3871,
+        "680": 0.396,
+        "730": 0.3799,
+        "760": 0.3498,
+        "810": 0.3467,
+        "860": 0.3124,
+        "910": 0.2959
+      }
+    },
+    "analysis": {
+      "sample_type": "solo/pastagem",
+      "moisture_risk": 0.0695,
+      "organic_matter_proxy": 0.6958,
+      "pasture_support_score": 0.8249,
+      "interpretation": "Solo com suporte adequado à pastagem"
+    }
+  },
+  "feed": {
+    "capture": {
+      "kind": "feed",
+      "scenario": "integrated_risk",
+      "capture_id": "CAP-15408AB21BA6",
+      "captured_at": "2026-05-29T18:19:56+00:00",
+      "spectrometer": {
+        "equipment_id": "AE-SPEC-V11-MVP-001",
+        "sensor_stack": "AS7341 11 canais + extensão UV/NIR simulada",
+        "optical_path_mm": 10,
+        "light_banks": [
+          "UV 365/395 nm",
+          "VIS 415-680 nm",
+          "NIR 730-910 nm"
+        ],
+        "integration_time_ms": 120,
+        "gain": "64x",
+        "adc_resolution_bits": 16,
+        "communication": "ESP32/HTTP JSON para servidor Flask",
+        "calibration_strategy": "dark current + branco/referência + normalização por canal"
+      },
+      "calibration": {
+        "dark_reference": "capturada antes da amostra",
+        "white_reference": "cubeta/referência óptica do ensaio",
+        "temperature_compensation": true,
+        "stray_light_correction": "simulada por canal"
+      },
+      "channels": [
+        {
+          "wavelength_nm": 365,
+          "led_bank": "UV",
+          "dark_adc": 136.06,
+          "reference_adc": 44359.24,
+          "sample_adc": 11708.79,
+          "corrected_adc": 11572.73,
+          "normalized_signal": 0.2617,
+          "absorbance": 0.5822,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 395,
+          "led_bank": "UV",
+          "dark_adc": 150.67,
+          "reference_adc": 45140.16,
+          "sample_adc": 12690.74,
+          "corrected_adc": 12540.08,
+          "normalized_signal": 0.2787,
+          "absorbance": 0.5548,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 415,
+          "led_bank": "VIS",
+          "dark_adc": 115.74,
+          "reference_adc": 43591.53,
+          "sample_adc": 13876.8,
+          "corrected_adc": 13761.06,
+          "normalized_signal": 0.3165,
+          "absorbance": 0.4996,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 445,
+          "led_bank": "VIS",
+          "dark_adc": 96.89,
+          "reference_adc": 51373.45,
+          "sample_adc": 16580.84,
+          "corrected_adc": 16483.95,
+          "normalized_signal": 0.3215,
+          "absorbance": 0.4929,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 480,
+          "led_bank": "VIS",
+          "dark_adc": 167.81,
+          "reference_adc": 49465.6,
+          "sample_adc": 19431.94,
+          "corrected_adc": 19264.13,
+          "normalized_signal": 0.3908,
+          "absorbance": 0.4081,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 515,
+          "led_bank": "VIS",
+          "dark_adc": 156.44,
+          "reference_adc": 49266.13,
+          "sample_adc": 21323.91,
+          "corrected_adc": 21167.46,
+          "normalized_signal": 0.431,
+          "absorbance": 0.3655,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 555,
+          "led_bank": "VIS",
+          "dark_adc": 90.84,
+          "reference_adc": 48914.42,
+          "sample_adc": 22033.23,
+          "corrected_adc": 21942.39,
+          "normalized_signal": 0.4494,
+          "absorbance": 0.3473,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 590,
+          "led_bank": "VIS",
+          "dark_adc": 128.49,
+          "reference_adc": 52959.77,
+          "sample_adc": 26914.76,
+          "corrected_adc": 26786.26,
+          "normalized_signal": 0.507,
+          "absorbance": 0.295,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 630,
+          "led_bank": "VIS",
+          "dark_adc": 147.66,
+          "reference_adc": 45247.97,
+          "sample_adc": 24182.94,
+          "corrected_adc": 24035.28,
+          "normalized_signal": 0.5329,
+          "absorbance": 0.2733,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 680,
+          "led_bank": "VIS",
+          "dark_adc": 158.18,
+          "reference_adc": 47174.68,
+          "sample_adc": 27517.06,
+          "corrected_adc": 27358.89,
+          "normalized_signal": 0.5819,
+          "absorbance": 0.2352,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 730,
+          "led_bank": "NIR",
+          "dark_adc": 86.3,
+          "reference_adc": 47185.08,
+          "sample_adc": 24742.89,
+          "corrected_adc": 24656.6,
+          "normalized_signal": 0.5235,
+          "absorbance": 0.2811,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 760,
+          "led_bank": "NIR",
+          "dark_adc": 148.31,
+          "reference_adc": 42559.44,
+          "sample_adc": 23671.64,
+          "corrected_adc": 23523.34,
+          "normalized_signal": 0.5547,
+          "absorbance": 0.256,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 810,
+          "led_bank": "NIR",
+          "dark_adc": 158.06,
+          "reference_adc": 40997.06,
+          "sample_adc": 24007.34,
+          "corrected_adc": 23849.28,
+          "normalized_signal": 0.584,
+          "absorbance": 0.2336,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 860,
+          "led_bank": "NIR",
+          "dark_adc": 165.66,
+          "reference_adc": 39770.4,
+          "sample_adc": 23401.62,
+          "corrected_adc": 23235.96,
+          "normalized_signal": 0.5867,
+          "absorbance": 0.2316,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 910,
+          "led_bank": "NIR",
+          "dark_adc": 127.25,
+          "reference_adc": 42501.25,
+          "sample_adc": 25421.17,
+          "corrected_adc": 25293.92,
+          "normalized_signal": 0.5969,
+          "absorbance": 0.2241,
+          "saturation": false
+        }
+      ],
+      "normalized_signal": {
+        "365": 0.2617,
+        "395": 0.2787,
+        "415": 0.3165,
+        "445": 0.3215,
+        "480": 0.3908,
+        "515": 0.431,
+        "555": 0.4494,
+        "590": 0.507,
+        "630": 0.5329,
+        "680": 0.5819,
+        "730": 0.5235,
+        "760": 0.5547,
+        "810": 0.584,
+        "860": 0.5867,
+        "910": 0.5969
+      },
+      "absorbance": {
+        "365": 0.5822,
+        "395": 0.5548,
+        "415": 0.4996,
+        "445": 0.4929,
+        "480": 0.4081,
+        "515": 0.3655,
+        "555": 0.3473,
+        "590": 0.295,
+        "630": 0.2733,
+        "680": 0.2352,
+        "730": 0.2811,
+        "760": 0.256,
+        "810": 0.2336,
+        "860": 0.2316,
+        "910": 0.2241
+      }
+    },
+    "analysis": {
+      "sample_type": "alimentação do rebanho",
+      "dry_matter_proxy": 0.5806,
+      "fermentation_or_mold_risk": 0.1172,
+      "nutrition_score": 0.6652,
+      "interpretation": "Alimentação dentro do padrão demonstrativo"
+    }
+  },
+  "water": {
+    "capture": {
+      "kind": "water",
+      "scenario": "integrated_risk",
+      "capture_id": "CAP-9D6F09052ED0",
+      "captured_at": "2026-05-29T18:19:56+00:00",
+      "spectrometer": {
+        "equipment_id": "AE-SPEC-V11-MVP-001",
+        "sensor_stack": "AS7341 11 canais + extensão UV/NIR simulada",
+        "optical_path_mm": 10,
+        "light_banks": [
+          "UV 365/395 nm",
+          "VIS 415-680 nm",
+          "NIR 730-910 nm"
+        ],
+        "integration_time_ms": 120,
+        "gain": "64x",
+        "adc_resolution_bits": 16,
+        "communication": "ESP32/HTTP JSON para servidor Flask",
+        "calibration_strategy": "dark current + branco/referência + normalização por canal"
+      },
+      "calibration": {
+        "dark_reference": "capturada antes da amostra",
+        "white_reference": "cubeta/referência óptica do ensaio",
+        "temperature_compensation": true,
+        "stray_light_correction": "simulada por canal"
+      },
+      "channels": [
+        {
+          "wavelength_nm": 365,
+          "led_bank": "UV",
+          "dark_adc": 168.51,
+          "reference_adc": 44188.45,
+          "sample_adc": 28986.1,
+          "corrected_adc": 28817.59,
+          "normalized_signal": 0.6546,
+          "absorbance": 0.184,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 395,
+          "led_bank": "UV",
+          "dark_adc": 134.62,
+          "reference_adc": 49139.01,
+          "sample_adc": 34553.15,
+          "corrected_adc": 34418.52,
+          "normalized_signal": 0.7024,
+          "absorbance": 0.1534,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 415,
+          "led_bank": "VIS",
+          "dark_adc": 98.88,
+          "reference_adc": 48759.78,
+          "sample_adc": 35697.25,
+          "corrected_adc": 35598.37,
+          "normalized_signal": 0.7316,
+          "absorbance": 0.1357,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 445,
+          "led_bank": "VIS",
+          "dark_adc": 163.18,
+          "reference_adc": 50755.64,
+          "sample_adc": 37408.09,
+          "corrected_adc": 37244.91,
+          "normalized_signal": 0.7362,
+          "absorbance": 0.133,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 480,
+          "led_bank": "VIS",
+          "dark_adc": 119.95,
+          "reference_adc": 50504.08,
+          "sample_adc": 39105.11,
+          "corrected_adc": 38985.16,
+          "normalized_signal": 0.7738,
+          "absorbance": 0.1114,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 515,
+          "led_bank": "VIS",
+          "dark_adc": 144.94,
+          "reference_adc": 47760.94,
+          "sample_adc": 37883.86,
+          "corrected_adc": 37738.92,
+          "normalized_signal": 0.7926,
+          "absorbance": 0.101,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 555,
+          "led_bank": "VIS",
+          "dark_adc": 106.27,
+          "reference_adc": 54663.07,
+          "sample_adc": 43990.22,
+          "corrected_adc": 43883.95,
+          "normalized_signal": 0.8044,
+          "absorbance": 0.0945,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 590,
+          "led_bank": "VIS",
+          "dark_adc": 169.1,
+          "reference_adc": 50156.48,
+          "sample_adc": 41881.48,
+          "corrected_adc": 41712.37,
+          "normalized_signal": 0.8345,
+          "absorbance": 0.0786,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 630,
+          "led_bank": "VIS",
+          "dark_adc": 160.76,
+          "reference_adc": 48094.06,
+          "sample_adc": 39786.4,
+          "corrected_adc": 39625.64,
+          "normalized_signal": 0.8267,
+          "absorbance": 0.0827,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 680,
+          "led_bank": "VIS",
+          "dark_adc": 100.24,
+          "reference_adc": 50658.17,
+          "sample_adc": 42787.38,
+          "corrected_adc": 42687.13,
+          "normalized_signal": 0.8443,
+          "absorbance": 0.0735,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 730,
+          "led_bank": "NIR",
+          "dark_adc": 146.47,
+          "reference_adc": 44297.48,
+          "sample_adc": 39609.58,
+          "corrected_adc": 39463.1,
+          "normalized_signal": 0.8938,
+          "absorbance": 0.0487,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 760,
+          "led_bank": "NIR",
+          "dark_adc": 138.98,
+          "reference_adc": 43701.08,
+          "sample_adc": 39323.21,
+          "corrected_adc": 39184.23,
+          "normalized_signal": 0.8995,
+          "absorbance": 0.046,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 810,
+          "led_bank": "NIR",
+          "dark_adc": 174.7,
+          "reference_adc": 43007.64,
+          "sample_adc": 37992.46,
+          "corrected_adc": 37817.76,
+          "normalized_signal": 0.8829,
+          "absorbance": 0.0541,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 860,
+          "led_bank": "NIR",
+          "dark_adc": 123.13,
+          "reference_adc": 40899.65,
+          "sample_adc": 36805.52,
+          "corrected_adc": 36682.38,
+          "normalized_signal": 0.8996,
+          "absorbance": 0.046,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 910,
+          "led_bank": "NIR",
+          "dark_adc": 85.09,
+          "reference_adc": 41843.04,
+          "sample_adc": 36921.22,
+          "corrected_adc": 36836.13,
+          "normalized_signal": 0.8821,
+          "absorbance": 0.0545,
+          "saturation": false
+        }
+      ],
+      "normalized_signal": {
+        "365": 0.6546,
+        "395": 0.7024,
+        "415": 0.7316,
+        "445": 0.7362,
+        "480": 0.7738,
+        "515": 0.7926,
+        "555": 0.8044,
+        "590": 0.8345,
+        "630": 0.8267,
+        "680": 0.8443,
+        "730": 0.8938,
+        "760": 0.8995,
+        "810": 0.8829,
+        "860": 0.8996,
+        "910": 0.8821
+      },
+      "absorbance": {
+        "365": 0.184,
+        "395": 0.1534,
+        "415": 0.1357,
+        "445": 0.133,
+        "480": 0.1114,
+        "515": 0.101,
+        "555": 0.0945,
+        "590": 0.0786,
+        "630": 0.0827,
+        "680": 0.0735,
+        "730": 0.0487,
+        "760": 0.046,
+        "810": 0.0541,
+        "860": 0.046,
+        "910": 0.0545
+      }
+    },
+    "analysis": {
+      "sample_type": "água de consumo/limpeza",
+      "visible_transparency": 0.7857,
+      "organic_signal_proxy": 0.3215,
+      "turbidity_risk": 0.2515,
+      "water_score": 0.724,
+      "interpretation": "Água compatível com controle operacional"
+    }
+  },
+  "milk_sample": {
+    "batch_id": "LEITE-20260529-2534",
+    "producer_id": "PROD-226",
+    "producer_name": "Produtor demonstrativo",
+    "collection_point": "Ponto de coleta demonstrativo",
+    "cooperative": "Cooperativa demonstrativa",
+    "equipment_id": "AE-SPEC-V11-MVP-001",
+    "scenario": "integrated_risk",
+    "temperature_celsius": 8.71,
+    "spectral_reading": {
+      "415": 0.7539,
+      "445": 0.7111,
+      "480": 0.6746,
+      "515": 0.6207,
+      "555": 0.6184,
+      "590": 0.5451,
+      "630": 0.5067,
+      "680": 0.4545,
+      "730": 0.4224,
+      "760": 0.414,
+      "810": 0.3846,
+      "860": 0.3823,
+      "910": 0.3632
+    },
+    "traceability": [
+      {
+        "stage": "solo_pastagem",
+        "actor": "Análise Evolutiva",
+        "timestamp": "2026-05-29T18:19:56+00:00",
+        "location": "Talhão de pastagem demonstrativo",
+        "metadata": {
+          "sensores": [
+            "NPK",
+            "pH",
+            "umidade",
+            "espectrofotometria"
+          ],
+          "finalidade": "contexto produtivo"
+        }
+      },
+      {
+        "stage": "alimentacao_rebanho",
+        "actor": "Análise Evolutiva",
+        "timestamp": "2026-05-29T18:19:56+00:00",
+        "location": "Cocho/silo demonstrativo",
+        "metadata": {
+          "amostra": "silagem/ração",
+          "finalidade": "risco de umidade e qualidade nutricional"
+        }
+      },
+      {
+        "stage": "coleta_leite",
+        "actor": "Produtor rural",
+        "timestamp": "2026-05-29T18:19:56+00:00",
+        "location": "Propriedade leiteira simulada",
+        "metadata": {
+          "volume_litros": 928,
+          "tanque": "TQ-5"
+        }
+      },
+      {
+        "stage": "transporte_refrigerado",
+        "actor": "Transportador credenciado",
+        "timestamp": "2026-05-29T18:19:56+00:00",
+        "location": "Rota refrigerada",
+        "metadata": {
+          "temperatura_media_celsius": 8.71,
+          "veiculo": "TR-42"
+        }
+      },
+      {
+        "stage": "analise_espectrofotometrica",
+        "actor": "Análise Evolutiva",
+        "timestamp": "2026-05-29T18:19:56+00:00",
+        "location": "Bancada de análise multiespectral",
+        "metadata": {
+          "sensor": "AS7341 11 canais + extensão UV/NIR simulada",
+          "faixa_nm": "365-910"
+        }
+      }
+    ],
+    "spectrometer_capture": {
+      "kind": "milk",
+      "scenario": "integrated_risk",
+      "capture_id": "CAP-E37501E2822D",
+      "captured_at": "2026-05-29T18:19:56+00:00",
+      "spectrometer": {
+        "equipment_id": "AE-SPEC-V11-MVP-001",
+        "sensor_stack": "AS7341 11 canais + extensão UV/NIR simulada",
+        "optical_path_mm": 10,
+        "light_banks": [
+          "UV 365/395 nm",
+          "VIS 415-680 nm",
+          "NIR 730-910 nm"
+        ],
+        "integration_time_ms": 120,
+        "gain": "64x",
+        "adc_resolution_bits": 16,
+        "communication": "ESP32/HTTP JSON para servidor Flask",
+        "calibration_strategy": "dark current + branco/referência + normalização por canal"
+      },
+      "calibration": {
+        "dark_reference": "capturada antes da amostra",
+        "white_reference": "cubeta/referência óptica do ensaio",
+        "temperature_compensation": true,
+        "stray_light_correction": "simulada por canal"
+      },
+      "channels": [
+        {
+          "wavelength_nm": 415,
+          "led_bank": "VIS",
+          "dark_adc": 118.83,
+          "reference_adc": 45807.12,
+          "sample_adc": 34560.99,
+          "corrected_adc": 34442.16,
+          "normalized_signal": 0.7539,
+          "absorbance": 0.1227,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 445,
+          "led_bank": "VIS",
+          "dark_adc": 120.76,
+          "reference_adc": 50063.05,
+          "sample_adc": 35635.86,
+          "corrected_adc": 35515.1,
+          "normalized_signal": 0.7111,
+          "absorbance": 0.1481,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 480,
+          "led_bank": "VIS",
+          "dark_adc": 81.25,
+          "reference_adc": 48491.67,
+          "sample_adc": 32739.04,
+          "corrected_adc": 32657.79,
+          "normalized_signal": 0.6746,
+          "absorbance": 0.171,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 515,
+          "led_bank": "VIS",
+          "dark_adc": 115.99,
+          "reference_adc": 51813.9,
+          "sample_adc": 32206.16,
+          "corrected_adc": 32090.18,
+          "normalized_signal": 0.6207,
+          "absorbance": 0.2071,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 555,
+          "led_bank": "VIS",
+          "dark_adc": 134.81,
+          "reference_adc": 49013.2,
+          "sample_adc": 30361.44,
+          "corrected_adc": 30226.63,
+          "normalized_signal": 0.6184,
+          "absorbance": 0.2087,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 590,
+          "led_bank": "VIS",
+          "dark_adc": 135.62,
+          "reference_adc": 48193.83,
+          "sample_adc": 26332.89,
+          "corrected_adc": 26197.27,
+          "normalized_signal": 0.5451,
+          "absorbance": 0.2635,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 630,
+          "led_bank": "VIS",
+          "dark_adc": 98.16,
+          "reference_adc": 47713.04,
+          "sample_adc": 24224.67,
+          "corrected_adc": 24126.51,
+          "normalized_signal": 0.5067,
+          "absorbance": 0.2952,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 680,
+          "led_bank": "VIS",
+          "dark_adc": 83.14,
+          "reference_adc": 45464.29,
+          "sample_adc": 20707.15,
+          "corrected_adc": 20624.01,
+          "normalized_signal": 0.4545,
+          "absorbance": 0.3425,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 730,
+          "led_bank": "NIR",
+          "dark_adc": 81.3,
+          "reference_adc": 48921.95,
+          "sample_adc": 20710.46,
+          "corrected_adc": 20629.16,
+          "normalized_signal": 0.4224,
+          "absorbance": 0.3743,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 760,
+          "led_bank": "NIR",
+          "dark_adc": 161.69,
+          "reference_adc": 44590.99,
+          "sample_adc": 18555.14,
+          "corrected_adc": 18393.45,
+          "normalized_signal": 0.414,
+          "absorbance": 0.383,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 810,
+          "led_bank": "NIR",
+          "dark_adc": 102.93,
+          "reference_adc": 43290.76,
+          "sample_adc": 16713.13,
+          "corrected_adc": 16610.2,
+          "normalized_signal": 0.3846,
+          "absorbance": 0.415,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 860,
+          "led_bank": "NIR",
+          "dark_adc": 80.55,
+          "reference_adc": 42630.98,
+          "sample_adc": 16347.28,
+          "corrected_adc": 16266.74,
+          "normalized_signal": 0.3823,
+          "absorbance": 0.4176,
+          "saturation": false
+        },
+        {
+          "wavelength_nm": 910,
+          "led_bank": "NIR",
+          "dark_adc": 129.57,
+          "reference_adc": 38622.46,
+          "sample_adc": 14111.72,
+          "corrected_adc": 13982.16,
+          "normalized_signal": 0.3632,
+          "absorbance": 0.4398,
+          "saturation": false
+        }
+      ],
+      "normalized_signal": {
+        "415": 0.7539,
+        "445": 0.7111,
+        "480": 0.6746,
+        "515": 0.6207,
+        "555": 0.6184,
+        "590": 0.5451,
+        "630": 0.5067,
+        "680": 0.4545,
+        "730": 0.4224,
+        "760": 0.414,
+        "810": 0.3846,
+        "860": 0.3823,
+        "910": 0.3632
+      },
+      "absorbance": {
+        "415": 0.1227,
+        "445": 0.1481,
+        "480": 0.171,
+        "515": 0.2071,
+        "555": 0.2087,
+        "590": 0.2635,
+        "630": 0.2952,
+        "680": 0.3425,
+        "730": 0.3743,
+        "760": 0.383,
+        "810": 0.415,
+        "860": 0.4176,
+        "910": 0.4398
+      }
+    }
+  },
+  "milk_analysis": {
+    "status": "ATENÇÃO",
+    "compliance_score": 0.8818,
+    "spectral_consistency": 0.9304,
+    "water_adulteration_risk": 0.0782,
+    "temperature_risk": 0.3388,
+    "solids_index": 0.9233,
+    "recommendation": "Lote requer revisão técnica, conferência de temperatura e possível contraprova laboratorial."
+  },
+  "integrated_analysis": {
+    "status": "ATENÇÃO",
+    "integrated_score": 0.8142,
+    "context_score": 0.7209,
+    "conclusion": "A cadeia simulada permite rastreabilidade, mas indica pontos que exigem revisão técnica antes da liberação comercial.",
+    "technical_note": "Resultado sintético para demonstração do MVP; a calibração real depende de curvas laboratoriais e validação metrológica."
+  },
+  "chain_steps": [
+    {
+      "order": 1,
+      "stage": "Cadastro da propriedade",
+      "actor": "Produtor/Cooperativa",
+      "evidence": "ID do produtor, talhão, lote do rebanho e tanque",
+      "timestamp": "2026-05-29T18:19:56+00:00"
+    },
+    {
+      "order": 2,
+      "stage": "Solo e pastagem",
+      "actor": "Análise Evolutiva",
+      "evidence": "Leitura UV/VIS/NIR do solo e contexto da alimentação",
+      "timestamp": "2026-05-29T18:19:56+00:00"
+    },
+    {
+      "order": 3,
+      "stage": "Alimentação",
+      "actor": "Análise Evolutiva",
+      "evidence": "Leitura espectral de silagem/ração e proxy de matéria seca",
+      "timestamp": "2026-05-29T18:19:56+00:00"
+    },
+    {
+      "order": 4,
+      "stage": "Água e ambiente",
+      "actor": "Análise Evolutiva",
+      "evidence": "Leitura de transparência/turbidez e sinal orgânico",
+      "timestamp": "2026-05-29T18:19:56+00:00"
+    },
+    {
+      "order": 5,
+      "stage": "Coleta do leite",
+      "actor": "Produtor rural",
+      "evidence": "Volume, tanque, temperatura inicial e lacre",
+      "timestamp": "2026-05-29T18:19:56+00:00"
+    },
+    {
+      "order": 6,
+      "stage": "Transporte refrigerado",
+      "actor": "Transportador",
+      "evidence": "Temperatura média e rota",
+      "timestamp": "2026-05-29T18:19:56+00:00"
+    },
+    {
+      "order": 7,
+      "stage": "Bancada multiespectral",
+      "actor": "Análise Evolutiva",
+      "evidence": "Captura de ondas 365-910 nm, absorbância e normalização",
+      "timestamp": "2026-05-29T18:19:56+00:00"
+    },
+    {
+      "order": 8,
+      "stage": "Registro Web3",
+      "actor": "Smart contract",
+      "evidence": "Hash SHA-256 da evidência off-chain",
+      "timestamp": "2026-05-29T18:19:56+00:00"
+    }
+  ],
+  "recommended_actions": [
+    "Registrar hash da evidência para auditoria e verificação pública.",
+    "Verificar fonte de água, limpeza de reservatório e turbidez operacional.",
+    "Auditar cadeia fria entre tanque, transporte e recebimento."
+  ]
+}

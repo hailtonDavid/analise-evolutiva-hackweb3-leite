@@ -6,11 +6,11 @@ from typing import Any, Dict
 from flask import Flask, jsonify, render_template, request
 
 try:
-    from .core import analyze_milk_sample, build_evidence, sample_to_dict, simulate_spectral_reading, tamper_check
+    from .core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, sample_to_dict, simulate_spectral_reading, tamper_check
     from .db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
     from .web3_client import register_evidence
 except ImportError:  # permite executar com: cd backend && python app.py
-    from core import analyze_milk_sample, build_evidence, sample_to_dict, simulate_spectral_reading, tamper_check
+    from core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, sample_to_dict, simulate_spectral_reading, tamper_check
     from db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
     from web3_client import register_evidence
 
@@ -44,6 +44,35 @@ def api_simulate_sample():
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
 
+
+
+
+@app.post("/api/simulator/full-process")
+def api_full_process_simulation():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    scenario = data.get("scenario", "normal")
+    seed = data.get("seed")
+    try:
+        process = build_full_chain_process(scenario=scenario, seed=seed)
+        return jsonify(process)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+
+@app.post("/api/evidence/full-process")
+def api_create_full_process_evidence():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    try:
+        if "milk_sample" in data and "integrated_analysis" in data:
+            process = data
+        else:
+            process = build_full_chain_process(scenario=data.get("scenario", "normal"), seed=data.get("seed"))
+        evidence = build_chain_evidence(process)
+        tx = register_evidence(evidence)
+        save_evidence(evidence, tx)
+        return jsonify({"process": process, "evidence": evidence, "web3_registration": tx})
+    except Exception as exc:  # pragma: no cover - retorno seguro para demonstração
+        return jsonify({"error": str(exc)}), 500
 
 @app.post("/api/evidence")
 def api_create_evidence():

@@ -1,51 +1,74 @@
 # Análise Evolutiva HackWeb 3.0 — Cadeia Produtiva do Leite
 
-> Rastreabilidade Web3 da cadeia produtiva do leite com espectrofotometria, análise automatizada, geração de evidência digital, hash criptográfico e smart contract.
+> Rastreabilidade Web3 da cadeia produtiva do leite com espectrofotometria multiespectral, análise da própria Análise Evolutiva, geração de evidência digital, hash criptográfico e smart contract.
 
 ## Visão geral
 
-A **Análise Evolutiva Web3** é um MVP criado para o HackWeb 3.0 com foco na cadeia produtiva do leite. A proposta é demonstrar como uma análise técnica realizada pela própria Análise Evolutiva, a partir de leituras espectrofotométricas, pode gerar uma evidência digital verificável e rastreável.
+A **Análise Evolutiva Web3** é um MVP criado para o HackWeb 3.0 com foco na cadeia produtiva do leite. A proposta é demonstrar como a própria Análise Evolutiva pode analisar o contexto produtivo e a amostra de leite usando um fluxo espectrofotométrico multiespectral e, depois, transformar esse resultado em uma evidência digital verificável.
 
-Além da demonstração rápida, o MVP agora inclui uma tela de **simulador completo para usuário/investidor** em `/simulador`, permitindo visualizar o sistema como produto: jornada do lote, indicadores, gráfico espectrofotométrico, diagnóstico, hash, registro Web3 e link de verificação pública.
-
-O sistema simula o fluxo completo:
+Esta versão inclui um **simulador completo para usuário, investidor e banca avaliadora** na rota `/simulador`. O simulador mostra o processo de ponta a ponta:
 
 ```text
-Produtor rural → Coleta da amostra → Transporte resfriado → Cooperativa/Laboratório
-→ Espectrofotômetro → Análise Evolutiva → Hash da evidência
-→ Registro Web3/Smart Contract → Verificação pública → Auditoria do lote
+Propriedade → Solo/Pastagem → Alimentação do rebanho → Água → Coleta do leite
+→ Transporte refrigerado → Captura multiespectral 365-910 nm → Diagnóstico técnico
+→ Evidência digital → Hash SHA-256 → Registro Web3 → Verificação pública
 ```
 
-A blockchain não armazena o laudo completo. Ela registra a prova de integridade da evidência, reduzindo custo, preservando dados sensíveis e permitindo auditoria futura.
+A blockchain não armazena o laudo completo. Ela registra a prova de integridade da evidência, preservando dados sensíveis, reduzindo custo e permitindo auditoria futura.
 
 ## Problema
 
-A cadeia produtiva do leite depende de análises de qualidade, laudos, registros de coleta, transporte, temperatura e conformidade. Na prática, essas informações podem ficar espalhadas em planilhas, PDFs, sistemas internos e documentos difíceis de auditar.
+A cadeia produtiva do leite depende de análises de qualidade, laudos, registros de coleta, transporte, temperatura, alimentação do rebanho, qualidade da água e condições da pastagem. Na prática, essas informações podem ficar espalhadas em planilhas, PDFs, sistemas internos e documentos difíceis de auditar.
 
 Isso dificulta responder com segurança:
 
 - a amostra analisada corresponde ao lote informado?
-- quem realizou a análise?
-- quando a evidência foi gerada?
-- o laudo foi alterado depois da análise?
+- o solo, a alimentação e a água foram considerados no contexto produtivo?
+- quem realizou a análise e quando ela foi gerada?
+- o laudo foi alterado depois do registro?
+- existe evidência verificável para auditoria, cooperativa, indústria ou fiscalização?
 - o lote foi aprovado, reprovado ou ficou em atenção?
-- existe histórico rastreável da cadeia produtiva?
 
 ## Solução
 
 O MVP demonstra uma plataforma capaz de:
 
-1. simular ou receber uma leitura espectrofotométrica do leite;
-2. analisar a amostra com regras técnicas demonstrativas;
-3. classificar o lote como `APROVADO`, `ATENÇÃO` ou `REPROVADO`;
-4. gerar uma evidência digital em JSON;
-5. calcular o hash SHA-256 da evidência;
-6. registrar o hash em uma camada Web3 simulada ou smart contract;
-7. disponibilizar uma página pública de verificação.
+1. simular a captura espectrofotométrica do solo/pastagem;
+2. simular a análise da alimentação do rebanho;
+3. simular a leitura da água operacional;
+4. simular a coleta e a análise multiespectral do leite;
+5. calcular corrente escura, branco de referência, ADC bruto, sinal corrigido, normalização e absorbância por canal;
+6. classificar o processo como `APROVADO`, `ATENÇÃO` ou `REPROVADO`;
+7. gerar evidência digital em JSON;
+8. calcular o hash SHA-256 da evidência;
+9. registrar o hash em camada Web3 simulada ou smart contract;
+10. disponibilizar página pública de verificação.
+
+## Simulador completo
+
+Acesse:
+
+```text
+http://127.0.0.1:5000/simulador
+```
+
+O simulador apresenta:
+
+- cenários de cadeia em conformidade, adulteração, quebra de frio, risco alimentar, estresse de solo e risco integrado;
+- captura das ondas de 365 nm a 910 nm;
+- seleção visual entre leite, solo/pastagem, alimentação e água;
+- tabela de leitura por canal óptico;
+- corrente escura, referência, ADC da amostra, sinal normalizado e absorbância;
+- diagnóstico técnico da Análise Evolutiva;
+- score integrado da cadeia;
+- recomendações técnicas;
+- evidência digital com hash;
+- registro Web3;
+- link de verificação pública.
 
 ## Diferencial Web3
 
-O diferencial está em transformar uma análise técnica da cadeia do leite em uma evidência digital verificável. O hash do relatório permite comprovar que o conteúdo não foi alterado. O smart contract cria uma trilha de auditoria pública, transparente e resistente a adulterações.
+O diferencial está em transformar uma análise técnica completa da cadeia do leite em uma evidência digital verificável. O hash do relatório permite comprovar que o conteúdo não foi alterado. O smart contract cria uma trilha de auditoria pública, transparente e resistente a adulterações.
 
 ## Estrutura do repositório
 
@@ -111,26 +134,22 @@ http://127.0.0.1:5000
 | GET | `/` | Interface de demonstração |
 | GET | `/simulador` | Simulador completo para usuário/investidor |
 | GET | `/health` | Saúde da aplicação |
-| POST | `/api/samples/simulate` | Gera leitura espectrofotométrica simulada |
-| POST | `/api/evidence` | Analisa a amostra, gera evidência e registra hash |
+| POST | `/api/samples/simulate` | Gera leitura espectrofotométrica simulada do leite |
+| POST | `/api/simulator/full-process` | Simula o processo completo: solo, alimentação, água e leite |
+| POST | `/api/evidence` | Analisa uma amostra de leite, gera evidência e registra hash |
+| POST | `/api/evidence/full-process` | Gera evidência completa da cadeia e registra hash Web3 |
 | GET | `/api/evidence/<evidence_id>` | Consulta uma evidência pelo ID |
 | GET | `/verify/<evidence_hash>` | Página pública de verificação |
 | GET | `/api/verify/<evidence_hash>` | Verificação em JSON |
 
 ## Exemplo rápido via cURL
 
-```bash
-curl -X POST http://127.0.0.1:5000/api/samples/simulate \
-  -H "Content-Type: application/json" \
-  -d '{"scenario":"normal"}'
-```
-
-Depois envie a leitura retornada para:
+Simular o processo completo:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/api/evidence \
+curl -X POST http://127.0.0.1:5000/api/evidence/full-process \
   -H "Content-Type: application/json" \
-  -d @data/sample_payload.json
+  -d '{"scenario":"integrated_risk", "seed":42}'
 ```
 
 ## Smart contract
@@ -168,14 +187,16 @@ A demonstração deve seguir esta ordem:
 1. abrir a tela inicial;
 2. entrar em `/simulador`;
 3. explicar o problema de rastreabilidade na cadeia do leite;
-4. escolher um cenário, por exemplo leite normal ou suspeita de adição de água;
-5. executar a análise completa;
-6. mostrar a jornada do lote, os KPIs e o gráfico espectrofotométrico;
-7. mostrar o diagnóstico da Análise Evolutiva;
-8. mostrar o hash da evidência e o registro Web3;
-9. abrir a tela pública de verificação;
-10. explicar que qualquer alteração no laudo mudaria o hash;
-11. mostrar o contrato Solidity e os testes.
+4. escolher um cenário, por exemplo risco integrado ou suspeita de adição de água;
+5. executar o processo completo;
+6. mostrar a jornada do lote, do solo e da alimentação até a análise do leite;
+7. alternar entre os gráficos de leite, solo/pastagem, alimentação e água;
+8. mostrar a tabela de captura das ondas com ADC, referência, normalização e absorbância;
+9. mostrar o diagnóstico da Análise Evolutiva;
+10. mostrar o hash da evidência e o registro Web3;
+11. abrir a tela pública de verificação;
+12. explicar que qualquer alteração no laudo mudaria o hash;
+13. mostrar o contrato Solidity e os testes.
 
 Documentos úteis:
 
@@ -184,6 +205,7 @@ Documentos úteis:
 - [`docs/REGRAS_HACKWEB_CHECKLIST.md`](docs/REGRAS_HACKWEB_CHECKLIST.md)
 - [`docs/SUBMISSAO.md`](docs/SUBMISSAO.md)
 - [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md)
+- [`docs/SIMULADOR_COMPLETO.md`](docs/SIMULADOR_COMPLETO.md)
 
 ## Limitações do MVP
 

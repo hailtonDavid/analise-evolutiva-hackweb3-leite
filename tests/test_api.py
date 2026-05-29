@@ -26,6 +26,26 @@ def test_create_evidence_flow():
     assert verify_response.get_json()["valid"] is True
 
 
+def test_full_process_endpoint():
+    client = app.test_client()
+    response = client.post("/api/simulator/full-process", json={"scenario": "feed_risk", "seed": 44})
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert "soil" in payload
+    assert "feed" in payload
+    assert "water" in payload
+    assert "milk_sample" in payload
+
+
+def test_full_process_evidence_flow():
+    client = app.test_client()
+    response = client.post("/api/evidence/full-process", json={"scenario": "integrated_risk", "seed": 99})
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert len(payload["evidence"]["evidence_hash"]) == 64
+    assert payload["evidence"]["chain_process"]["milk_sample"]["spectrometer_capture"]["channels"]
+
+
 def test_simulator_page_available():
     client = app.test_client()
     response = client.get("/simulador")

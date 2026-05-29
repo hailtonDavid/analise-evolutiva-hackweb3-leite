@@ -1,41 +1,81 @@
-# API
+# API — Análise Evolutiva Web3
 
-## `GET /health`
+## Saúde
 
-Retorna status da aplicação.
+```http
+GET /health
+```
 
-## `POST /api/samples/simulate`
+## Simulação simples do leite
 
-Gera uma amostra simulada.
+```http
+POST /api/samples/simulate
+Content-Type: application/json
 
-Payload:
-
-```json
 {
   "scenario": "normal",
-  "seed": 123
+  "seed": 42
 }
 ```
 
-Cenários aceitos:
+## Evidência simples do leite
 
-- `normal`
-- `water_adulteration`
-- `temperature_break`
-- `high_solids`
+```http
+POST /api/evidence
+Content-Type: application/json
 
-## `POST /api/evidence`
+{ ...amostra retornada por /api/samples/simulate... }
+```
 
-Recebe uma amostra, analisa, gera evidência e registra o hash.
+## Simulação completa da cadeia
 
-## `GET /api/evidence/<evidence_id>`
+```http
+POST /api/simulator/full-process
+Content-Type: application/json
 
-Consulta evidência por ID.
+{
+  "scenario": "integrated_risk",
+  "seed": 42
+}
+```
 
-## `GET /api/verify/<evidence_hash>`
+Retorna o processo completo com:
 
-Verifica evidência por hash.
+- solo/pastagem;
+- alimentação;
+- água;
+- leite;
+- captura óptica por canal;
+- análise integrada;
+- jornada rastreável.
 
-## `GET /verify/<evidence_hash>`
+## Evidência completa da cadeia
 
-Tela pública de verificação.
+```http
+POST /api/evidence/full-process
+Content-Type: application/json
+
+{
+  "scenario": "integrated_risk",
+  "seed": 42
+}
+```
+
+Retorna:
+
+- processo completo;
+- evidência digital;
+- hash SHA-256;
+- registro Web3 simulado.
+
+## Verificação pública
+
+```http
+GET /verify/<evidence_hash>
+```
+
+## Verificação JSON
+
+```http
+GET /api/verify/<evidence_hash>
+```

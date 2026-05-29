@@ -1,76 +1,50 @@
-# Roteiro da demonstração
+# Roteiro de demonstração — HackWeb 3.0
 
-## Tempo sugerido: 3 a 5 minutos
+## 1. Abertura
 
-### 1. Apresentar o problema
+Apresente a proposta:
 
-Explicar que a cadeia do leite precisa comprovar qualidade, origem, temperatura, análise e integridade dos laudos.
+> A Análise Evolutiva Web3 é uma plataforma para rastrear e auditar a cadeia produtiva do leite. Ela usa espectrofotometria multiespectral para analisar solo, alimentação, água e leite, gera uma evidência digital e registra o hash em uma camada Web3.
 
-### 2. Abrir o simulador do MVP
+## 2. Problema
 
-Acessar:
+Explique que a cadeia do leite possui informações fragmentadas: laudos, coleta, temperatura, alimentação, transporte, qualidade da água e dados de propriedade. Quando essas informações não são rastreáveis, há dificuldade de auditoria, verificação de integridade e confiança entre produtor, cooperativa, indústria e fiscalização.
+
+## 3. Demonstração principal
+
+Abra:
 
 ```text
 http://127.0.0.1:5000/simulador
 ```
 
-Explicar que esta tela foi criada para demonstrar a visão de produto para banca, usuário e investidor.
+Escolha um cenário, preferencialmente:
 
-### 3. Explicar o fluxo
+- `Risco integrado na cadeia`, para mostrar todos os módulos; ou
+- `Suspeita de adição de água no leite`, para destacar a análise da amostra.
 
-Mostrar na tela:
+Clique em **Executar processo completo**.
 
-```text
-Produtor → Coleta → Transporte → Cooperativa/Laboratório → Espectrofotômetro → Análise Evolutiva → Hash → Smart Contract → Verificação pública
-```
+## 4. O que mostrar na tela
 
-### 4. Rodar uma amostra normal
+Mostre nesta ordem:
 
-Selecionar `Leite normal` e clicar em `Executar análise completa`.
+1. **Jornada rastreável** — propriedade, solo, alimentação, água, coleta, transporte, bancada e Web3.
+2. **KPIs** — status integrado, score da cadeia, risco de adulteração e temperatura.
+3. **Captura das ondas** — alterne entre Leite, Solo/Pastagem, Alimentação e Água.
+4. **Tabela de canais** — mostre corrente escura, referência, ADC da amostra, sinal normalizado e absorbância.
+5. **Diagnóstico técnico** — explique que a própria Análise Evolutiva interpreta a leitura.
+6. **Hash da evidência** — mostre que todo o processo vira uma evidência digital.
+7. **Verificação pública** — abra o link `/verify/<hash>`.
 
-Mostrar:
+## 5. Mensagem Web3
 
-- status do lote;
-- score de conformidade;
-- risco de adulteração;
-- temperatura da amostra;
-- jornada rastreável;
-- gráfico espectrofotométrico;
-- recomendação técnica;
-- hash da evidência;
-- link de verificação pública.
+Diga:
 
-### 5. Rodar uma amostra com problema
+> A blockchain não precisa armazenar o laudo inteiro. O sistema registra o hash da evidência. Assim, se qualquer campo do laudo ou da cadeia for alterado, o hash muda e a verificação falha.
 
-Selecionar:
+## 6. Fechamento
 
-- `Suspeita de adição de água`; ou
-- `Quebra de temperatura`.
+Finalize com:
 
-Explicar que o sistema altera os indicadores, gera nova evidência e recomenda revisão técnica, bloqueio preventivo ou contraprova conforme o cenário.
-
-### 6. Mostrar verificação pública
-
-Abrir o link `/verify/<hash>` gerado pelo simulador.
-
-Explicar que o hash permite comprovar se a evidência foi alterada e que a estratégia do MVP é `off-chain evidence + on-chain hash`.
-
-### 7. Mostrar o smart contract
-
-Abrir o arquivo:
-
-```text
-contracts/AnaliseEvolutivaLeiteTrace.sol
-```
-
-Explicar que o contrato registra o hash, lote, produtor, status, registrador e timestamp.
-
-### 8. Encerramento
-
-Reforçar:
-
-- aderência Web3;
-- impacto na cadeia do leite;
-- experiência visual do produto;
-- viabilidade técnica;
-- evolução futura com hardware real, calibração laboratorial e rede blockchain pública/testnet.
+> O MVP demonstra como a cadeia produtiva do leite pode ganhar confiança, rastreabilidade e auditabilidade com análise espectrofotométrica, IA/regras técnicas e Web3.

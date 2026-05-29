@@ -6,6 +6,8 @@
 
 A **Análise Evolutiva Web3** é um MVP criado para o HackWeb 3.0 com foco na cadeia produtiva do leite. A proposta é demonstrar como uma análise técnica realizada pela própria Análise Evolutiva, a partir de leituras espectrofotométricas, pode gerar uma evidência digital verificável e rastreável.
 
+Além da demonstração rápida, o MVP agora inclui uma tela de **simulador completo para usuário/investidor** em `/simulador`, permitindo visualizar o sistema como produto: jornada do lote, indicadores, gráfico espectrofotométrico, diagnóstico, hash, registro Web3 e link de verificação pública.
+
 O sistema simula o fluxo completo:
 
 ```text
@@ -107,6 +109,7 @@ http://127.0.0.1:5000
 | Método | Rota | Descrição |
 |---|---|---|
 | GET | `/` | Interface de demonstração |
+| GET | `/simulador` | Simulador completo para usuário/investidor |
 | GET | `/health` | Saúde da aplicação |
 | POST | `/api/samples/simulate` | Gera leitura espectrofotométrica simulada |
 | POST | `/api/evidence` | Analisa a amostra, gera evidência e registra hash |
@@ -163,14 +166,16 @@ npm run deploy:local
 A demonstração deve seguir esta ordem:
 
 1. abrir a tela inicial;
-2. explicar o problema de rastreabilidade na cadeia do leite;
-3. simular uma amostra normal;
-4. gerar a análise da Análise Evolutiva;
-5. mostrar o hash da evidência;
-6. mostrar o registro Web3;
-7. abrir a tela pública de verificação;
-8. explicar que qualquer alteração no laudo mudaria o hash;
-9. mostrar o contrato Solidity e os testes.
+2. entrar em `/simulador`;
+3. explicar o problema de rastreabilidade na cadeia do leite;
+4. escolher um cenário, por exemplo leite normal ou suspeita de adição de água;
+5. executar a análise completa;
+6. mostrar a jornada do lote, os KPIs e o gráfico espectrofotométrico;
+7. mostrar o diagnóstico da Análise Evolutiva;
+8. mostrar o hash da evidência e o registro Web3;
+9. abrir a tela pública de verificação;
+10. explicar que qualquer alteração no laudo mudaria o hash;
+11. mostrar o contrato Solidity e os testes.
 
 Documentos úteis:
 

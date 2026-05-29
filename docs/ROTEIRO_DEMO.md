@@ -6,49 +6,54 @@
 
 Explicar que a cadeia do leite precisa comprovar qualidade, origem, temperatura, análise e integridade dos laudos.
 
-### 2. Abrir o sistema
+### 2. Abrir o simulador do MVP
 
 Acessar:
 
 ```text
-http://127.0.0.1:5000
+http://127.0.0.1:5000/simulador
 ```
+
+Explicar que esta tela foi criada para demonstrar a visão de produto para banca, usuário e investidor.
 
 ### 3. Explicar o fluxo
 
 Mostrar na tela:
 
 ```text
-Produtor → Coleta → Transporte → Cooperativa → Espectrofotômetro → Análise Evolutiva → Hash → Smart Contract → Verificação pública
+Produtor → Coleta → Transporte → Cooperativa/Laboratório → Espectrofotômetro → Análise Evolutiva → Hash → Smart Contract → Verificação pública
 ```
 
 ### 4. Rodar uma amostra normal
 
-Selecionar `Leite normal` e clicar em `Gerar evidência rastreável`.
+Selecionar `Leite normal` e clicar em `Executar análise completa`.
 
 Mostrar:
 
-- lote;
-- produtor;
-- status;
+- status do lote;
 - score de conformidade;
-- hash;
-- transaction hash simulado.
+- risco de adulteração;
+- temperatura da amostra;
+- jornada rastreável;
+- gráfico espectrofotométrico;
+- recomendação técnica;
+- hash da evidência;
+- link de verificação pública.
 
 ### 5. Rodar uma amostra com problema
 
-Voltar para a página inicial e selecionar:
+Selecionar:
 
 - `Suspeita de adição de água`; ou
 - `Quebra de temperatura`.
 
-Explicar que o sistema altera o score e recomenda revisão ou bloqueio.
+Explicar que o sistema altera os indicadores, gera nova evidência e recomenda revisão técnica, bloqueio preventivo ou contraprova conforme o cenário.
 
 ### 6. Mostrar verificação pública
 
-Abrir o link `/verify/<hash>`.
+Abrir o link `/verify/<hash>` gerado pelo simulador.
 
-Explicar que o hash permite comprovar se a evidência foi alterada.
+Explicar que o hash permite comprovar se a evidência foi alterada e que a estratégia do MVP é `off-chain evidence + on-chain hash`.
 
 ### 7. Mostrar o smart contract
 
@@ -66,5 +71,6 @@ Reforçar:
 
 - aderência Web3;
 - impacto na cadeia do leite;
+- experiência visual do produto;
 - viabilidade técnica;
-- evolução futura com hardware real e rede blockchain pública/testnet.
+- evolução futura com hardware real, calibração laboratorial e rede blockchain pública/testnet.

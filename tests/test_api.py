@@ -24,3 +24,10 @@ def test_create_evidence_flow():
     verify_response = client.get(f"/api/verify/{payload['evidence']['evidence_hash']}")
     assert verify_response.status_code == 200
     assert verify_response.get_json()["valid"] is True
+
+
+def test_simulator_page_available():
+    client = app.test_client()
+    response = client.get("/simulador")
+    assert response.status_code == 200
+    assert "Simulador da Análise Evolutiva Web3" in response.get_data(as_text=True)

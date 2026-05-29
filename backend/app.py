@@ -28,6 +28,11 @@ def health():
     return jsonify({"status": "ok", "service": "analise-evolutiva-web3-leite"})
 
 
+@app.get("/simulador")
+def simulator_page():
+    return render_template("simulator.html")
+
+
 @app.post("/api/samples/simulate")
 def api_simulate_sample():
     data: Dict[str, Any] = request.get_json(silent=True) or {}

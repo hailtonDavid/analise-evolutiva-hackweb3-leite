@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador Investidor — Análise Evolutiva Web3</title>
+  <style>
+    :root {
+      --bg:#071827; --card:#0d253a; --card2:#0a2034; --line:#1d4a68; --text:#eaf8ff; --muted:#a9c8d8;
+      --accent:#41d3bd; --accent2:#74b7ff; --warn:#ffd166; --bad:#ff6b6b; --good:#63e6a4;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, Helvetica, sans-serif; background:radial-gradient(circle at top left, #123a55, var(--bg)); color:var(--text); }
+    header, main { max-width:1180px; margin:auto; padding:24px; }
+    header { padding-top:34px; }
+    a { color:var(--accent); text-decoration:none; }
+    h1 { font-size:clamp(30px, 5vw, 54px); line-height:1; margin:10px 0 12px; }
+    h2, h3 { margin:0 0 12px; }
+    p { color:var(--muted); line-height:1.55; }
+    .badge { display:inline-flex; gap:8px; align-items:center; border:1px solid var(--line); color:var(--accent); padding:8px 12px; border-radius:999px; font-weight:700; background:rgba(7,24,39,.72); }
+    .topbar { display:flex; justify-content:space-between; gap:16px; align-items:center; flex-wrap:wrap; }
+    .panel { background:rgba(13,37,58,.90); border:1px solid var(--line); border-radius:24px; padding:20px; box-shadow:0 16px 40px rgba(0,0,0,.25); }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; }
+    .grid-2 { display:grid; grid-template-columns:1.15fr .85fr; gap:16px; }
+    @media (max-width: 860px) { .grid-2 { grid-template-columns:1fr; } }
+    .controls { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    button, select, input { border-radius:14px; padding:13px 15px; font-weight:700; }
+    select, input { background:#071827; color:var(--text); border:1px solid var(--line); min-width:210px; }
+    button { border:0; background:linear-gradient(90deg, var(--accent), var(--accent2)); color:#062033; cursor:pointer; }
+    button.secondary { background:#091f31; color:var(--text); border:1px solid var(--line); }
+    .kpi { padding:18px; background:linear-gradient(180deg, rgba(15,47,74,.95), rgba(8,28,45,.95)); border:1px solid var(--line); border-radius:20px; }
+    .kpi small { color:var(--muted); display:block; margin-bottom:8px; }
+    .kpi strong { font-size:28px; display:block; }
+    .timeline { display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-top:16px; }
+    @media (max-width: 760px) { .timeline { grid-template-columns:1fr; } }
+    .step { border:1px solid var(--line); background:#091f31; border-radius:18px; padding:14px; min-height:116px; position:relative; overflow:hidden; }
+    .step::before { content:""; width:10px; height:10px; border-radius:50%; background:var(--accent); position:absolute; top:14px; right:14px; box-shadow:0 0 18px var(--accent); }
+    .step span { color:var(--accent); font-weight:700; font-size:13px; }
+    .step strong { display:block; margin:8px 0; }
+    .step p { margin:0; font-size:13px; }
+    .chart-wrap { height:280px; position:relative; border:1px solid var(--line); border-radius:20px; background:#061523; padding:12px; }
+    canvas { width:100%; height:100%; }
+    .status { display:inline-flex; align-items:center; gap:8px; padding:8px 11px; border-radius:999px; border:1px solid var(--line); background:#071827; font-weight:800; }
+    .status.aprovado { color:var(--good); }
+    .status.atencao { color:var(--warn); }
+    .status.reprovado { color:var(--bad); }
+    .hash { word-break:break-all; background:#061523; border:1px solid var(--line); border-radius:14px; padding:12px; color:#d9fff8; font-family:Consolas, monospace; font-size:13px; }
+    .log { background:#061523; border:1px solid var(--line); border-radius:18px; padding:12px; min-height:150px; max-height:230px; overflow:auto; font-family:Consolas, monospace; color:#cfeefa; font-size:13px; }
+    .log div { padding:4px 0; border-bottom:1px solid rgba(29,74,104,.4); }
+    .pill { display:inline-block; margin:4px 4px 0 0; padding:7px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); background:#071827; font-size:13px; }
+    table { width:100%; border-collapse:collapse; }
+    th,td { border-bottom:1px solid var(--line); padding:9px 8px; text-align:left; font-size:14px; }
+    th { color:var(--muted); }
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="badge">Simulador MVP • Investidor • Cadeia Produtiva do Leite</div>
+      <a href="/">← Voltar para visão executiva</a>
+    </div>
+    <h1>Simulador da Análise Evolutiva Web3</h1>
+    <p>Esta tela demonstra a experiência do sistema final: a própria Análise Evolutiva recebe dados do espectrofotômetro, interpreta a amostra de leite, acompanha a rastreabilidade do lote e registra a prova de integridade em camada Web3.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Rodar simulação completa</h2>
+      <p>Escolha o cenário, informe uma semente opcional para repetir o mesmo resultado e execute o fluxo completo de ponta a ponta.</p>
+      <div class="controls">
+        <select id="scenario">
+          <option value="normal">Leite normal</option>
+          <option value="water_adulteration">Suspeita de adição de água</option>
+          <option value="temperature_break">Quebra de temperatura</option>
+          <option value="high_solids">Sólidos elevados</option>
+        </select>
+        <input id="seed" type="number" value="42" placeholder="Semente da simulação">
+        <button id="run">Executar análise completa</button>
+        <button class="secondary" id="reset">Limpar painel</button>
+      </div>
+    </section>
+
+    <section class="grid" style="margin-top:16px;">
+      <div class="kpi"><small>Status do lote</small><strong id="kpiStatus">—</strong></div>
+      <div class="kpi"><small>Score de conformidade</small><strong id="kpiScore">—</strong></div>
+      <div class="kpi"><small>Risco de adulteração</small><strong id="kpiWater">—</strong></div>
+      <div class="kpi"><small>Temperatura da amostra</small><strong id="kpiTemp">—</strong></div>
+    </section>
+
+    <section class="panel" style="margin-top:16px;">
+      <h2>Jornada rastreável do lote</h2>
+      <p>O MVP simula o caminho do leite desde a propriedade até a validação digital. Cada etapa gera metadados auditáveis.</p>
+      <div class="timeline" id="timeline">
+        <div class="step"><span>01</span><strong>Produtor</strong><p>Aguardando execução da simulação.</p></div>
+        <div class="step"><span>02</span><strong>Coleta</strong><p>Amostra e tanque serão gerados automaticamente.</p></div>
+        <div class="step"><span>03</span><strong>Transporte</strong><p>Controle de temperatura e veículo.</p></div>
+        <div class="step"><span>04</span><strong>Laboratório</strong><p>Recebimento e conferência da amostra.</p></div>
+        <div class="step"><span>05</span><strong>Web3</strong><p>Hash da evidência registrado para auditoria.</p></div>
+      </div>
+    </section>
+
+    <section class="grid-2" style="margin-top:16px;">
+      <div class="panel">
+        <h2>Leitura espectrofotométrica simulada</h2>
+        <p>Absorbância/reflectância demonstrativa nos canais multiespectrais usados para caracterizar a amostra.</p>
+        <div class="chart-wrap"><canvas id="spectralChart" width="760" height="280"></canvas></div>
+      </div>
+      <div class="panel">
+        <h2>Diagnóstico da Análise Evolutiva</h2>
+        <p id="diagnosisText">Execute uma simulação para gerar diagnóstico, recomendação técnica e evidência rastreável.</p>
+        <div id="riskPills"></div>
+        <h3 style="margin-top:18px;">Registro Web3</h3>
+        <div class="hash" id="hashBox">Hash ainda não gerado.</div>
+        <p id="verifyLink"></p>
+      </div>
+    </section>
+
+    <section class="grid-2" style="margin-top:16px;">
+      <div class="panel">
+        <h2>Resumo técnico do lote</h2>
+        <table>
+          <tbody id="summaryTable">
+            <tr><th>Lote</th><td>—</td></tr>
+            <tr><th>Produtor</th><td>—</td></tr>
+            <tr><th>Equipamento</th><td>—</td></tr>
+            <tr><th>Cooperativa</th><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h2>Log da simulação</h2>
+        <div class="log" id="log"><div>Pronto para executar o fluxo.</div></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const wavelengths = [415,445,480,515,555,590,630,680,910];
+    const refs = {415:.72,445:.69,480:.65,515:.61,555:.57,590:.52,630:.48,680:.43,910:.34};
+    const els = {
+      scenario: document.getElementById('scenario'), seed: document.getElementById('seed'), run: document.getElementById('run'), reset: document.getElementById('reset'),
+      status: document.getElementById('kpiStatus'), score: document.getElementById('kpiScore'), water: document.getElementById('kpiWater'), temp: document.getElementById('kpiTemp'),
+      timeline: document.getElementById('timeline'), diagnosis: document.getElementById('diagnosisText'), pills: document.getElementById('riskPills'), hash: document.getElementById('hashBox'),
+      verify: document.getElementById('verifyLink'), summary: document.getElementById('summaryTable'), log: document.getElementById('log'), canvas: document.getElementById('spectralChart')
+    };
+
+    function pct(v) { return `${(Number(v) * 100).toFixed(1)}%`; }
+    function log(msg) { const d = document.createElement('div'); d.textContent = `${new Date().toLocaleTimeString()} • ${msg}`; els.log.prepend(d); }
+    function statusClass(status) { return status === 'APROVADO' ? 'aprovado' : status === 'ATENÇÃO' ? 'atencao' : 'reprovado'; }
+
+    function drawChart(reading) {
+      const c = els.canvas, ctx = c.getContext('2d');
+      ctx.clearRect(0,0,c.width,c.height);
+      ctx.fillStyle = '#061523'; ctx.fillRect(0,0,c.width,c.height);
+      const pad = 38, w = c.width - pad*2, h = c.height - pad*2;
+      ctx.strokeStyle = '#1d4a68'; ctx.lineWidth = 1;
+      for(let i=0;i<=4;i++){ const y=pad+h-(h*i/4); ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(pad+w,y); ctx.stroke(); }
+      function plot(values, stroke, label, yOffset) {
+        ctx.strokeStyle = stroke; ctx.lineWidth = 3; ctx.beginPath();
+        wavelengths.forEach((wl,i)=>{ const x=pad+(w*i/(wavelengths.length-1)); const y=pad+h-(Number(values[wl])*h/1.15); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+        ctx.stroke();
+        wavelengths.forEach((wl,i)=>{ const x=pad+(w*i/(wavelengths.length-1)); const y=pad+h-(Number(values[wl])*h/1.15); ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fillStyle=stroke; ctx.fill(); });
+        ctx.fillStyle = stroke; ctx.fillText(label, pad, yOffset);
+      }
+      ctx.font = '13px Arial';
+      plot(refs, '#74b7ff', 'Perfil de referência', 18);
+      plot(reading, '#41d3bd', 'Amostra simulada', 34);
+      ctx.fillStyle = '#a9c8d8';
+      wavelengths.forEach((wl,i)=>{ const x=pad+(w*i/(wavelengths.length-1)); ctx.fillText(String(wl), x-12, c.height-12); });
+    }
+
+    function renderTimeline(sample, tx) {
+      const steps = sample.traceability || [];
+      const cards = steps.map((s, i) => `
+        <div class="step"><span>${String(i+1).padStart(2,'0')}</span><strong>${s.stage.replaceAll('_',' ')}</strong><p>${s.actor}<br>${s.location}</p></div>
+      `).join('');
+      els.timeline.innerHTML = cards + `<div class="step"><span>05</span><strong>registro web3</strong><p>Modo: ${tx.mode}<br>TX: ${tx.transaction_hash.slice(0,18)}...</p></div>`;
+    }
+
+    async function runSimulation() {
+      els.run.disabled = true;
+      els.log.innerHTML = '';
+      try {
+        const seed = els.seed.value ? Number(els.seed.value) : null;
+        log('Gerando leitura do espectrofotômetro multiespectral.');
+        const sampleResp = await fetch('/api/samples/simulate', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({scenario: els.scenario.value, seed})});
+        const sample = await sampleResp.json();
+        if(!sampleResp.ok) throw new Error(sample.error || 'Falha ao simular amostra.');
+        log(`Amostra ${sample.batch_id} criada para ${sample.producer_name}.`);
+        log('Enviando amostra para análise técnica da Análise Evolutiva.');
+        const evResp = await fetch('/api/evidence', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(sample)});
+        const payload = await evResp.json();
+        if(!evResp.ok) throw new Error(payload.error || 'Falha ao criar evidência.');
+        const ev = payload.evidence, an = ev.analysis, tx = payload.web3_registration;
+        log(`Diagnóstico concluído com status ${an.status}.`);
+        log('Hash SHA-256 gerado e registrado em camada Web3 simulada.');
+
+        els.status.className = `status ${statusClass(an.status)}`;
+        els.status.textContent = an.status;
+        els.score.textContent = pct(an.compliance_score);
+        els.water.textContent = pct(an.water_adulteration_risk);
+        els.temp.textContent = `${sample.temperature_celsius.toFixed(2)} °C`;
+        els.diagnosis.textContent = an.recommendation;
+        els.pills.innerHTML = `
+          <span class="pill">Consistência espectral: ${pct(an.spectral_consistency)}</span>
+          <span class="pill">Risco temperatura: ${pct(an.temperature_risk)}</span>
+          <span class="pill">Índice de sólidos: ${pct(an.solids_index)}</span>`;
+        els.hash.textContent = ev.evidence_hash;
+        els.verify.innerHTML = `<a href="/verify/${ev.evidence_hash}" target="_blank">Abrir verificação pública da evidência</a>`;
+        els.summary.innerHTML = `
+          <tr><th>Lote</th><td>${sample.batch_id}</td></tr>
+          <tr><th>Produtor</th><td>${sample.producer_id} — ${sample.producer_name}</td></tr>
+          <tr><th>Equipamento</th><td>${sample.equipment_id}</td></tr>
+          <tr><th>Cooperativa</th><td>${sample.cooperative}</td></tr>
+          <tr><th>Estratégia Web3</th><td>${ev.web3.storage_strategy}</td></tr>`;
+        renderTimeline(sample, tx);
+        drawChart(sample.spectral_reading);
+      } catch (err) {
+        log(`ERRO: ${err.message}`);
+      } finally {
+        els.run.disabled = false;
+      }
+    }
+
+    function reset() {
+      els.status.className = 'status'; els.status.textContent = '—'; els.score.textContent = '—'; els.water.textContent = '—'; els.temp.textContent = '—';
+      els.diagnosis.textContent = 'Execute uma simulação para gerar diagnóstico, recomendação técnica e evidência rastreável.';
+      els.pills.innerHTML = ''; els.hash.textContent = 'Hash ainda não gerado.'; els.verify.innerHTML = '';
+      els.summary.innerHTML = '<tr><th>Lote</th><td>—</td></tr><tr><th>Produtor</th><td>—</td></tr><tr><th>Equipamento</th><td>—</td></tr><tr><th>Cooperativa</th><td>—</td></tr>';
+      els.log.innerHTML = '<div>Pronto para executar o fluxo.</div>';
+      drawChart(refs);
+    }
+
+    els.run.addEventListener('click', runSimulation);
+    els.reset.addEventListener('click', reset);
+    reset();
+  </script>
+</body>
+</html>

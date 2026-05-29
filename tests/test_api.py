@@ -88,3 +88,52 @@ def test_investor_page():
     response = client.get("/investidor")
     assert response.status_code == 200
     assert b"Vis" in response.data
+
+
+def test_ecosystem_endpoints():
+    client = app.test_client()
+    response = client.post("/api/ecosystem/simulation", json={"scenario": "normal", "seed": 42})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["project"].startswith("Análise Evolutiva")
+    assert "leite_web3" in data["modules"]
+
+    evidence_response = client.post("/api/ecosystem/evidence", json={"scenario": "normal", "seed": 42})
+    assert evidence_response.status_code == 200
+    payload = evidence_response.get_json()
+    assert payload["evidence"]["evidence_type"] == "complete_ecosystem_simulation"
+
+
+def test_site_page_available():
+    client = app.test_client()
+    response = client.get("/site")
+    assert response.status_code == 200
+    assert "Site institucional" in response.get_data(as_text=True)
+    assert "https://www.analise-evolutiva.ia.br/" in response.get_data(as_text=True)
+
+
+def test_site_meta_endpoint():
+    client = app.test_client()
+    response = client.get("/api/site/meta")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["official_site"] == "https://www.analise-evolutiva.ia.br/"
+    assert data["integration_mode"] == "embedded_webview_with_external_fallback"
+
+
+
+def test_milk_use_cases_endpoint():
+    client = app.test_client()
+    response = client.get("/api/use-cases/milk")
+    assert response.status_code == 200
+    data = response.get_json()
+    labels = {case["label"] for case in data["cases"]}
+    assert {"A2A2", "Orgânico", "Raça", "Fraude", "Contaminação", "Lote"}.issubset(labels)
+    assert "Web3" in data["investor_message"]
+
+
+def test_milk_use_cases_page():
+    client = app.test_client()
+    response = client.get("/casos-leite")
+    assert response.status_code == 200
+    assert b"Solu" in response.data

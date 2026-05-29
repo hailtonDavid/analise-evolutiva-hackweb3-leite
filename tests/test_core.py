@@ -84,3 +84,14 @@ def test_investor_impact_model():
     assert impact["client_value_simulation"]["monthly_liters"] == 120000
     assert impact["business_model_simulation"]["vendor_mrr_brl_per_client"] > 0
     assert len(impact["investment_thesis"]["defensibility"]) >= 3
+
+
+def test_complete_ecosystem_simulation():
+    from backend.core import build_complete_ecosystem_evidence, build_complete_evolutionary_analysis
+    eco = build_complete_evolutionary_analysis(scenario="integrated_risk", seed=42)
+    assert "bioinsumos_goticulas" in eco["modules"]
+    assert "leite_web3" in eco["modules"]
+    assert "ecosystem_evidence_hash" in eco["web3_layer"]
+    ev = build_complete_ecosystem_evidence(eco)
+    assert ev["evidence_type"] == "complete_ecosystem_simulation"
+    assert len(ev["hash"]) == 64

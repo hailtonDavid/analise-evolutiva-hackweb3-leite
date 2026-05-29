@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Site institucional — Análise Evolutiva</title>
+  <style>
+    :root { --bg:#071827; --card:#0d253a; --line:#1d4a68; --text:#eaf8ff; --muted:#a9c8d8; --accent:#41d3bd; --accent2:#74b7ff; --warn:#ffd166; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Arial, Helvetica, sans-serif; background: radial-gradient(circle at top left, #123a55, var(--bg)); color:var(--text); }
+    header, main { max-width: 1180px; margin: auto; padding: 24px; }
+    header { padding-top: 34px; }
+    h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 48px); }
+    p { color: var(--muted); line-height: 1.6; }
+    a { color: var(--accent); }
+    .nav { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+    .nav strong { color: var(--text); }
+    .nav a, .button { display:inline-block; margin-left: 8px; padding:10px 13px; border-radius: 12px; border:1px solid var(--line); text-decoration:none; color: var(--text); background: rgba(13,37,58,.8); }
+    .button.primary { color:#062033; font-weight:800; border:0; background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+    .card { background: rgba(13,37,58,.90); border:1px solid var(--line); border-radius:22px; padding:20px; box-shadow:0 16px 40px rgba(0,0,0,.25); margin-bottom:18px; }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    .badge { display:inline-block; border:1px solid var(--line); color:var(--accent); padding:8px 12px; border-radius:999px; font-weight:700; margin-bottom:12px; }
+    .frame-wrap { height: 76vh; min-height: 560px; overflow:hidden; border-radius: 18px; border: 1px solid var(--line); background: #061523; }
+    iframe { width: 100%; height: 100%; border: 0; background: white; }
+    .warning { border-left:4px solid var(--warn); padding-left:14px; }
+    code { background:#061523; padding:2px 6px; border-radius:6px; color:#d9fff8; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <strong>Análise Evolutiva Web3</strong>
+      <div>
+        <a href="/">Início</a>
+        <a href="/simulador">Simulador</a>
+        <a href="/ecossistema">Ecossistema</a><a href="/casos-leite">Casos do leite</a>
+        <a href="/investidor">Investidor</a><a href="/casos-leite">Casos do leite</a>
+        <a href="/site">Site institucional</a><a href="/casos-leite">Casos do leite</a>
+      </div>
+    </nav>
+    <div class="badge">Site oficial integrado ao MVP</div>
+    <h1>Site institucional da Análise Evolutiva dentro do sistema</h1>
+    <p>Esta área disponibiliza o site público da Análise Evolutiva no próprio MVP, para que avaliadores e investidores naveguem pela proposta institucional sem sair do fluxo de demonstração do HackWeb 3.0.</p>
+  </header>
+
+  <main>
+    <section class="card toolbar">
+      <div>
+        <strong>Endereço oficial:</strong>
+        <code>{{ site_url }}</code>
+      </div>
+      <div>
+        <a class="button primary" href="{{ site_url }}" target="_blank" rel="noopener noreferrer">Abrir em nova aba</a>
+        <a class="button" href="/ecossistema">Ver ecossistema Web3</a>
+      </div>
+    </section>
+
+    <section class="card warning">
+      <p>O site é carregado por visualização incorporada. Caso o navegador ou o provedor do site bloqueie exibição em iframe, use o botão <strong>Abrir em nova aba</strong>. O acesso direto continua disponível para apresentação.</p>
+    </section>
+
+    <section class="card">
+      <div class="frame-wrap">
+        <iframe src="{{ site_url }}" title="Site oficial da Análise Evolutiva" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

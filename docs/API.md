@@ -104,3 +104,25 @@ Retorno principal:
 - `sample_cycles` com solo, alimentação, água e leite;
 - `led_sweep` por comprimento de onda;
 - `quality_control` por matriz.
+
+
+## Ecossistema completo
+
+### POST /api/ecosystem/simulation
+
+Gera a simulação completa da Análise Evolutiva V11, incluindo módulos de gotículas, solo, raiz, predição, irrigação, leite Web3, hortifrúti, dashboards e governança.
+
+### POST /api/ecosystem/evidence
+
+Gera uma evidência digital do ecossistema completo com hash SHA-256 e registro Web3 simulado.
+
+
+## Site institucional integrado
+
+### `GET /site`
+
+Disponibiliza o site oficial da Análise Evolutiva dentro do MVP, com visualização incorporada e botão de abertura em nova aba.
+
+### `GET /api/site/meta`
+
+Retorna metadados da integração do site institucional.

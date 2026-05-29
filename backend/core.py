@@ -1074,3 +1074,383 @@ def spectral_distance(sample: Mapping[str, Any]) -> float:
     for key, ref in REFERENCE_PROFILE.items():
         total += (float(spectral.get(key, ref)) - ref) ** 2
     return round(math.sqrt(total), 5)
+
+
+# ---------------------------------------------------------------------------
+# Simulador estratégico completo da Análise Evolutiva V11
+# ---------------------------------------------------------------------------
+
+def _risk_label(score: float) -> str:
+    if score >= 0.78:
+        return "baixo"
+    if score >= 0.58:
+        return "moderado"
+    return "alto"
+
+
+def _severity_label(value: float, low: float, high: float) -> str:
+    if value < low:
+        return "baixo"
+    if value < high:
+        return "médio"
+    return "alto"
+
+
+def _simulate_droplet_application(rng: random.Random, scenario: str) -> Dict[str, Any]:
+    base_coverage = 0.74 if scenario not in {"integrated_risk", "feed_risk"} else 0.58
+    coverage = round(_bounded(base_coverage + rng.uniform(-0.06, 0.06), 0.25, 0.95), 3)
+    density = int(72 + coverage * 95 + rng.randint(-12, 16))
+    uniformity = round(_bounded(0.92 - abs(coverage - 0.72) * 0.9 + rng.uniform(-0.04, 0.03), 0.35, 0.99), 3)
+    drift = round(_bounded((1 - uniformity) * 0.55 + rng.uniform(0.01, 0.08), 0.0, 0.55), 3)
+    score = round(_bounded((coverage * 0.45) + (uniformity * 0.40) + ((1 - drift) * 0.15), 0, 1), 3)
+    return {
+        "module": "Bioinsumos e gotículas",
+        "objective": "Calibrar deposição, cobertura e qualidade da aplicação de bioinsumos.",
+        "capture": "Imagem RGB/UV de papel hidrossensível ou superfície foliar",
+        "metrics": {
+            "coverage_pct": round(coverage * 100, 1),
+            "droplet_density_per_cm2": density,
+            "uniformity_index": uniformity,
+            "drift_risk": drift,
+            "technical_score": score,
+        },
+        "classification": _risk_label(score),
+        "recommendation": "Ajustar bico/pressão e repetir calibração" if score < 0.70 else "Aplicação dentro da faixa operacional demonstrativa",
+        "data_products": ["mapa de cobertura", "histórico por talhão", "alerta de deriva", "relatório de aplicação"],
+    }
+
+
+def _simulate_soil_module(rng: random.Random, scenario: str) -> Dict[str, Any]:
+    spectral = simulate_wave_capture(_scenario_adjusted_profile("soil", scenario), scenario, "soil", seed=rng.randint(1, 10_000))
+    moisture = round(_bounded(0.34 + rng.uniform(-0.08, 0.06) - (0.10 if scenario in {"soil_moisture_stress", "integrated_risk"} else 0), 0.08, 0.62), 3)
+    n = round(38 + rng.uniform(-8, 8) - (7 if scenario in {"soil_moisture_stress", "integrated_risk"} else 0), 1)
+    p = round(21 + rng.uniform(-5, 5), 1)
+    k = round(118 + rng.uniform(-22, 18), 1)
+    ph = round(6.1 + rng.uniform(-0.45, 0.35) - (0.25 if scenario in {"soil_moisture_stress", "integrated_risk"} else 0), 2)
+    ece = round(0.52 + rng.uniform(-0.11, 0.18) + (0.24 if scenario in {"soil_moisture_stress", "integrated_risk"} else 0), 2)
+    organic_matter = round(2.8 + rng.uniform(-0.6, 0.5), 2)
+    score = _bounded((moisture/0.55)*0.24 + (min(n, 45)/45)*0.18 + (min(p, 28)/28)*0.12 + (min(k, 140)/140)*0.16 + (1 - abs(ph-6.2)/2.5)*0.18 + (1 - min(ece, 1.4)/1.8)*0.12, 0, 1)
+    return {
+        "module": "Solo e pastagem",
+        "objective": "Apoiar análise físico-química e indicar risco de umidade, salinidade, fertilidade e matéria orgânica.",
+        "capture": "Reflectância UV/VIS/NIR + sensores NPK, pH, umidade e ECe",
+        "spectral_capture": spectral,
+        "metrics": {
+            "moisture_pct": round(moisture * 100, 1),
+            "nitrogen_mg_dm3": n,
+            "phosphorus_mg_dm3": p,
+            "potassium_mg_dm3": k,
+            "ph": ph,
+            "ece_ds_m": ece,
+            "organic_matter_pct": organic_matter,
+            "technical_score": round(score, 3),
+        },
+        "classification": _risk_label(score),
+        "recommendation": "Priorizar correção de umidade/salinidade e confirmar em laboratório" if score < 0.65 else "Solo em condição operacional aceitável para o ciclo simulado",
+        "data_products": ["score do talhão", "assinatura espectral do solo", "histórico de fertilidade", "alerta de salinização"],
+    }
+
+
+def _simulate_root_and_yield(rng: random.Random, soil: Mapping[str, Any], scenario: str) -> Dict[str, Any]:
+    metrics = soil["metrics"]
+    vigor = _bounded((metrics["moisture_pct"]/45)*0.26 + (metrics["nitrogen_mg_dm3"]/45)*0.18 + (metrics["phosphorus_mg_dm3"]/28)*0.14 + (metrics["potassium_mg_dm3"]/150)*0.16 + (1 - abs(metrics["ph"]-6.2)/2.3)*0.16 + rng.uniform(-0.04, 0.04), 0, 1)
+    vigor_score = round(vigor * 10, 2)
+    yield_previous = round(47 + rng.uniform(-5, 4), 1)
+    yield_pred = round(yield_previous * (0.93 + vigor * 0.22) - (3.5 if scenario in {"soil_moisture_stress", "integrated_risk"} else 0), 1)
+    return {
+        "module": "Raiz, vigor e predição de safra/pastagem",
+        "objective": "Transformar solo, clima e manejo em previsão operacional para produtividade e suporte alimentar do rebanho.",
+        "metrics": {
+            "root_vigor_score_0_10": vigor_score,
+            "yield_previous_index": yield_previous,
+            "yield_predicted_index": yield_pred,
+            "expected_delta_pct": round(((yield_pred - yield_previous) / yield_previous) * 100, 1),
+            "model_confidence": round(_bounded(0.62 + vigor * 0.26 + rng.uniform(-0.03, 0.04), 0.45, 0.93), 3),
+        },
+        "classification": _risk_label(vigor),
+        "recommendation": "Ajustar irrigação/adubação e acompanhar vigor radicular" if vigor < 0.65 else "Manter manejo e monitorar tendência semanal",
+        "data_products": ["score de raiz", "previsão de produção", "alerta por talhão", "relatório de evolução"],
+    }
+
+
+def _simulate_irrigation_roi(rng: random.Random, soil: Mapping[str, Any], root_yield: Mapping[str, Any], scenario: str) -> Dict[str, Any]:
+    total_water_mm = 82 if scenario in {"soil_moisture_stress", "integrated_risk"} else 112
+    plots = []
+    remaining = total_water_mm
+    for idx, name in enumerate(["Talhão A", "Talhão B", "Talhão C"]):
+        need = round(rng.uniform(24, 44), 1)
+        marginal_return = round(rng.uniform(38, 72), 2)
+        allocated = round(min(need + rng.uniform(-4, 5), remaining/(3-idx)), 1) if idx < 2 else round(max(0, remaining), 1)
+        remaining -= allocated
+        plots.append({"plot": name, "minimum_need_mm": need, "allocated_mm": allocated, "marginal_return_brl_per_mm": marginal_return, "estimated_return_brl": round(allocated * marginal_return, 2)})
+    total_return = round(sum(p["estimated_return_brl"] for p in plots), 2)
+    return {
+        "module": "Pesquisa Operacional para irrigação e ROI",
+        "objective": "Distribuir água e insumos entre talhões priorizando retorno econômico e redução de risco.",
+        "method": "Otimização demonstrativa estilo CPLEX/PuLP com restrição de água total",
+        "metrics": {"total_available_water_mm": total_water_mm, "estimated_return_brl": total_return, "water_efficiency_score": round(_bounded(total_return/(total_water_mm*72), 0, 1), 3)},
+        "plots": plots,
+        "classification": "plano otimizado demonstrativo",
+        "recommendation": "Executar alocação recomendada e recalcular após nova leitura de umidade",
+        "data_products": ["plano de irrigação", "ROI por talhão", "cenário água escassa", "alerta de restrição"],
+    }
+
+
+def _simulate_hortifruti_module(rng: random.Random, scenario: str) -> Dict[str, Any]:
+    reference = {str(w): _bounded(0.28 + (i * 0.035) + rng.uniform(-0.025, 0.025), 0.08, 0.92) for i, w in enumerate(WAVELENGTHS_NM)}
+    spectral = simulate_wave_capture(reference, scenario, "hortifruti", seed=rng.randint(1, 10_000))
+    chlorophyll = round(_bounded(0.68 + rng.uniform(-0.12, 0.12) - (0.10 if scenario == "integrated_risk" else 0), 0.20, 0.96), 3)
+    maturity = round(_bounded(0.52 + rng.uniform(-0.14, 0.18), 0.10, 0.94), 3)
+    defect = round(_bounded(0.12 + rng.uniform(-0.06, 0.11) + (0.10 if scenario == "integrated_risk" else 0), 0, 0.50), 3)
+    score = round(_bounded(chlorophyll * 0.32 + (1-defect)*0.34 + (1-abs(maturity-0.58))*0.20 + (sum(ch.get("snr_db", 0) for ch in spectral["channels"]) / max(1, len(spectral["channels"])) / 180) * 0.14, 0, 1), 3)
+    return {
+        "module": "Hortifrúti",
+        "objective": "Triagem óptica, classificação de lotes e apoio ao controle de qualidade.",
+        "capture": "Reflectância portátil em folha/fruto + classificação por IA",
+        "spectral_capture": spectral,
+        "metrics": {"chlorophyll_proxy": chlorophyll, "maturity_index": maturity, "defect_risk": defect, "technical_score": score},
+        "classification": _risk_label(score),
+        "recommendation": "Separar lote para inspeção complementar" if score < 0.68 else "Lote apto para fluxo operacional demonstrativo",
+        "data_products": ["classe do lote", "histórico de qualidade", "priorização laboratorial", "rastreio de origem"],
+    }
+
+
+def _simulate_reports_and_governance(ecosystem_modules: List[Mapping[str, Any]], scenario: str) -> Dict[str, Any]:
+    average_score = round(sum(m.get("metrics", {}).get("technical_score", m.get("metrics", {}).get("water_efficiency_score", 0.72)) for m in ecosystem_modules if isinstance(m.get("metrics"), Mapping)) / max(1, len(ecosystem_modules)), 3)
+    return {
+        "module": "Dashboards, laudos, governança e documentação automática",
+        "objective": "Transformar captura de campo em histórico, indicadores, documentos técnicos e evidências verificáveis.",
+        "metrics": {
+            "ecosystem_score": average_score,
+            "modules_connected": len(ecosystem_modules),
+            "alerts_generated": sum(1 for m in ecosystem_modules if m.get("classification") in {"moderado", "alto"}),
+            "report_sections": 8,
+            "data_lineage_steps": 9,
+        },
+        "outputs": [
+            "dashboard por propriedade/talhão/lote",
+            "histórico de amostras e versões de modelos",
+            "laudo interpretável com limitações técnicas",
+            "trilha de evidência para auditoria Web3",
+            "documentação para investidor e piloto",
+        ],
+        "governance": [
+            "dados sintéticos no MVP; calibração real permanece proprietária",
+            "validação laboratorial necessária antes de uso comercial",
+            "hash registra integridade; dados sensíveis permanecem off-chain",
+            "versão do modelo e do firmware ficam registrados na evidência",
+        ],
+    }
+
+
+def build_complete_evolutionary_analysis(scenario: str = "normal", seed: int | None = 42) -> Dict[str, Any]:
+    """Simula a visão completa da Análise Evolutiva V11, mantendo o leite como caso Web3 central."""
+    if scenario not in SCENARIO_LABELS:
+        raise ValueError(f"Cenário inválido: {scenario}. Use: {', '.join(SCENARIO_LABELS)}")
+    rng = _scenario_rng(seed, scenario, salt=10_001)
+    milk_chain = build_full_chain_process(scenario=scenario, seed=seed)
+    milk_chain_evidence = build_chain_evidence(milk_chain)
+    droplet = _simulate_droplet_application(rng, scenario)
+    soil = _simulate_soil_module(rng, scenario)
+    root_yield = _simulate_root_and_yield(rng, soil, scenario)
+    irrigation = _simulate_irrigation_roi(rng, soil, root_yield, scenario)
+    hortifruti = _simulate_hortifruti_module(rng, scenario)
+    modules = [droplet, soil, root_yield, irrigation, hortifruti]
+    governance = _simulate_reports_and_governance(modules, scenario)
+    evidence_core = {
+        "scenario": scenario,
+        "milk_chain_hash": milk_chain_evidence["evidence_hash"],
+        "modules": [{"module": m["module"], "classification": m.get("classification"), "metrics": m.get("metrics", {})} for m in modules],
+        "firmware": SPECTROMETER_CONFIG["firmware"],
+        "created_at": utc_now(),
+    }
+    ecosystem_hash = sha256_payload(evidence_core)
+    investor_impact = build_investor_impact_model(scenario=scenario, seed=seed)
+    return {
+        "project": "Análise Evolutiva V11 - Ecossistema Agro/FoodTech Web3",
+        "scenario": scenario,
+        "scenario_label": SCENARIO_LABELS[scenario],
+        "thesis": {
+            "positioning": "Plataforma de IA óptica aplicada ao agro e aos alimentos, com rastreabilidade Web3 por evidência.",
+            "core_problem": "Análises de solo, leite, hortifrúti e aplicação de bioinsumos ainda são lentas, caras e pouco integradas ao histórico operacional.",
+            "investment_case": "SaaS + hardware + taxa por análise + consultoria técnica, formando base proprietária de dados ópticos por lote.",
+            "moat": ["base própria de imagens/espectros", "calibração contra métodos de referência", "histórico por lote", "integração edge/cloud", "trilha Web3 de evidências"],
+        },
+        "hardware_topology": {
+            "edge_devices": ["ESP32", "Raspberry Pi Pico 2W", "ESP32-CAM", "sensor AS7341", "NPK", "pH", "umidade", "ECe"],
+            "communication": ["HTTP/REST", "MQTT demonstrativo", "Wi-Fi local", "JSON assinado por lote"],
+            "capture_modes": ["imagem RGB/UV", "reflectância", "transmitância", "leitura NPK/pH/umidade/ECe", "metadados de lote"],
+        },
+        "edge_to_cloud_flow": [
+            "captura física por câmera/sensor/espectrofotômetro",
+            "pré-processamento no dispositivo ou gateway",
+            "envio HTTP/MQTT para backend Flask",
+            "extração de features e quimiometria",
+            "modelos de IA classificam risco/score",
+            "dashboard registra histórico e recomendações",
+            "evidência técnica é gerada em JSON canônico",
+            "hash SHA-256 é preparado para smart contract",
+            "verificação pública comprova integridade sem expor dado sensível",
+        ],
+        "modules": {
+            "bioinsumos_goticulas": droplet,
+            "solo_pastagem": soil,
+            "raiz_predicao_safra": root_yield,
+            "irrigacao_roi": irrigation,
+            "leite_web3": {
+                "module": "Leite e rastreabilidade Web3",
+                "objective": "Análise fotométrica/espectral, controle da cadeia fria, detecção de risco e evidência verificável.",
+                "milk_sample": milk_chain["milk_sample"],
+                "integrated_analysis": milk_chain["integrated_analysis"],
+                "spectrophotometer_session": milk_chain["spectrophotometer_session"],
+                "evidence_preview": {"hash": milk_chain_evidence["evidence_hash"], "evidence_id": milk_chain_evidence["evidence_id"]},
+            },
+            "hortifruti": hortifruti,
+            "dashboards_governanca": governance,
+        },
+        "web3_layer": {
+            "strategy": "off-chain para dados completos e on-chain para hash, status, versão e auditoria",
+            "ecosystem_evidence_hash": ecosystem_hash,
+            "milk_chain_evidence_hash": milk_chain_evidence["evidence_hash"],
+            "smart_contract": "AnaliseEvolutivaLeiteTrace.sol",
+            "privacy_note": "O MVP não publica dados sensíveis em blockchain; publica apenas prova de integridade.",
+        },
+        "investor_impact": investor_impact,
+        "roadmap_to_product": [
+            "piloto controlado com cooperativa/laticínio",
+            "coleta pareada com método laboratorial de referência",
+            "curvas de calibração por matriz e região",
+            "validação metrológica do protótipo óptico",
+            "painel multiusuário SaaS",
+            "registro Web3 em testnet/mainnet conforme custo e governança",
+        ],
+    }
+
+
+def build_complete_ecosystem_evidence(ecosystem: Mapping[str, Any]) -> Dict[str, Any]:
+    payload = {
+        "project": ecosystem.get("project"),
+        "scenario": ecosystem.get("scenario"),
+        "scenario_label": ecosystem.get("scenario_label"),
+        "web3_layer": ecosystem.get("web3_layer"),
+        "modules_summary": {
+            key: {
+                "module": value.get("module") if isinstance(value, Mapping) else key,
+                "classification": value.get("classification") if isinstance(value, Mapping) else None,
+                "metrics": value.get("metrics", {}) if isinstance(value, Mapping) else {},
+            }
+            for key, value in dict(ecosystem.get("modules", {})).items()
+        },
+        "created_at": utc_now(),
+    }
+    return {
+        "evidence_id": f"AE-ECO-{uuid.uuid4().hex[:12].upper()}",
+        "evidence_type": "complete_ecosystem_simulation",
+        "created_at": payload["created_at"],
+        "sample": {
+            "batch_id": f"AE-ECO-{ecosystem.get('scenario', 'normal')}",
+            "producer_id": "AE-PLATFORM-V11",
+            "producer_name": "Análise Evolutiva",
+        },
+        "analysis": {
+            "status": "ECOSSISTEMA_SIMULADO",
+            "compliance_score": payload.get("web3_layer", {}).get("ecosystem_evidence_hash", "")[:8],
+            "recommendation": "Evidência demonstrativa do ecossistema completo para avaliação técnica e investimento.",
+        },
+        "payload": payload,
+        "hash": sha256_payload(payload),
+        "evidence_hash": sha256_payload(payload),
+        "integrity_algorithm": "SHA-256 over canonical JSON",
+        "license_note": "MVP demonstrativo com dados sintéticos; calibração real, bases laboratoriais e modelos proprietários não estão incluídos.",
+    }
+
+
+
+def build_milk_chain_use_cases() -> Dict[str, Any]:
+    """Casos de uso comerciais da Análise Evolutiva para a cadeia do leite.
+
+    Estes dados representam a camada de produto/mercado que conecta a captura
+    espectrofotométrica, a análise técnica e a rastreabilidade Web3 aos desafios
+    reais de produtores, cooperativas, laticínios, distribuidores e investidores.
+    """
+    cases = [
+        {
+            "id": "a2a2",
+            "label": "A2A2",
+            "title": "Leite A2A2 Certificado",
+            "description": "Detecção de assinatura proteica A2A2 por espectroscopia e análise comparativa da amostra. O fluxo gera certificação de origem, trilha desde a ordenha e evidência digital para agregação de valor.",
+            "technical_signal": ["proteina_a2a2", "assinatura_espectral", "origem_do_lote", "historico_de_ordenha"],
+            "web3_value": "Hash do laudo e dos metadados do lote para prova de integridade da certificação.",
+            "impact": "Acesso a mercado premium e diferencial de marca, com potencial de agregação de valor de até 40% no preço percebido.",
+            "investor_angle": "Produto premium com maior margem, recorrência por certificação e expansão para selos de qualidade.",
+            "expected_gain_pct": 0.40,
+        },
+        {
+            "id": "organico",
+            "label": "Orgânico",
+            "title": "Leite de Propriedade Orgânica",
+            "description": "Rastreamento da alimentação, histórico de pastagem, conformidade produtiva e coerência entre solo, água, manejo e leite analisado.",
+            "technical_signal": ["solo_pastagem", "alimentacao", "agua", "leite", "conformidade_organica"],
+            "web3_value": "Prova de origem, histórico de conformidade e trilha auditável para certificação orgânica.",
+            "impact": "Certificação comprovada e valorização comercial de até 35% em canais de maior valor agregado.",
+            "investor_angle": "Vertical de certificação contínua, com assinatura SaaS, taxa por auditoria e base histórica do produtor.",
+            "expected_gain_pct": 0.35,
+        },
+        {
+            "id": "raca",
+            "label": "Raça",
+            "title": "Leite de Raça Específica",
+            "description": "Identificação de assinatura espectral associada a Jersey, Holandesa, Girolando, Guernsey ou composição específica do rebanho, cruzando proteína, gordura, composição e origem.",
+            "technical_signal": ["assinatura_espectral", "perfil_proteico", "perfil_lipidico", "origem_do_rebanho"],
+            "web3_value": "Rastreabilidade por raça, lote e propriedade, com prova de integridade do histórico produtivo.",
+            "impact": "Diferenciação no mercado e potencial de agregação de valor de até 30%.",
+            "investor_angle": "Segmentação premium e criação de produtos rastreados por identidade produtiva.",
+            "expected_gain_pct": 0.30,
+        },
+        {
+            "id": "fraude",
+            "label": "Fraude",
+            "title": "Detecção de Fraude",
+            "description": "Identificação de leite em pó adulterado, água adicionada, mistura com leite de outra origem e inconsistências na assinatura espectral do lote.",
+            "technical_signal": ["agua_adicionada", "solidos_totais", "perfil_uv_vis_nir", "inconsistencia_de_origem"],
+            "web3_value": "Blockchain registra a evidência, impedindo alteração posterior do laudo e fortalecendo a cadeia de custódia.",
+            "impact": "Elimina fraude, protege marca e fortalece conformidade auditável.",
+            "investor_angle": "Economia direta por perdas evitadas, seguro de qualidade e redução de contestação comercial.",
+            "expected_gain_pct": None,
+        },
+        {
+            "id": "contaminacao",
+            "label": "Contaminação",
+            "title": "Rastreamento de Contaminação",
+            "description": "Detecção precoce de contaminantes, patógenos indicativos, resíduos ou alteração físico-química por leitura espectral e correlação com água, alimentação e transporte.",
+            "technical_signal": ["turbidez", "temperatura", "agua", "residuos", "anomalia_espectral"],
+            "web3_value": "Histórico imutável para isolamento rápido de lotes comprometidos e auditoria sanitária.",
+            "impact": "Redução de desperdício de até 25%, segurança alimentar e menor tempo de resposta.",
+            "investor_angle": "Valor operacional alto para cooperativas e laticínios por reduzir descarte amplo e preservar lotes saudáveis.",
+            "expected_loss_reduction_pct": 0.25,
+        },
+        {
+            "id": "lote",
+            "label": "Lote",
+            "title": "Rastreabilidade de Lote",
+            "description": "Histórico completo de origem, propriedade, data, temperatura, transporte, análise espectrofotométrica, status técnico e QR Code público para verificação pelo consumidor ou auditor.",
+            "technical_signal": ["origem", "propriedade", "temperatura", "transporte", "hash_do_laudo", "qr_code"],
+            "web3_value": "Camada de verificação pública baseada em hash, status e timestamp do smart contract.",
+            "impact": "Transparência total, confiança do consumidor e redução de risco reputacional.",
+            "investor_angle": "Base para produto SaaS multiagente: produtor, laboratório, cooperativa, laticínio, fiscalização e varejo.",
+            "expected_gain_pct": None,
+        },
+    ]
+    return {
+        "project": "Análise Evolutiva Web3 — Cadeia Produtiva do Leite",
+        "source": "Camada de casos de uso comerciais extraída do posicionamento institucional da Análise Evolutiva.",
+        "summary": "Soluções específicas para A2A2, orgânico, raça, fraude, contaminação e rastreabilidade de lote, conectadas à espectrofotometria, IA e Web3.",
+        "cases": cases,
+        "platform_fit": {
+            "spectrophotometer": "Captura UV/VIS/NIR, corrente escura, branco/referência, ADC, sinal normalizado e absorbância.",
+            "ai_layer": "Classificação de conformidade, risco de fraude, risco sanitário, coerência de origem e score técnico.",
+            "web3_layer": "Registro de hash, status, timestamp e trilha de auditoria sem expor dados sensíveis da propriedade.",
+            "business_layer": "SaaS, taxa por análise, kit óptico, certificação, auditoria e licenciamento para cooperativas/laticínios.",
+        },
+        "investor_message": "O MVP deixa de ser apenas uma simulação técnica e passa a demonstrar produtos vendáveis com Web3: certificação premium, prevenção de fraude, rastreabilidade de lote e auditoria de qualidade com receita recorrente.",
+    }

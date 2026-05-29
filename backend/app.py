@@ -6,11 +6,11 @@ from typing import Any, Dict
 from flask import Flask, jsonify, render_template, request
 
 try:
-    from .core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_investor_impact_model, sample_to_dict, simulate_spectral_reading, tamper_check
+    from .core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_investor_impact_model, build_milk_chain_use_cases, sample_to_dict, simulate_spectral_reading, tamper_check
     from .db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
     from .web3_client import register_evidence
 except ImportError:  # permite executar com: cd backend && python app.py
-    from core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_investor_impact_model, sample_to_dict, simulate_spectral_reading, tamper_check
+    from core import analyze_milk_sample, build_chain_evidence, build_evidence, build_full_chain_process, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_complete_ecosystem_evidence, build_complete_evolutionary_analysis, build_investor_impact_model, build_milk_chain_use_cases, sample_to_dict, simulate_spectral_reading, tamper_check
     from db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
     from web3_client import register_evidence
 
@@ -38,6 +38,72 @@ def simulator_page():
 @app.get("/investidor")
 def investor_page():
     return render_template("investor.html")
+
+
+@app.get("/ecossistema")
+def ecosystem_page():
+    return render_template("ecosystem.html")
+
+
+
+
+@app.get("/casos-leite")
+def milk_use_cases_page():
+    return render_template("milk_use_cases.html")
+
+
+@app.get("/api/use-cases/milk")
+def api_milk_use_cases():
+    return jsonify(build_milk_chain_use_cases())
+
+
+@app.get("/site")
+def official_site_page():
+    return render_template(
+        "site.html",
+        site_url="https://www.analise-evolutiva.ia.br/",
+    )
+
+
+@app.get("/api/site/meta")
+def api_site_meta():
+    return jsonify({
+        "name": "Análise Evolutiva",
+        "official_site": "https://www.analise-evolutiva.ia.br/",
+        "integration_mode": "embedded_webview_with_external_fallback",
+        "purpose": "Disponibilizar o site institucional dentro do MVP HackWeb 3.0 e manter acesso direto à presença pública da Análise Evolutiva.",
+    })
+
+
+@app.post("/api/ecosystem/simulation")
+def api_ecosystem_simulation():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    try:
+        ecosystem = build_complete_evolutionary_analysis(
+            scenario=data.get("scenario", "normal"),
+            seed=data.get("seed", 42),
+        )
+        return jsonify(ecosystem)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.post("/api/ecosystem/evidence")
+def api_ecosystem_evidence():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    try:
+        ecosystem = build_complete_evolutionary_analysis(
+            scenario=data.get("scenario", "normal"),
+            seed=data.get("seed", 42),
+        )
+        evidence = build_complete_ecosystem_evidence(ecosystem)
+        tx = register_evidence(evidence)
+        save_evidence(evidence, tx)
+        return jsonify({"ecosystem": ecosystem, "evidence": evidence, "web3_registration": tx})
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": str(exc)}), 500
 
 
 @app.post("/api/investor/impact")

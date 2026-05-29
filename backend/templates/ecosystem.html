@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ecossistema Completo | Análise Evolutiva Web3</title>
+  <style>
+    :root{--bg:#07111f;--card:#0f1e32;--card2:#132842;--txt:#edf7ff;--muted:#a9bfd4;--cyan:#38d5ff;--green:#5ee2a0;--yellow:#ffd166;--red:#ff6b6b;--line:rgba(255,255,255,.12)}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,rgba(56,213,255,.16),transparent 32%),linear-gradient(180deg,#07111f,#0b1524);color:var(--txt)}
+    .wrap{width:min(1180px,calc(100% - 32px));margin:auto}.nav{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:18px 0}.nav a{color:var(--txt);text-decoration:none;margin-left:14px;font-weight:700}.hero{padding:48px 0 28px}.eyebrow{color:var(--cyan);font-weight:900;letter-spacing:.18em;text-transform:uppercase;font-size:.78rem}h1{font-size:clamp(2.2rem,6vw,5.1rem);line-height:.98;margin:12px 0;letter-spacing:-.06em}.lead{max-width:880px;color:var(--muted);font-size:1.1rem}.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}.btn,select,input{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#10243b;color:var(--txt);font-weight:800}.btn{cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--green));color:#06202b}.btn.secondary{background:#10243b;color:var(--txt)}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.035));border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.22)}.card h3{margin:0 0 10px}.metric{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:8px 0;color:var(--muted)}.metric b{color:var(--txt)}.wide{grid-column:1/-1}.flow{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-top:10px}.step{padding:12px;border:1px solid var(--line);border-radius:16px;background:#0c1b2e;color:var(--muted);font-size:.84rem}.hash{font-family:ui-monospace,Consolas,monospace;word-break:break-all;color:var(--green)}.module-title{display:flex;justify-content:space-between;gap:10px}.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 9px;color:var(--cyan);font-size:.78rem;font-weight:900}.risk-alto{color:var(--red)}.risk-moderado{color:var(--yellow)}.risk-baixo{color:var(--green)}canvas{width:100%;height:190px;background:#07111f;border-radius:16px;border:1px solid var(--line)}@media(max-width:900px){.grid{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.nav{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav"><strong>Análise Evolutiva Web3</strong><div><a href="/">Início</a><a href="/simulador">Simulador</a><a href="/investidor">Investidor</a><a href="/casos-leite">Casos do leite</a><a href="/site">Site institucional</a><a href="/casos-leite">Casos do leite</a></div></nav>
+    <section class="hero">
+      <div class="eyebrow">Ecossistema completo V11</div>
+      <h1>Do sensor ao retorno: solo, folha, raiz, leite, hortifrúti, irrigação e Web3.</h1>
+      <p class="lead">Esta visão integra tudo que a Análise Evolutiva propõe: IoT, visão computacional, quimiometria, espectrofotometria, machine learning, pesquisa operacional, dashboards, laudos e rastreabilidade por hash.</p>
+      <div class="toolbar">
+        <select id="scenario">
+          <option value="normal">Cadeia em conformidade</option>
+          <option value="integrated_risk">Risco integrado</option>
+          <option value="soil_moisture_stress">Estresse de solo/pastagem</option>
+          <option value="feed_risk">Risco na alimentação</option>
+          <option value="water_adulteration">Suspeita de água no leite</option>
+          <option value="temperature_break">Quebra de cadeia fria</option>
+        </select>
+        <input id="seed" type="number" value="42" aria-label="semente">
+        <button class="btn" onclick="runEco()">Simular ecossistema completo</button>
+        <button class="btn secondary" onclick="registerEvidence()">Gerar evidência Web3</button>
+      </div>
+    </section>
+    <main id="out" class="grid"></main>
+  </div>
+<script>
+const fmt = (v)=> typeof v==='number' ? (Math.round(v*1000)/1000).toLocaleString('pt-BR') : v;
+function riskClass(x){return 'risk-'+String(x||'').toLowerCase();}
+function card(title, body, cls=''){return `<article class="card ${cls}"><h3>${title}</h3>${body}</article>`}
+function metrics(obj){return Object.entries(obj||{}).map(([k,v])=>`<div class="metric"><span>${k}</span><b>${fmt(v)}</b></div>`).join('')}
+function moduleCard(key, m){let klass = m.classification || (m.integrated_analysis?m.integrated_analysis.status:'');let mt = m.metrics || (m.integrated_analysis?m.integrated_analysis:{});return card(`<span class="module-title"><span>${m.module||key}</span><span class="badge ${riskClass(klass)}">${klass||'ativo'}</span></span>`, `<p style="color:var(--muted)">${m.objective||''}</p>${metrics(mt)}<p style="color:var(--muted)"><b>Entrega:</b> ${(m.data_products||m.outputs||[]).slice(0,4).join(' • ')}</p>`)}
+function drawSpectral(canvas, cap){if(!canvas||!cap||!cap.channels)return; const ctx=canvas.getContext('2d'), w=canvas.width=canvas.clientWidth, h=canvas.height=190; ctx.clearRect(0,0,w,h); ctx.strokeStyle='#38d5ff';ctx.lineWidth=2;ctx.beginPath();cap.channels.forEach((c,i)=>{const x=20+i*(w-40)/(cap.channels.length-1), y=h-20-(c.normalized_signal||0)*130; if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();ctx.fillStyle='#a9bfd4';ctx.font='11px Segoe UI';ctx.fillText('sinal normalizado por canal',16,18)}
+async function runEco(){const payload={scenario:scenario.value,seed:Number(seed.value||42)};const r=await fetch('/api/ecosystem/simulation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json(); window.lastEco=d; render(d)}
+async function registerEvidence(){const payload={scenario:scenario.value,seed:Number(seed.value||42)};const r=await fetch('/api/ecosystem/evidence',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json(); window.lastEco=d.ecosystem; render(d.ecosystem, d.evidence, d.web3_registration)}
+function render(d, evidence=null, tx=null){const out=document.getElementById('out'); if(d.error){out.innerHTML=card('Erro',d.error,'wide'); return} let html=''; html+=card('Tese para investidor',`<p style="color:var(--muted)">${d.thesis.positioning}</p><p>${d.thesis.investment_case}</p><div class="hash">${d.web3_layer.ecosystem_evidence_hash}</div>`,'wide'); html+=card('Fluxo edge/cloud/Web3',`<div class="flow">${d.edge_to_cloud_flow.map(s=>`<div class="step">${s}</div>`).join('')}</div>`,'wide'); for(const [k,m] of Object.entries(d.modules)){html+=moduleCard(k,m)} html+=card('Topologia de hardware',`<p>${d.hardware_topology.edge_devices.join(' • ')}</p><p style="color:var(--muted)">${d.hardware_topology.communication.join(' • ')}</p>`); html+=card('Impacto comercial',`${metrics(d.investor_impact.kpis||{})}<p style="color:var(--muted)">${(d.investor_impact.revenue_streams||[]).join(' • ')}</p>`); html+=card('Roadmap',`<ol>${d.roadmap_to_product.map(x=>`<li>${x}</li>`).join('')}</ol>`); if(evidence){html+=card('Evidência Web3 gerada',`<div class="hash">${evidence.hash}</div><p>Status: ${tx.status} • Rede: ${tx.network}</p>`,'wide')} out.innerHTML=html; setTimeout(()=>{const soil=d.modules.solo_pastagem?.spectral_capture; const milk=d.modules.leite_web3?.spectrophotometer_session?.sample_cycles?.[3]?.capture; document.querySelectorAll('.card').forEach((el,i)=>{if(i===3&&soil){el.insertAdjacentHTML('beforeend','<canvas></canvas>');drawSpectral(el.querySelector('canvas'),soil)} if(i===6&&milk){el.insertAdjacentHTML('beforeend','<canvas></canvas>');drawSpectral(el.querySelector('canvas'),milk)}})},0)}
+runEco();
+</script>
+</body>
+</html>

@@ -540,6 +540,106 @@ def _capture_quality_summary(capture: Mapping[str, Any]) -> Dict[str, Any]:
     }
 
 
+
+def build_live_capture_sequence(session: Mapping[str, Any]) -> List[Dict[str, Any]]:
+    """Cria uma sequência operacional para simular a captura real do espectrofotômetro.
+
+    A sequência não é apenas o resultado final: ela representa o que o
+    equipamento faria na bancada, em ordem temporal: energização, auto-teste,
+    calibração escura, branco de referência, acionamento de cada LED, leitura
+    ADC, cálculo de absorbância, fechamento do pacote JSON e envio para a
+    camada de análise/rastreabilidade.
+    """
+
+    def event(
+        order: int,
+        phase: str,
+        message: str,
+        *,
+        matrix: str | None = None,
+        kind: str | None = None,
+        wavelength_nm: int | None = None,
+        led_bank: str | None = None,
+        led_state: str = "OFF",
+        led_current_ma: float | None = None,
+        exposure_ms: float | None = None,
+        dark_adc: float | None = None,
+        reference_adc: float | None = None,
+        sample_adc: float | None = None,
+        corrected_adc: float | None = None,
+        normalized_signal: float | None = None,
+        absorbance: float | None = None,
+        snr_db: float | None = None,
+        qc_label: str | None = None,
+        duration_ms: int = 70,
+    ) -> Dict[str, Any]:
+        return {
+            "event_id": f"EVT-{order:04d}",
+            "order": order,
+            "phase": phase,
+            "matrix": matrix,
+            "kind": kind,
+            "message": message,
+            "wavelength_nm": wavelength_nm,
+            "led_bank": led_bank,
+            "led_state": led_state,
+            "led_current_ma": led_current_ma,
+            "exposure_ms": exposure_ms,
+            "dark_adc": dark_adc,
+            "reference_adc": reference_adc,
+            "sample_adc": sample_adc,
+            "corrected_adc": corrected_adc,
+            "normalized_signal": normalized_signal,
+            "absorbance": absorbance,
+            "snr_db": snr_db,
+            "qc_label": qc_label,
+            "duration_ms": duration_ms,
+        }
+
+    events: List[Dict[str, Any]] = []
+    order = 1
+    events.append(event(order, "POWER_ON", "Energizando ESP32, sensor multicanal, detector e bancos de LED.", duration_ms=120)); order += 1
+    events.append(event(order, "BOOT", f"Firmware carregado: {session['equipment']['firmware']}.", duration_ms=90)); order += 1
+    for test in session.get("self_test", []):
+        events.append(event(order, "SELF_TEST", f"Auto-teste: {test['item']} — {test['status']} ({test['detail']}).", duration_ms=85)); order += 1
+    events.append(event(order, "THERMAL_STABILIZATION", "Estabilizando câmara óptica, ganho do detector e ruído eletrônico.", duration_ms=120)); order += 1
+
+    for cycle in session.get("sample_cycles", []):
+        matrix = cycle["matrix"]
+        kind = cycle["kind"]
+        events.append(event(order, "SAMPLE_INSERT", f"Inserindo {matrix} no {cycle['container']}: {cycle['sample_preparation']}.", matrix=matrix, kind=kind, duration_ms=120)); order += 1
+        events.append(event(order, "CHAMBER_LOCK", "Travando câmara escura e bloqueando luz ambiente.", matrix=matrix, kind=kind, duration_ms=80)); order += 1
+        mean_dark = round(_mean([float(ch.get("dark_adc", 0)) for ch in cycle.get("led_sweep", [])]), 2)
+        events.append(event(order, "DARK_CAPTURE", f"Capturando corrente escura de {matrix} com todos os LEDs desligados.", matrix=matrix, kind=kind, dark_adc=mean_dark, led_state="OFF", duration_ms=100)); order += 1
+        events.append(event(order, "WHITE_REFERENCE", f"Capturando branco/referência óptica para normalização de {matrix}.", matrix=matrix, kind=kind, duration_ms=100)); order += 1
+
+        for ch in cycle.get("led_sweep", []):
+            wl = int(ch["wavelength_nm"])
+            led_bank = "UV" if wl < 400 else "VIS" if wl < 700 else "NIR"
+            corrected = round(float(ch.get("sample_adc", 0)) - float(ch.get("dark_adc", 0)), 2)
+            msg = (
+                f"LED {led_bank} {wl} nm acionado; integração {ch.get('exposure_ms')} ms; "
+                f"ADC da amostra={ch.get('sample_adc')}; sinal normalizado={ch.get('normalized_signal')}."
+            )
+            events.append(event(
+                order, "CHANNEL_CAPTURE", msg,
+                matrix=matrix, kind=kind, wavelength_nm=wl, led_bank=led_bank, led_state="ON",
+                led_current_ma=ch.get("led_current_ma"), exposure_ms=ch.get("exposure_ms"),
+                dark_adc=ch.get("dark_adc"), reference_adc=ch.get("reference_adc"), sample_adc=ch.get("sample_adc"),
+                corrected_adc=corrected, normalized_signal=ch.get("normalized_signal"), absorbance=ch.get("absorbance"),
+                snr_db=ch.get("snr_db"), qc_label=ch.get("qc_label"), duration_ms=55,
+            )); order += 1
+
+        qc = cycle.get("quality_control", {})
+        events.append(event(order, "MATRIX_QC", f"Controle de qualidade de {matrix}: {qc.get('qc_label')} — SNR médio {qc.get('mean_snr_db')} dB.", matrix=matrix, kind=kind, qc_label=qc.get("qc_label"), duration_ms=90)); order += 1
+        events.append(event(order, "PACKET_READY", f"Pacote JSON de {matrix} pronto para envio HTTP ao backend Flask.", matrix=matrix, kind=kind, duration_ms=70)); order += 1
+
+    events.append(event(order, "ANALYSIS", "A Análise Evolutiva recebe os pacotes, integra leite, solo, água e alimentação e gera diagnóstico técnico.", duration_ms=110)); order += 1
+    events.append(event(order, "EVIDENCE_HASH", "Evidência digital completa montada off-chain; cálculo do hash SHA-256 para rastreabilidade.", duration_ms=95)); order += 1
+    events.append(event(order, "WEB3_REGISTER", "Hash preparado para registro Web3/smart contract e verificação pública.", duration_ms=95)); order += 1
+
+    return events
+
 def build_spectrophotometer_session(
     captures: Mapping[str, Mapping[str, Any]],
     scenario: str,
@@ -629,7 +729,7 @@ def build_spectrophotometer_session(
         })
 
     overall_valid = all(c["quality_control"]["valid_capture"] for c in sample_cycles)
-    return {
+    session_payload = {
         "session_id": session_id,
         "started_at": utc_now(),
         "scenario": scenario,
@@ -651,6 +751,8 @@ def build_spectrophotometer_session(
             "note": "Sessão sintética: em produção, estes controles devem ser validados por calibração metrológica e curvas laboratoriais.",
         },
     }
+    session_payload["live_sequence"] = build_live_capture_sequence(session_payload)
+    return session_payload
 
 
 def build_full_chain_process(scenario: str = "normal", seed: int | None = None) -> Dict[str, Any]:
@@ -763,7 +865,7 @@ def build_evidence(sample: Mapping[str, Any], analysis: AnalysisResult) -> Dict[
     payload = {
         "evidence_id": evidence_id,
         "project": "Análise Evolutiva Web3 — Cadeia Produtiva do Leite",
-        "version": "1.2.0-hackweb3-spectrometer-simulator",
+        "version": "1.3.0-hackweb3-live-spectrometer-capture",
         "created_at": utc_now(),
         "sample": sample,
         "analysis": asdict(analysis),
@@ -785,7 +887,7 @@ def build_chain_evidence(process: Mapping[str, Any]) -> Dict[str, Any]:
     payload = {
         "evidence_id": evidence_id,
         "project": "Análise Evolutiva Web3 — Cadeia Produtiva do Leite",
-        "version": "1.2.0-hackweb3-spectrometer-simulator",
+        "version": "1.3.0-hackweb3-live-spectrometer-capture",
         "created_at": utc_now(),
         "sample": milk_sample,
         "analysis": {

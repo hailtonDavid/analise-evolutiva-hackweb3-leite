@@ -71,6 +71,23 @@ def api_spectrometer_session():
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
 
+
+
+@app.post("/api/spectrometer/live-sequence")
+def api_spectrometer_live_sequence():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    scenario = data.get("scenario", "normal")
+    seed = data.get("seed")
+    try:
+        process = build_full_chain_process(scenario=scenario, seed=seed)
+        return jsonify({
+            "session_id": process["spectrophotometer_session"]["session_id"],
+            "scenario": scenario,
+            "live_sequence": process["spectrophotometer_session"].get("live_sequence", []),
+        })
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
 @app.post("/api/evidence/full-process")
 def api_create_full_process_evidence():
     data: Dict[str, Any] = request.get_json(silent=True) or {}

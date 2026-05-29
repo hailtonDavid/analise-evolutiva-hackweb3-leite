@@ -61,6 +61,31 @@
     .workflow-item { background:#071c2d; border:1px solid #1d4a68; border-radius:14px; padding:10px; color:#dffaff; font-size:12px; }
     .qc-ok { color:var(--good); font-weight:800; }
     .qc-warn { color:var(--warn); font-weight:800; }
+    .live-console { display:grid; grid-template-columns:1fr 1.2fr 1fr; gap:14px; align-items:stretch; }
+    .live-card { background:#061a2a; border:1px solid #1d4a68; border-radius:18px; padding:14px; min-height:190px; }
+    .live-card strong { display:block; margin-bottom:8px; color:#eaffff; }
+    .led-rack { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:10px; }
+    .led-dot { border:1px solid #245a78; border-radius:14px; padding:9px 6px; text-align:center; background:#041321; color:#a9c8d8; font-size:12px; transition:.18s ease; }
+    .led-dot span { display:block; width:16px; height:16px; margin:0 auto 5px; border-radius:50%; background:#24465a; box-shadow:none; }
+    .led-dot.active { color:#ffffff; transform:scale(1.06); border-color:#dffaff; }
+    .led-dot.active span { background:#42dcc6; box-shadow:0 0 20px rgba(66,220,198,.9); }
+    .led-dot.uv.active span { background:#ad7cff; box-shadow:0 0 20px rgba(173,124,255,.9); }
+    .led-dot.vis.active span { background:#42dcc6; box-shadow:0 0 20px rgba(66,220,198,.9); }
+    .led-dot.nir.active span { background:#ffb86b; box-shadow:0 0 20px rgba(255,184,107,.9); }
+    .live-beam { height:14px; margin:14px 0; border-radius:999px; background:#14344a; transition:.2s ease; }
+    .live-beam.on.uv { background:linear-gradient(90deg,#2b1555,#ad7cff,#f0e5ff); box-shadow:0 0 26px rgba(173,124,255,.75); }
+    .live-beam.on.vis { background:linear-gradient(90deg,#0e3a40,#42dcc6,#eaffff); box-shadow:0 0 26px rgba(66,220,198,.75); }
+    .live-beam.on.nir { background:linear-gradient(90deg,#3f2406,#ffb86b,#fff2d9); box-shadow:0 0 26px rgba(255,184,107,.75); }
+    .progress { height:12px; background:#041321; border:1px solid #1d4a68; border-radius:999px; overflow:hidden; margin-top:10px; }
+    .progress div { height:100%; width:0%; background:linear-gradient(90deg,#42dcc6,#91fff0); transition:.15s ease; }
+    .live-metrics { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:10px; }
+    .metric { background:#041321; border:1px solid #1d4a68; border-radius:12px; padding:9px; }
+    .metric span { display:block; color:#a9c8d8; font-size:11px; margin-bottom:4px; }
+    .metric b { font-size:18px; color:#eaffff; }
+    .packet { height:170px; overflow:auto; background:#041321; border:1px solid #1d4a68; border-radius:14px; padding:10px; font-family:Consolas,monospace; font-size:11px; color:#c9f7ff; white-space:pre-wrap; }
+    #liveScope { height:180px; }
+    @media(max-width:980px){ .live-console,.live-metrics { grid-template-columns:1fr; } .led-rack{grid-template-columns:repeat(3,1fr);} }
+
     @media(max-width:980px){ .grid-4,.grid-3,.grid-2,.controls,.timeline,.device,.workflow { grid-template-columns:1fr; } canvas{height:280px;} }
   </style>
 </head>
@@ -137,6 +162,38 @@
       </div>
     </section>
 
+
+
+    <section class="panel" style="margin-top:16px;">
+      <h2>Simulação viva da captura óptica</h2>
+      <p>Aqui o MVP simula o equipamento trabalhando como em bancada: cada LED é acionado, o detector lê corrente escura, referência e amostra, o ADC gera o valor bruto, o sinal é corrigido e a Análise Evolutiva recebe o pacote técnico da captura.</p>
+      <div class="live-console">
+        <div class="live-card">
+          <strong>Bancada de LEDs UV/VIS/NIR</strong>
+          <div id="ledRack" class="led-rack"></div>
+          <div id="liveBeam" class="live-beam"></div>
+          <div class="progress"><div id="liveProgressBar"></div></div>
+          <p class="notice" id="liveProgressText">0% do processo executado.</p>
+        </div>
+        <div class="live-card">
+          <strong id="livePhase">Aguardando início da captura</strong>
+          <canvas id="liveScope" width="760" height="260"></canvas>
+          <div class="live-metrics">
+            <div class="metric"><span>Matriz</span><b id="liveMatrix">—</b></div>
+            <div class="metric"><span>LED / comprimento</span><b id="liveLed">—</b></div>
+            <div class="metric"><span>ADC amostra</span><b id="liveAdc">—</b></div>
+            <div class="metric"><span>Sinal normalizado</span><b id="liveNorm">—</b></div>
+          </div>
+        </div>
+        <div class="live-card">
+          <strong>Pacote técnico da captura</strong>
+          <div id="livePacket" class="packet">Execute a simulação para ver o pacote enviado pelo ESP32 ao backend.</div>
+        </div>
+      </div>
+      <h3>Eventos em tempo real do espectrofotômetro</h3>
+      <div class="log" id="liveEvents"><div>Aguardando acionamento do equipamento.</div></div>
+    </section>
+
     <section class="panel" style="margin-top:16px;">
       <h2>Jornada rastreável da cadeia produtiva</h2>
       <div id="timeline" class="timeline"></div>
@@ -206,6 +263,8 @@
     timeline: document.getElementById('timeline'), diagnosis: document.getElementById('diagnosisText'), pills: document.getElementById('riskPills'), equipment: document.getElementById('equipmentTable'),
     channelTable: document.getElementById('channelTable'), summary: document.getElementById('summaryTable'), matrix: document.getElementById('matrixTable'), hash: document.getElementById('hashBox'), verify: document.getElementById('verifyLink'),
     telemetry: document.getElementById('telemetryTable'), workflow: document.getElementById('workflowBox'), deviceLeds: document.getElementById('deviceLeds'), deviceSample: document.getElementById('deviceSample'), deviceDetector: document.getElementById('deviceDetector'), deviceQc: document.getElementById('deviceQc'),
+    ledRack: document.getElementById('ledRack'), liveBeam: document.getElementById('liveBeam'), liveProgressBar: document.getElementById('liveProgressBar'), liveProgressText: document.getElementById('liveProgressText'),
+    livePhase: document.getElementById('livePhase'), liveMatrix: document.getElementById('liveMatrix'), liveLed: document.getElementById('liveLed'), liveAdc: document.getElementById('liveAdc'), liveNorm: document.getElementById('liveNorm'), livePacket: document.getElementById('livePacket'), liveEvents: document.getElementById('liveEvents'), liveScope: document.getElementById('liveScope'),
     log: document.getElementById('log'), chart: document.getElementById('waveChart')
   };
 
@@ -214,6 +273,96 @@
   function log(msg){ const d=document.createElement('div'); d.textContent=`${new Date().toLocaleTimeString()} • ${msg}`; els.log.prepend(d); }
   function getCapture(process, kind){ return kind === 'milk' ? process.milk_sample.spectrometer_capture : process[kind].capture; }
   function getAnalysis(process, kind){ return kind === 'milk' ? process.milk_analysis : process[kind].analysis; }
+
+
+  function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
+
+  function ledClass(wl){ if(Number(wl) < 400) return 'uv'; if(Number(wl) < 700) return 'vis'; return 'nir'; }
+
+  function initLedRack(){
+    if(!els.ledRack) return;
+    els.ledRack.innerHTML = wavelengths.map(wl => `<div class="led-dot ${ledClass(wl)}" data-wl="${wl}"><span></span>${wl} nm</div>`).join('');
+  }
+
+  function addLiveEvent(message){
+    const d = document.createElement('div');
+    d.textContent = `${new Date().toLocaleTimeString()} • ${message}`;
+    els.liveEvents.prepend(d);
+  }
+
+  function drawLiveScope(event){
+    const c = els.liveScope, ctx = c.getContext('2d');
+    const w = c.width, h = c.height;
+    ctx.fillStyle = '#041321'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle = '#1d4a68'; ctx.lineWidth = 1;
+    for(let i=0;i<=4;i++){ const y=20+(h-45)*i/4; ctx.beginPath(); ctx.moveTo(36,y); ctx.lineTo(w-20,y); ctx.stroke(); }
+    ctx.fillStyle = '#a9c8d8'; ctx.font = '12px Arial';
+    ctx.fillText('ADC / sinal óptico simulado', 36, 18);
+    const dark = Number(event.dark_adc || 0), ref = Number(event.reference_adc || 0), sample = Number(event.sample_adc || 0), corrected = Number(event.corrected_adc || 0);
+    const vals = [dark, ref, sample, corrected];
+    const labels = ['dark', 'referência', 'amostra', 'corrigido'];
+    const maxv = Math.max(65535, ...vals, 1);
+    vals.forEach((v,i)=>{
+      const barW = 92; const x = 55 + i*145; const bh = (v/maxv)*(h-70); const y = h-28-bh;
+      ctx.fillStyle = i===0 ? '#24465a' : i===1 ? '#76bfff' : i===2 ? '#42dcc6' : '#ffd166';
+      ctx.fillRect(x,y,barW,bh);
+      ctx.fillStyle = '#dffaff'; ctx.fillText(labels[i], x, h-10);
+      ctx.fillStyle = '#a9c8d8'; ctx.fillText(String(Math.round(v)), x, Math.max(32, y-8));
+    });
+  }
+
+  function updateLiveDevice(event, index, total){
+    const progress = total ? Math.round(((index+1)/total)*100) : 0;
+    els.liveProgressBar.style.width = `${progress}%`;
+    els.liveProgressText.textContent = `${progress}% do processo executado • ${event.event_id}`;
+    els.livePhase.textContent = `${event.phase} — ${event.message}`;
+    els.liveMatrix.textContent = event.matrix || 'equipamento';
+    els.liveLed.textContent = event.wavelength_nm ? `${event.led_bank} ${event.wavelength_nm} nm` : (event.led_state === 'OFF' ? 'LEDs desligados' : '—');
+    els.liveAdc.textContent = event.sample_adc ? Math.round(Number(event.sample_adc)).toString() : (event.dark_adc ? Math.round(Number(event.dark_adc)).toString() : '—');
+    els.liveNorm.textContent = event.normalized_signal ? Number(event.normalized_signal).toFixed(4) : '—';
+    document.querySelectorAll('.led-dot').forEach(dot => dot.classList.remove('active'));
+    els.liveBeam.className = 'live-beam';
+    if(event.led_state === 'ON' && event.wavelength_nm){
+      const dot = document.querySelector(`.led-dot[data-wl="${event.wavelength_nm}"]`);
+      if(dot) dot.classList.add('active');
+      els.liveBeam.classList.add('on', ledClass(event.wavelength_nm));
+    }
+    const packet = {
+      event_id: event.event_id,
+      phase: event.phase,
+      matrix: event.matrix,
+      wavelength_nm: event.wavelength_nm,
+      led_state: event.led_state,
+      led_current_ma: event.led_current_ma,
+      exposure_ms: event.exposure_ms,
+      dark_adc: event.dark_adc,
+      reference_adc: event.reference_adc,
+      sample_adc: event.sample_adc,
+      corrected_adc: event.corrected_adc,
+      normalized_signal: event.normalized_signal,
+      absorbance: event.absorbance,
+      snr_db: event.snr_db,
+      qc: event.qc_label
+    };
+    els.livePacket.textContent = JSON.stringify(packet, null, 2);
+    drawLiveScope(event);
+    addLiveEvent(event.message);
+  }
+
+  async function playLiveCapture(events){
+    if(!events || !events.length){ addLiveEvent('Sequência viva não disponível no payload.'); return; }
+    initLedRack();
+    els.liveEvents.innerHTML = '';
+    addLiveEvent('Iniciando simulação física do espectrofotômetro.');
+    for(let i=0;i<events.length;i++){
+      const ev = events[i];
+      updateLiveDevice(ev, i, events.length);
+      await sleep(Math.max(28, Math.min(Number(ev.duration_ms || 55), 140)));
+    }
+    document.querySelectorAll('.led-dot').forEach(dot => dot.classList.remove('active'));
+    els.liveBeam.className = 'live-beam';
+    addLiveEvent('Ciclo finalizado: dados ópticos enviados, analisados e preparados para rastreabilidade Web3.');
+  }
 
   function drawChart(capture){
     const c = els.chart, ctx = c.getContext('2d');
@@ -319,6 +468,8 @@
       if(!resp.ok) throw new Error(payload.error || 'Falha na simulação.');
       currentPayload = payload;
       const p = payload.process, ev = payload.evidence, tx = payload.web3_registration, ia = p.integrated_analysis, milk = p.milk_analysis;
+      log('Executando simulação viva: LEDs, câmara escura, ADC, absorbância e pacote JSON.');
+      await playLiveCapture(p.spectrophotometer_session.live_sequence || []);
       log(`Diagnóstico integrado final: ${ia.status}.`);
       log('Evidência completa gerada off-chain e hash SHA-256 preparado para smart contract.');
       log(`Registro Web3 concluído em modo ${tx.mode}.`);
@@ -357,11 +508,13 @@
     currentPayload = null;
     els.status.textContent='—'; els.status.className=''; els.score.textContent='—'; els.adulteration.textContent='—'; els.temp.textContent='—';
     els.timeline.innerHTML=''; els.diagnosis.textContent='Execute a simulação para gerar o diagnóstico integrado.'; els.pills.innerHTML='';
+    initLedRack(); els.liveProgressBar.style.width='0%'; els.liveProgressText.textContent='0% do processo executado.'; els.livePhase.textContent='Aguardando início da captura'; els.liveMatrix.textContent='—'; els.liveLed.textContent='—'; els.liveAdc.textContent='—'; els.liveNorm.textContent='—'; els.livePacket.textContent='Execute a simulação para ver o pacote enviado pelo ESP32 ao backend.'; els.liveEvents.innerHTML='<div>Aguardando acionamento do equipamento.</div>'; els.liveBeam.className='live-beam';
     els.equipment.innerHTML='<tr><th>Equipamento</th><td>—</td></tr>'; els.channelTable.innerHTML='<tr><td colspan="9">Execute uma simulação.</td></tr>';
     els.telemetry.innerHTML='<tr><th>Sessão</th><td>—</td></tr>'; els.workflow.innerHTML='<div class="workflow-item">Execute a simulação para visualizar o ciclo.</div>'; els.deviceSample.textContent='Aguardando amostra.'; els.deviceQc.textContent='QC: —';
     els.summary.innerHTML='<tr><th>Lote</th><td>—</td></tr>'; els.matrix.innerHTML='<tr><th>Matriz</th><td>—</td></tr>'; els.hash.textContent='Hash ainda não gerado.'; els.verify.innerHTML='';
     els.log.innerHTML='<div>Pronto para iniciar o processo.</div>';
     const ctx=els.chart.getContext('2d'); ctx.clearRect(0,0,els.chart.width,els.chart.height); ctx.fillStyle='#041321'; ctx.fillRect(0,0,els.chart.width,els.chart.height); ctx.fillStyle='#a9c8d8'; ctx.fillText('Execute a simulação para visualizar a captura das ondas.',40,40);
+    const lctx=els.liveScope.getContext('2d'); lctx.clearRect(0,0,els.liveScope.width,els.liveScope.height); lctx.fillStyle='#041321'; lctx.fillRect(0,0,els.liveScope.width,els.liveScope.height); lctx.fillStyle='#a9c8d8'; lctx.fillText('Aguardando acionamento dos LEDs e leitura ADC.',36,36);
   }
 
   document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => renderKind(btn.dataset.kind)));

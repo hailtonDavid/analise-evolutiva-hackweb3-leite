@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verificação de Evidência | Análise Evolutiva</title>
+  <style>
+    body { margin:0; font-family:Inter,Arial,sans-serif; background:#f7fbff; color:#0f172a; }
+    .wrap { width:min(980px, calc(100% - 40px)); margin:0 auto; padding:42px 0; }
+    .card { background:white; border:1px solid #dbeafe; border-radius:24px; padding:24px; box-shadow:0 18px 45px rgba(15,23,42,.08); margin-bottom:18px; }
+    h1 { font-size:clamp(2rem,4vw,3.4rem); letter-spacing:-.05em; line-height:1; }
+    code { word-break:break-all; }
+    .ok { color:#047857; font-weight:900; }
+    .bad { color:#b91c1c; font-weight:900; }
+    dt { font-weight:800; margin-top:12px; }
+    dd { margin:4px 0 10px; color:#475569; }
+    a { color:#2563eb; font-weight:800; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <a href="/">Voltar ao painel</a>
+    <h1>Verificação pública de evidência</h1>
+    {% if not found %}
+      <div class="card"><p class="bad">Evidência não encontrada.</p><code>{{ evidence_hash }}</code></div>
+    {% else %}
+      <div class="card">
+        <p class="{{ 'ok' if integrity.integro else 'bad' }}">Integridade: {{ 'confirmada' if integrity.integro else 'violada' }}</p>
+        <dl>
+          <dt>Amostra</dt><dd>{{ sample.sample_id }}</dd>
+          <dt>Lote</dt><dd>{{ sample.lot_id }}</dd>
+          <dt>Classificação</dt><dd>{{ sample.analysis.classificacao }}</dd>
+          <dt>Hash da evidência</dt><dd><code>{{ sample.evidence_hash }}</code></dd>
+          <dt>Transação simulada</dt><dd><code>{{ sample.blockchain.tx_hash }}</code></dd>
+          <dt>Recomendação</dt><dd>{{ sample.analysis.recomendacao }}</dd>
+        </dl>
+      </div>
+      <div class="card">
+        <h2>Cadeia registrada</h2>
+        <ol>
+        {% for stage in sample.chain %}
+          <li><strong>{{ stage.etapa }}</strong> — {{ stage.responsavel }} — {{ stage.local }}</li>
+        {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+services:
+  analise-evolutiva-web3:
+    build: ./backend
+    container_name: analise-evolutiva-hackweb3-mvp
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - FLASK_ENV=development

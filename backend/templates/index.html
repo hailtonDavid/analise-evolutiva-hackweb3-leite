@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Análise Evolutiva Web3 | Cadeia Produtiva do Leite</title>
+  <style>
+    :root { --bg:#f7fbff; --card:#ffffff; --text:#0f172a; --muted:#475569; --blue:#2563eb; --cyan:#0891b2; --green:#10b981; --border:#dbeafe; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,Arial,sans-serif; background:linear-gradient(180deg,#f7fbff,#eef8ff); color:var(--text); }
+    .wrap { width:min(1180px, calc(100% - 40px)); margin:0 auto; }
+    header { padding:48px 0 28px; }
+    .eyebrow { text-transform:uppercase; letter-spacing:.18em; color:var(--cyan); font-size:.78rem; font-weight:800; }
+    h1 { font-size:clamp(2.1rem,5vw,4.6rem); line-height:1; letter-spacing:-.06em; margin:12px 0 18px; }
+    .lead { max-width:900px; color:var(--muted); font-size:1.1rem; }
+    .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; margin:30px 0; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:22px; padding:20px; box-shadow:0 18px 45px rgba(15,23,42,.08); }
+    .card b { display:block; color:var(--blue); font-size:1.5rem; margin-bottom:8px; }
+    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; }
+    button, .btn { border:0; border-radius:14px; padding:13px 18px; font-weight:800; cursor:pointer; text-decoration:none; }
+    button { background:linear-gradient(135deg,#38bdf8,#34d399); color:#042f2e; }
+    .btn { background:#fff; color:#0f172a; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 18px 45px rgba(15,23,42,.08); }
+    th,td { padding:14px; border-bottom:1px solid #e2e8f0; text-align:left; font-size:.92rem; }
+    th { background:#eff6ff; color:#1e40af; }
+    code { word-break:break-all; }
+    .ok { color:#047857; font-weight:800; }
+    .warn { color:#b45309; font-weight:800; }
+    @media (max-width:900px){ .grid{grid-template-columns:1fr 1fr;} }
+    @media (max-width:620px){ .grid{grid-template-columns:1fr;} th:nth-child(4), td:nth-child(4){display:none;} }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <div class="eyebrow">HackWeb 3.0 | Web3 aplicada ao agro</div>
+    <h1>Análise Evolutiva para rastreabilidade da cadeia produtiva do leite.</h1>
+    <p class="lead">MVP funcional que simula a coleta do leite, a leitura multiespectral pelo espectrofotômetro, a análise automatizada, a geração do hash da evidência e o registro Web3 em modo demonstrativo.</p>
+    <div class="actions">
+      <button onclick="simular(false)">Simular lote conforme</button>
+      <button onclick="simular(true)">Simular lote suspeito</button>
+      <a class="btn" href="/api/amostras">Ver API JSON</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="grid">
+      <div class="card"><b>01</b>Coleta identificada na propriedade.</div>
+      <div class="card"><b>02</b>Leitura espectral AS7341 simulada.</div>
+      <div class="card"><b>03</b>Análise de conformidade do leite.</div>
+      <div class="card"><b>04</b>Hash e registro Web3 verificável.</div>
+    </section>
+
+    <section>
+      <h2>Amostras registradas</h2>
+      <table>
+        <thead><tr><th>Amostra</th><th>Lote</th><th>Status</th><th>Hash da evidência</th><th>Verificação</th></tr></thead>
+        <tbody>
+        {% for item in samples %}
+          <tr>
+            <td>{{ item.sample_id }}</td>
+            <td>{{ item.lot_id }}</td>
+            <td class="{{ 'warn' if 'Suspeita' in item.classification or 'Atencao' in item.classification else 'ok' }}">{{ item.classification }}</td>
+            <td><code>{{ item.evidence_hash }}</code></td>
+            <td><a href="/verificar/{{ item.evidence_hash }}">Abrir</a></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5">Nenhuma amostra gerada ainda. Use os botões acima para simular o processo.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    async function simular(adulterated) {
+      const payload = {
+        adulterated,
+        producer_name: adulterated ? "Produtor com lote em atenção" : "Produtor demonstrativo",
+        farm_name: "Fazenda Piloto do Leite",
+        city: "Goiás"
+      };
+      const res = await fetch('/api/amostras/simular', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+      if (!res.ok) { alert('Falha ao simular amostra'); return; }
+      location.reload();
+    }
+  </script>
+</body>
+</html>

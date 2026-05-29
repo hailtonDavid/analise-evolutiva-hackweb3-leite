@@ -1,133 +1,94 @@
 from __future__ import annotations
 
-import json
-import sqlite3
-from pathlib import Path
-from typing import Any, Dict, List
+import os
+from typing import Any, Dict
 
 from flask import Flask, jsonify, render_template, request
 
-from core import create_sample, verify_integrity
-
-BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "analise_evolutiva_mvp.sqlite3"
+try:
+    from .core import analyze_milk_sample, build_evidence, sample_to_dict, simulate_spectral_reading, tamper_check
+    from .db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
+    from .web3_client import register_evidence
+except ImportError:  # permite executar com: cd backend && python app.py
+    from core import analyze_milk_sample, build_evidence, sample_to_dict, simulate_spectral_reading, tamper_check
+    from db import get_evidence_by_hash, get_evidence_by_id, init_db, list_recent, save_evidence
+    from web3_client import register_evidence
 
 app = Flask(__name__)
+init_db()
 
 
-def get_conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-def init_db() -> None:
-    with get_conn() as conn:
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS samples (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                sample_id TEXT NOT NULL,
-                lot_id TEXT NOT NULL,
-                evidence_hash TEXT NOT NULL UNIQUE,
-                classification TEXT NOT NULL,
-                tx_hash TEXT NOT NULL,
-                payload_json TEXT NOT NULL,
-                created_at_utc TEXT NOT NULL
-            )
-            """
-        )
-        conn.commit()
-
-
-def insert_sample(sample: Dict[str, Any]) -> None:
-    with get_conn() as conn:
-        conn.execute(
-            """
-            INSERT OR REPLACE INTO samples
-            (sample_id, lot_id, evidence_hash, classification, tx_hash, payload_json, created_at_utc)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                sample["sample_id"],
-                sample["lot_id"],
-                sample["evidence_hash"],
-                sample["analysis"]["classificacao"],
-                sample["blockchain"]["tx_hash"],
-                json.dumps(sample, ensure_ascii=False),
-                sample["created_at_utc"],
-            ),
-        )
-        conn.commit()
-
-
-def list_samples(limit: int = 25) -> List[Dict[str, Any]]:
-    with get_conn() as conn:
-        rows = conn.execute(
-            "SELECT id, sample_id, lot_id, evidence_hash, classification, tx_hash, created_at_utc FROM samples ORDER BY id DESC LIMIT ?",
-            (limit,),
-        ).fetchall()
-    return [dict(row) for row in rows]
-
-
-def get_sample_by_hash(evidence_hash: str) -> Dict[str, Any] | None:
-    with get_conn() as conn:
-        row = conn.execute("SELECT payload_json FROM samples WHERE evidence_hash = ?", (evidence_hash,)).fetchone()
-    if row is None:
-        return None
-    return json.loads(row["payload_json"])
-
-
-@app.route("/")
+@app.get("/")
 def index():
-    samples = list_samples()
-    return render_template("index.html", samples=samples)
+    return render_template("index.html", recent=list_recent(8))
 
 
-@app.route("/api/amostras", methods=["GET"])
-def api_list_samples():
-    return jsonify({"items": list_samples()})
-
-
-@app.route("/api/amostras/simular", methods=["POST"])
-def api_simulate_sample():
-    data = request.get_json(silent=True) or {}
-    seed = data.get("seed")
-    adulterated = data.get("adulterated")
-    sample = create_sample(
-        seed=seed,
-        producer_name=data.get("producer_name", "Produtor demonstrativo"),
-        farm_name=data.get("farm_name", "Fazenda Piloto"),
-        city=data.get("city", "Goiás"),
-        adulterated=adulterated,
-    )
-    insert_sample(sample)
-    return jsonify(sample), 201
-
-
-@app.route("/api/verificar/<evidence_hash>", methods=["GET"])
-def api_verify(evidence_hash: str):
-    sample = get_sample_by_hash(evidence_hash)
-    if not sample:
-        return jsonify({"encontrado": False, "mensagem": "Evidencia nao encontrada."}), 404
-    integrity = verify_integrity(sample)
-    return jsonify({"encontrado": True, "integridade": integrity, "amostra": sample})
-
-
-@app.route("/verificar/<evidence_hash>", methods=["GET"])
-def verify_page(evidence_hash: str):
-    sample = get_sample_by_hash(evidence_hash)
-    if not sample:
-        return render_template("verify.html", found=False, evidence_hash=evidence_hash, sample=None, integrity=None), 404
-    integrity = verify_integrity(sample)
-    return render_template("verify.html", found=True, evidence_hash=evidence_hash, sample=sample, integrity=integrity)
-
-
-@app.route("/api/health", methods=["GET"])
+@app.get("/health")
 def health():
-    return jsonify({"status": "ok", "project": "Analise Evolutiva HackWeb 3.0 MVP"})
+    return jsonify({"status": "ok", "service": "analise-evolutiva-web3-leite"})
+
+
+@app.post("/api/samples/simulate")
+def api_simulate_sample():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    scenario = data.get("scenario", "normal")
+    seed = data.get("seed")
+    try:
+        sample = simulate_spectral_reading(scenario=scenario, seed=seed)
+        return jsonify(sample_to_dict(sample))
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+
+@app.post("/api/evidence")
+def api_create_evidence():
+    data: Dict[str, Any] = request.get_json(silent=True) or {}
+    if "spectral_reading" not in data:
+        return jsonify({"error": "Payload inválido. Envie uma amostra com spectral_reading."}), 400
+    try:
+        analysis = analyze_milk_sample(data)
+        evidence = build_evidence(data, analysis)
+        tx = register_evidence(evidence)
+        save_evidence(evidence, tx)
+        return jsonify({"evidence": evidence, "web3_registration": tx})
+    except Exception as exc:  # pragma: no cover - retorno seguro para demonstração
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.post("/demo/run")
+def demo_run_form():
+    scenario = request.form.get("scenario", "normal")
+    sample = sample_to_dict(simulate_spectral_reading(scenario=scenario, seed=None))
+    analysis = analyze_milk_sample(sample)
+    evidence = build_evidence(sample, analysis)
+    tx = register_evidence(evidence)
+    save_evidence(evidence, tx)
+    return render_template("evidence.html", evidence=evidence, tx=tx, valid=tamper_check(evidence))
+
+
+@app.get("/api/evidence/<evidence_id>")
+def api_get_evidence(evidence_id: str):
+    evidence = get_evidence_by_id(evidence_id)
+    if evidence is None:
+        return jsonify({"error": "Evidência não encontrada."}), 404
+    return jsonify(evidence)
+
+
+@app.get("/api/verify/<evidence_hash>")
+def api_verify(evidence_hash: str):
+    evidence = get_evidence_by_hash(evidence_hash)
+    if evidence is None:
+        return jsonify({"exists": False, "valid": False, "evidence_hash": evidence_hash}), 404
+    return jsonify({"exists": True, "valid": tamper_check(evidence), "evidence": evidence})
+
+
+@app.get("/verify/<evidence_hash>")
+def verify_page(evidence_hash: str):
+    evidence = get_evidence_by_hash(evidence_hash)
+    return render_template("verify.html", evidence=evidence, evidence_hash=evidence_hash, valid=tamper_check(evidence) if evidence else False)
 
 
 if __name__ == "__main__":
-    init_db()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    host = os.getenv("FLASK_HOST", "127.0.0.1")
+    port = int(os.getenv("FLASK_PORT", "5000"))
+    app.run(host=host, port=port, debug=os.getenv("APP_ENV") == "development")

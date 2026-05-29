@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evidência registrada</title>
+  <style>
+    body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#071827; color:#eaf8ff; }
+    main { max-width:1000px; margin:auto; padding:30px 20px; }
+    .card { background:#0d253a; border:1px solid #1d4a68; border-radius:20px; padding:20px; margin:16px 0; }
+    .ok { color:#41d3bd; font-weight:700; }
+    .warn { color:#ffd166; font-weight:700; }
+    .bad { color:#ff6b6b; font-weight:700; }
+    pre { white-space:pre-wrap; word-break:break-word; background:#061523; padding:16px; border-radius:14px; color:#c7f7ff; }
+    a { color:#41d3bd; }
+    table { width:100%; border-collapse:collapse; }
+    td { padding:10px; border-bottom:1px solid #1d4a68; }
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="/">← voltar</a></p>
+  <h1>Evidência digital registrada</h1>
+  <div class="card">
+    <table>
+      <tr><td>Lote</td><td>{{ evidence.sample.batch_id }}</td></tr>
+      <tr><td>Produtor</td><td>{{ evidence.sample.producer_id }} — {{ evidence.sample.producer_name }}</td></tr>
+      <tr><td>Status</td><td><span class="{% if evidence.analysis.status == 'APROVADO' %}ok{% elif evidence.analysis.status == 'ATENÇÃO' %}warn{% else %}bad{% endif %}">{{ evidence.analysis.status }}</span></td></tr>
+      <tr><td>Score de conformidade</td><td>{{ evidence.analysis.compliance_score }}</td></tr>
+      <tr><td>Hash da evidência</td><td><pre>{{ evidence.evidence_hash }}</pre></td></tr>
+      <tr><td>Transaction hash</td><td><pre>{{ tx.transaction_hash }}</pre></td></tr>
+      <tr><td>Modo Web3</td><td>{{ tx.mode }}</td></tr>
+      <tr><td>Integridade local</td><td>{{ 'válida' if valid else 'inválida' }}</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Verificação pública</h2>
+    <p>Compartilhe este link para permitir a verificação da integridade da evidência:</p>
+    <p><a href="/verify/{{ evidence.evidence_hash }}">/verify/{{ evidence.evidence_hash }}</a></p>
+  </div>
+  <div class="card">
+    <h2>Recomendação técnica</h2>
+    <p>{{ evidence.analysis.recommendation }}</p>
+  </div>
+</main>
+</body>
+</html>

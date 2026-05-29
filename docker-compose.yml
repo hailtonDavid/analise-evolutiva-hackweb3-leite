@@ -1,10 +1,17 @@
 services:
   analise-evolutiva-web3:
-    build: ./backend
-    container_name: analise-evolutiva-hackweb3-mvp
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: analise-evolutiva-web3-leite
     ports:
       - "5000:5000"
-    volumes:
-      - ./backend:/app
     environment:
-      - FLASK_ENV=development
+      - APP_ENV=production
+      - WEB3_MODE=simulated
+      - DATABASE_URL=sqlite:////app/data/analise_evolutiva.db
+    volumes:
+      - ae_data:/app/data
+
+volumes:
+  ae_data:

@@ -1,49 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Verificação de Evidência | Análise Evolutiva</title>
+  <title>Verificação pública</title>
   <style>
-    body { margin:0; font-family:Inter,Arial,sans-serif; background:#f7fbff; color:#0f172a; }
-    .wrap { width:min(980px, calc(100% - 40px)); margin:0 auto; padding:42px 0; }
-    .card { background:white; border:1px solid #dbeafe; border-radius:24px; padding:24px; box-shadow:0 18px 45px rgba(15,23,42,.08); margin-bottom:18px; }
-    h1 { font-size:clamp(2rem,4vw,3.4rem); letter-spacing:-.05em; line-height:1; }
-    code { word-break:break-all; }
-    .ok { color:#047857; font-weight:900; }
-    .bad { color:#b91c1c; font-weight:900; }
-    dt { font-weight:800; margin-top:12px; }
-    dd { margin:4px 0 10px; color:#475569; }
-    a { color:#2563eb; font-weight:800; }
+    body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#071827; color:#eaf8ff; }
+    main { max-width:900px; margin:auto; padding:30px 20px; }
+    .card { background:#0d253a; border:1px solid #1d4a68; border-radius:20px; padding:20px; margin:16px 0; }
+    .ok { color:#41d3bd; font-weight:700; }
+    .bad { color:#ff6b6b; font-weight:700; }
+    pre { white-space:pre-wrap; word-break:break-word; background:#061523; padding:16px; border-radius:14px; }
+    a { color:#41d3bd; }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <a href="/">Voltar ao painel</a>
-    <h1>Verificação pública de evidência</h1>
-    {% if not found %}
-      <div class="card"><p class="bad">Evidência não encontrada.</p><code>{{ evidence_hash }}</code></div>
-    {% else %}
-      <div class="card">
-        <p class="{{ 'ok' if integrity.integro else 'bad' }}">Integridade: {{ 'confirmada' if integrity.integro else 'violada' }}</p>
-        <dl>
-          <dt>Amostra</dt><dd>{{ sample.sample_id }}</dd>
-          <dt>Lote</dt><dd>{{ sample.lot_id }}</dd>
-          <dt>Classificação</dt><dd>{{ sample.analysis.classificacao }}</dd>
-          <dt>Hash da evidência</dt><dd><code>{{ sample.evidence_hash }}</code></dd>
-          <dt>Transação simulada</dt><dd><code>{{ sample.blockchain.tx_hash }}</code></dd>
-          <dt>Recomendação</dt><dd>{{ sample.analysis.recomendacao }}</dd>
-        </dl>
-      </div>
-      <div class="card">
-        <h2>Cadeia registrada</h2>
-        <ol>
-        {% for stage in sample.chain %}
-          <li><strong>{{ stage.etapa }}</strong> — {{ stage.responsavel }} — {{ stage.local }}</li>
-        {% endfor %}
-        </ol>
-      </div>
-    {% endif %}
-  </main>
+<main>
+  <p><a href="/">← voltar</a></p>
+  <h1>Verificação pública de evidência</h1>
+  {% if evidence %}
+    <div class="card">
+      <h2 class="ok">Evidência encontrada</h2>
+      <p>Integridade local: <strong>{{ 'válida' if valid else 'inválida' }}</strong></p>
+      <p>Lote: <strong>{{ evidence.sample.batch_id }}</strong></p>
+      <p>Status: <strong>{{ evidence.analysis.status }}</strong></p>
+      <p>Hash:</p>
+      <pre>{{ evidence.evidence_hash }}</pre>
+      <p>Transaction hash:</p>
+      <pre>{{ evidence.transaction_hash }}</pre>
+    </div>
+  {% else %}
+    <div class="card">
+      <h2 class="bad">Evidência não encontrada</h2>
+      <p>O hash informado não foi localizado na base deste MVP.</p>
+      <pre>{{ evidence_hash }}</pre>
+    </div>
+  {% endif %}
+</main>
 </body>
 </html>

@@ -1,29 +1,56 @@
-# Arquitetura do MVP
+# Arquitetura técnica
+
+## Objetivo
+
+Demonstrar um fluxo Web3 aplicado à cadeia produtiva do leite, no qual a própria Análise Evolutiva realiza a análise da amostra com base em leitura espectrofotométrica e gera uma evidência digital rastreável.
+
+## Camadas
+
+### 1. Coleta e leitura espectrofotométrica
+
+No MVP, a leitura é simulada. Em evolução produtiva, o módulo pode receber dados reais de um espectrofotômetro multiespectral, incluindo comprimentos de onda como 415, 445, 480, 515, 555, 590, 630, 680 e 910 nm.
+
+### 2. Análise técnica
+
+O backend executa regras demonstrativas para calcular:
+
+- consistência espectral;
+- risco de adulteração por água;
+- risco por quebra de temperatura;
+- índice de sólidos;
+- score de conformidade;
+- status final do lote.
+
+### 3. Evidência digital
+
+O resultado da análise é consolidado em JSON canônico. O sistema calcula o SHA-256 do conteúdo para criar uma prova de integridade.
+
+### 4. Registro Web3
+
+A arquitetura usa o padrão:
 
 ```text
-[Produtor / Fazenda]
-        |
-        v
-[Coleta da Amostra de Leite]
-        |
-        v
-[Espectrofotômetro Multiespectral]
-        |  leitura AS7341 simulada: 415nm a 910nm
-        v
-[Backend Flask]
-        |  análise, classificação, armazenamento
-        v
-[Hash SHA-256 da Evidência]
-        |
-        +------------------> [SQLite / Histórico]
-        |
-        v
-[Smart Contract Solidity]
-        |  registra hash + metadados mínimos
-        v
-[Verificação Pública]
+evidência completa off-chain + hash on-chain
 ```
 
-## Decisão técnica
+Isso preserva privacidade, reduz custo e mantém auditabilidade.
 
-O laudo completo não deve ser gravado na blockchain. O sistema registra o hash e metadados mínimos. Assim, reduz custo, preserva privacidade e permite auditoria da integridade do documento.
+### 5. Smart contract
+
+O contrato Solidity registra:
+
+- hash da evidência;
+- identificador do lote;
+- identificador do produtor;
+- URI/referência do laudo;
+- status da análise;
+- registrador;
+- timestamp do bloco.
+
+### 6. Verificação pública
+
+A tela `/verify/<hash>` permite verificar se uma evidência foi registrada e se o hash local ainda confere com o conteúdo salvo.
+
+## Decisão arquitetural
+
+O MVP usa modo Web3 simulado no backend para permitir avaliação imediata sem carteira, chave privada ou RPC. O smart contract real está incluso e testável via Hardhat.

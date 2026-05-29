@@ -1,75 +1,72 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.24;
 
 /// @title AnaliseEvolutivaLeiteTrace
-/// @notice Smart contract demonstrativo para registrar evidencias da cadeia produtiva do leite.
-/// @dev O arquivo bruto do laudo nao entra na blockchain. Registra-se apenas o hash e metadados minimos.
+/// @notice Registro Web3 de evidências da cadeia produtiva do leite.
+/// @dev O contrato registra apenas o hash da evidência e metadados mínimos.
 contract AnaliseEvolutivaLeiteTrace {
-    enum EvidenceStatus { Pendente, Registrado, Validado, Reprovado }
-
     struct Evidence {
-        string sampleId;
-        string lotId;
-        string evidenceHash;
-        string classification;
-        string metadataURI;
-        address submitter;
-        uint256 createdAt;
-        EvidenceStatus status;
+        bytes32 evidenceHash;
+        string batchId;
+        string producerId;
+        string analysisURI;
+        string status;
+        address registrar;
+        uint256 registeredAt;
+        bool exists;
     }
 
-    mapping(string => Evidence) private evidences;
-    string[] private evidenceHashes;
+    mapping(bytes32 => Evidence) private evidences;
 
     event EvidenceRegistered(
-        string indexed evidenceHash,
-        string sampleId,
-        string lotId,
-        string classification,
-        address indexed submitter,
-        uint256 createdAt
+        bytes32 indexed evidenceHash,
+        string batchId,
+        string producerId,
+        string status,
+        address indexed registrar,
+        uint256 registeredAt
     );
 
-    event EvidenceStatusChanged(string indexed evidenceHash, EvidenceStatus status, uint256 updatedAt);
+    error EvidenceAlreadyRegistered(bytes32 evidenceHash);
+    error EvidenceNotFound(bytes32 evidenceHash);
+    error EmptyHash();
 
     function registerEvidence(
-        string calldata sampleId,
-        string calldata lotId,
-        string calldata evidenceHash,
-        string calldata classification,
-        string calldata metadataURI
+        bytes32 evidenceHash,
+        string calldata batchId,
+        string calldata producerId,
+        string calldata analysisURI,
+        string calldata status
     ) external {
-        require(bytes(evidenceHash).length > 0, "hash obrigatorio");
-        require(evidences[evidenceHash].createdAt == 0, "evidencia ja registrada");
+        if (evidenceHash == bytes32(0)) {
+            revert EmptyHash();
+        }
+        if (evidences[evidenceHash].exists) {
+            revert EvidenceAlreadyRegistered(evidenceHash);
+        }
 
         evidences[evidenceHash] = Evidence({
-            sampleId: sampleId,
-            lotId: lotId,
             evidenceHash: evidenceHash,
-            classification: classification,
-            metadataURI: metadataURI,
-            submitter: msg.sender,
-            createdAt: block.timestamp,
-            status: EvidenceStatus.Registrado
+            batchId: batchId,
+            producerId: producerId,
+            analysisURI: analysisURI,
+            status: status,
+            registrar: msg.sender,
+            registeredAt: block.timestamp,
+            exists: true
         });
 
-        evidenceHashes.push(evidenceHash);
-        emit EvidenceRegistered(evidenceHash, sampleId, lotId, classification, msg.sender, block.timestamp);
+        emit EvidenceRegistered(evidenceHash, batchId, producerId, status, msg.sender, block.timestamp);
     }
 
-    function updateStatus(string calldata evidenceHash, EvidenceStatus status) external {
-        require(evidences[evidenceHash].createdAt != 0, "evidencia inexistente");
-        require(evidences[evidenceHash].submitter == msg.sender, "somente o registrante pode atualizar no MVP");
-        evidences[evidenceHash].status = status;
-        emit EvidenceStatusChanged(evidenceHash, status, block.timestamp);
+    function exists(bytes32 evidenceHash) external view returns (bool) {
+        return evidences[evidenceHash].exists;
     }
 
-    function getEvidence(string calldata evidenceHash) external view returns (Evidence memory) {
-        require(evidences[evidenceHash].createdAt != 0, "evidencia inexistente");
+    function getEvidence(bytes32 evidenceHash) external view returns (Evidence memory) {
+        if (!evidences[evidenceHash].exists) {
+            revert EvidenceNotFound(evidenceHash);
+        }
         return evidences[evidenceHash];
-    }
-
-    function totalEvidences() external view returns (uint256) {
-        return evidenceHashes.length;
     }
 }

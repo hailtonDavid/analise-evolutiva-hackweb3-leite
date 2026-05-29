@@ -1,0 +1,18 @@
+[
+  {
+    "scenario": "normal",
+    "description": "Lote dentro do comportamento espectral esperado."
+  },
+  {
+    "scenario": "water_adulteration",
+    "description": "Lote com indício simulado de diluição/adulteração."
+  },
+  {
+    "scenario": "temperature_break",
+    "description": "Lote com quebra simulada na cadeia fria."
+  },
+  {
+    "scenario": "high_solids",
+    "description": "Lote com índice simulado de sólidos elevados."
+  }
+]

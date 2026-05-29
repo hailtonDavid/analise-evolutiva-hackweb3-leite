@@ -1,196 +1,283 @@
+"""Núcleo técnico do MVP Análise Evolutiva Web3.
+
+O objetivo deste módulo é simular uma leitura espectrofotométrica do leite,
+gerar uma análise técnica demonstrativa e produzir uma evidência digital
+com hash criptográfico para rastreabilidade Web3.
 """
-Nucleo do MVP HackWeb 3.0 - Analise Evolutiva.
-Simula a cadeia produtiva do leite, a leitura espectral por espectrofotometro,
-a classificacao por regras/IA simplificada e a geracao de evidencia rastreavel.
-"""
+
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 import random
-from dataclasses import dataclass, asdict
+import uuid
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Mapping
 
-SPECTRAL_CHANNELS_NM = [415, 445, 480, 515, 555, 590, 630, 680, 730, 850, 910]
+WAVELENGTHS_NM = [415, 445, 480, 515, 555, 590, 630, 680, 910]
+
+REFERENCE_PROFILE = {
+    "415": 0.72,
+    "445": 0.69,
+    "480": 0.65,
+    "515": 0.61,
+    "555": 0.57,
+    "590": 0.52,
+    "630": 0.48,
+    "680": 0.43,
+    "910": 0.34,
+}
+
+SCENARIO_FACTORS = {
+    "normal": 1.0,
+    "water_adulteration": 0.82,
+    "temperature_break": 0.92,
+    "high_solids": 1.08,
+}
 
 
 @dataclass(frozen=True)
-class ChainStage:
-    etapa: str
-    responsavel: str
-    local: str
-    timestamp_utc: str
-    observacao: str
+class TraceStep:
+    stage: str
+    actor: str
+    timestamp: str
+    location: str
+    metadata: Dict[str, Any]
 
 
 @dataclass(frozen=True)
-class MilkAnalysis:
-    classificacao: str
-    score_conformidade: float
-    score_adulteracao: float
-    parametros: Dict[str, float]
-    recomendacao: str
+class SpectralSample:
+    batch_id: str
+    producer_id: str
+    producer_name: str
+    collection_point: str
+    cooperative: str
+    equipment_id: str
+    scenario: str
+    temperature_celsius: float
+    spectral_reading: Dict[str, float]
+    traceability: List[TraceStep]
+
+
+@dataclass(frozen=True)
+class AnalysisResult:
+    status: str
+    compliance_score: float
+    spectral_consistency: float
+    water_adulteration_risk: float
+    temperature_risk: float
+    solids_index: float
+    recommendation: str
 
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-def canonical_json(data: Dict[str, Any]) -> str:
-    return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+def canonical_json(payload: Mapping[str, Any]) -> str:
+    """Retorna JSON canônico para cálculo de hash estável."""
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
-def sha256_hex(data: Dict[str, Any] | str) -> str:
-    if isinstance(data, dict):
-        data = canonical_json(data)
-    return hashlib.sha256(data.encode("utf-8")).hexdigest()
+def sha256_payload(payload: Mapping[str, Any]) -> str:
+    return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
 
 
-def simulate_spectral_reading(seed: Optional[int] = None, adulterated: Optional[bool] = None) -> Dict[str, Any]:
-    """Gera uma leitura multiespectral plausivel para demonstracao.
+def _bounded(value: float, minimum: float = 0.0, maximum: float = 1.0) -> float:
+    return max(minimum, min(maximum, value))
 
-    A simulacao nao substitui calibracao laboratorial. Ela serve para o MVP: demonstrar
-    o fluxo de aquisicao, analise, hash, registro e verificacao.
+
+def simulate_spectral_reading(scenario: str = "normal", seed: int | None = None) -> SpectralSample:
+    """Gera uma amostra simulada de leitura espectrofotométrica.
+
+    Cenários aceitos:
+    - normal
+    - water_adulteration
+    - temperature_break
+    - high_solids
     """
+    if scenario not in SCENARIO_FACTORS:
+        raise ValueError(f"Cenário inválido: {scenario}")
+
     rng = random.Random(seed)
-    if adulterated is None:
-        adulterated = rng.random() < 0.28
+    factor = SCENARIO_FACTORS[scenario]
+    spectral: Dict[str, float] = {}
 
-    base = {
-        415: 0.78, 445: 0.81, 480: 0.84, 515: 0.86, 555: 0.88,
-        590: 0.85, 630: 0.79, 680: 0.73, 730: 0.69, 850: 0.61, 910: 0.56,
-    }
+    for wavelength in WAVELENGTHS_NM:
+        base = REFERENCE_PROFILE[str(wavelength)]
+        noise = rng.uniform(-0.018, 0.018)
+        if scenario == "water_adulteration" and wavelength in (680, 910):
+            noise -= 0.035
+        if scenario == "high_solids" and wavelength in (415, 445, 480):
+            noise += 0.025
+        spectral[str(wavelength)] = round(_bounded(base * factor + noise, 0.05, 1.25), 4)
 
-    channels: Dict[str, float] = {}
-    for nm in SPECTRAL_CHANNELS_NM:
-        noise = rng.uniform(-0.025, 0.025)
-        value = base[nm] + noise
-        if adulterated:
-            if nm in (850, 910):
-                value += rng.uniform(0.08, 0.15)
-            if nm in (415, 445, 480):
-                value -= rng.uniform(0.03, 0.07)
-        channels[str(nm)] = round(max(0.0, min(1.0, value)), 4)
+    temperature = {
+        "normal": rng.uniform(3.2, 5.5),
+        "water_adulteration": rng.uniform(4.0, 6.2),
+        "temperature_break": rng.uniform(9.0, 13.5),
+        "high_solids": rng.uniform(3.0, 5.0),
+    }[scenario]
 
-    temperatura_c = round(rng.uniform(3.0, 7.8) + (rng.uniform(2.0, 5.0) if adulterated and rng.random() < 0.35 else 0), 2)
-    ph = round(rng.uniform(6.55, 6.82) + (rng.uniform(-0.25, 0.18) if adulterated else 0), 2)
-    condutividade_ms_cm = round(rng.uniform(4.0, 5.8) + (rng.uniform(0.8, 1.8) if adulterated else 0), 2)
+    batch_id = f"LEITE-{datetime.now().strftime('%Y%m%d')}-{rng.randint(1000, 9999)}"
+    producer_id = f"PROD-{rng.randint(100, 999)}"
+    now = utc_now()
 
-    return {
-        "sensor": "AS7341-simulado",
-        "comprimentos_onda_nm": SPECTRAL_CHANNELS_NM,
-        "leituras_normalizadas": channels,
-        "temperatura_c": temperatura_c,
-        "ph": ph,
-        "condutividade_ms_cm": condutividade_ms_cm,
-        "perfil_simulado": "adulterado" if adulterated else "conforme",
-    }
+    traceability = [
+        TraceStep(
+            stage="coleta",
+            actor="Produtor rural",
+            timestamp=now,
+            location="Propriedade leiteira simulada",
+            metadata={"volume_litros": rng.randint(900, 2200), "tanque": f"TQ-{rng.randint(1, 6)}"},
+        ),
+        TraceStep(
+            stage="transporte",
+            actor="Transportador credenciado",
+            timestamp=now,
+            location="Rota refrigerada",
+            metadata={"temperatura_media_celsius": round(temperature, 2), "veiculo": f"TR-{rng.randint(10, 99)}"},
+        ),
+        TraceStep(
+            stage="recebimento",
+            actor="Cooperativa/Laboratório",
+            timestamp=now,
+            location="Unidade de análise",
+            metadata={"conferencia_lacre": True, "amostra_integral": True},
+        ),
+        TraceStep(
+            stage="analise_espectrofotometrica",
+            actor="Análise Evolutiva",
+            timestamp=now,
+            location="Bancada de análise multiespectral",
+            metadata={"sensor": "AS7341/Simulado", "faixa_nm": "415-910"},
+        ),
+    ]
 
-
-def analyze_milk(reading: Dict[str, Any]) -> MilkAnalysis:
-    channels = {int(k): float(v) for k, v in reading["leituras_normalizadas"].items()}
-    nir_mean = (channels[850] + channels[910]) / 2
-    visible_mean = sum(channels[nm] for nm in [445, 480, 515, 555, 590, 630]) / 6
-    uv_visible_delta = channels[480] - channels[415]
-    temp = float(reading["temperatura_c"])
-    ph = float(reading["ph"])
-    cond = float(reading["condutividade_ms_cm"])
-
-    # Heuristica inicial de demonstracao: a calibracao real devera substituir estes pesos.
-    adulteration_score = 0.0
-    adulteration_score += max(0.0, (nir_mean - 0.66) * 2.3)
-    adulteration_score += max(0.0, (cond - 5.8) * 0.18)
-    adulteration_score += max(0.0, abs(ph - 6.7) - 0.16) * 1.4
-    adulteration_score += max(0.0, temp - 8.0) * 0.08
-    adulteration_score += max(0.0, 0.05 - uv_visible_delta) * 1.1
-    adulteration_score = round(min(1.0, adulteration_score), 4)
-    conformity = round(max(0.0, 1.0 - adulteration_score), 4)
-
-    if adulteration_score >= 0.65:
-        classification = "Suspeita de adulteracao"
-        recommendation = "Reter lote, repetir leitura, gerar contraprova e encaminhar amostra para validacao laboratorial."
-    elif adulteration_score >= 0.35:
-        classification = "Atencao tecnica"
-        recommendation = "Repetir medicao, conferir temperatura, limpeza da cubeta e historico do produtor antes da liberacao."
-    else:
-        classification = "Conforme no MVP"
-        recommendation = "Lote apto para continuidade da cadeia, mantendo registro de rastreabilidade e auditoria."
-
-    return MilkAnalysis(
-        classificacao=classification,
-        score_conformidade=conformity,
-        score_adulteracao=adulteration_score,
-        parametros={
-            "media_nir_850_910": round(nir_mean, 4),
-            "media_visivel": round(visible_mean, 4),
-            "delta_uv_visivel": round(uv_visible_delta, 4),
-            "temperatura_c": temp,
-            "ph": ph,
-            "condutividade_ms_cm": cond,
-        },
-        recomendacao=recommendation,
+    return SpectralSample(
+        batch_id=batch_id,
+        producer_id=producer_id,
+        producer_name="Produtor demonstrativo",
+        collection_point="Ponto de coleta demonstrativo",
+        cooperative="Cooperativa demonstrativa",
+        equipment_id="AE-SPEC-MVP-001",
+        scenario=scenario,
+        temperature_celsius=round(temperature, 2),
+        spectral_reading=spectral,
+        traceability=traceability,
     )
 
 
-def build_chain(sample_id: str, producer_name: str, farm_name: str, city: str) -> List[Dict[str, str]]:
-    stages = [
-        ChainStage("Coleta na propriedade", producer_name, farm_name, utc_now(), "Amostra vinculada ao produtor, lote e tanque de origem."),
-        ChainStage("Transporte resfriado", "Transportador credenciado", city, utc_now(), "Registro de rota e condicao de conservacao."),
-        ChainStage("Recebimento na cooperativa", "Cooperativa / laticinio", city, utc_now(), "Conferencia de volume, temperatura e lacre."),
-        ChainStage("Analise Evolutiva", "Espectrofotometro multiespectral", "Laboratorio de campo", utc_now(), f"Leitura espectral da amostra {sample_id}."),
-        ChainStage("Registro Web3", "Smart contract de rastreabilidade", "Blockchain/testnet", utc_now(), "Hash da evidencia registrado para verificacao publica."),
-    ]
-    return [asdict(stage) for stage in stages]
+def sample_to_dict(sample: SpectralSample) -> Dict[str, Any]:
+    data = asdict(sample)
+    return data
 
 
-def create_sample(seed: Optional[int] = None, producer_name: str = "Produtor demonstrativo", farm_name: str = "Fazenda Piloto", city: str = "Goiás", adulterated: Optional[bool] = None) -> Dict[str, Any]:
-    rng = random.Random(seed)
-    timestamp = utc_now()
-    sample_id = f"AE-LEITE-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{rng.randint(1000, 9999)}"
-    lot_id = f"LOTE-{rng.randint(100, 999)}-{rng.choice(['A', 'B', 'C'])}"
-    tank_id = f"TQ-{rng.randint(1, 6):02d}"
+def analyze_milk_sample(sample: Mapping[str, Any]) -> AnalysisResult:
+    spectral = sample.get("spectral_reading") or {}
+    if not spectral:
+        raise ValueError("A amostra não possui leitura espectrofotométrica.")
 
-    reading = simulate_spectral_reading(seed=seed, adulterated=adulterated)
-    analysis = analyze_milk(reading)
+    deviations = []
+    for key, ref in REFERENCE_PROFILE.items():
+        value = float(spectral.get(key, ref))
+        deviations.append(abs(value - ref) / max(ref, 0.001))
 
-    evidence_payload = {
-        "projeto": "Analise Evolutiva HackWeb 3.0",
-        "dominio": "Cadeia produtiva do leite",
-        "sample_id": sample_id,
-        "lot_id": lot_id,
-        "tank_id": tank_id,
-        "producer_name": producer_name,
-        "farm_name": farm_name,
-        "city": city,
-        "created_at_utc": timestamp,
-        "spectral_reading": reading,
+    mean_deviation = sum(deviations) / len(deviations)
+    spectral_consistency = _bounded(1 - mean_deviation)
+
+    ratio_910_630 = float(spectral.get("910", 0.0)) / max(float(spectral.get("630", 1.0)), 0.001)
+    expected_ratio = REFERENCE_PROFILE["910"] / REFERENCE_PROFILE["630"]
+    water_adulteration_risk = _bounded((expected_ratio - ratio_910_630) * 2.2 + mean_deviation * 0.8)
+
+    temperature = float(sample.get("temperature_celsius", 4.0))
+    temperature_risk = _bounded((temperature - 6.0) / 8.0)
+
+    solids_index = _bounded((float(spectral.get("415", 0.72)) + float(spectral.get("445", 0.69)) + float(spectral.get("480", 0.65))) / 2.1)
+
+    compliance_score = _bounded(
+        0.55 * spectral_consistency
+        + 0.25 * (1 - water_adulteration_risk)
+        + 0.20 * (1 - temperature_risk)
+    )
+
+    if compliance_score >= 0.86 and water_adulteration_risk < 0.18 and temperature_risk < 0.18:
+        status = "APROVADO"
+        recommendation = "Lote aprovado para continuidade na cadeia produtiva. Manter rastreabilidade e evidência registrada."
+    elif compliance_score >= 0.70:
+        status = "ATENÇÃO"
+        recommendation = "Lote requer revisão técnica, conferência de temperatura e possível contraprova laboratorial."
+    else:
+        status = "REPROVADO"
+        recommendation = "Lote deve ser bloqueado preventivamente e encaminhado para investigação/contraprova."
+
+    return AnalysisResult(
+        status=status,
+        compliance_score=round(compliance_score, 4),
+        spectral_consistency=round(spectral_consistency, 4),
+        water_adulteration_risk=round(water_adulteration_risk, 4),
+        temperature_risk=round(temperature_risk, 4),
+        solids_index=round(solids_index, 4),
+        recommendation=recommendation,
+    )
+
+
+def build_evidence(sample: Mapping[str, Any], analysis: AnalysisResult) -> Dict[str, Any]:
+    evidence_id = str(uuid.uuid4())
+    payload = {
+        "evidence_id": evidence_id,
+        "project": "Análise Evolutiva Web3 — Cadeia Produtiva do Leite",
+        "version": "1.0.0-hackweb3",
+        "created_at": utc_now(),
+        "sample": sample,
         "analysis": asdict(analysis),
-        "chain": build_chain(sample_id, producer_name, farm_name, city),
-    }
-    evidence_hash = sha256_hex(evidence_payload)
-    tx_hash = "0x" + sha256_hex(f"{evidence_hash}:{timestamp}:analise-evolutiva")[:64]
-
-    return {
-        **evidence_payload,
-        "evidence_hash": evidence_hash,
-        "blockchain": {
-            "modo": "simulado_para_mvp",
-            "network": "local/testnet",
-            "contract_name": "AnaliseEvolutivaLeiteTrace",
-            "tx_hash": tx_hash,
-            "status_onchain": "REGISTRADO",
+        "web3": {
+            "hash_algorithm": "SHA-256",
+            "storage_strategy": "off-chain evidence + on-chain hash",
+            "privacy_note": "A blockchain registra a prova de integridade, não o laudo completo.",
         },
-        "verification_url_path": f"/verificar/{evidence_hash}",
     }
+    evidence_hash = sha256_payload(payload)
+    payload["evidence_hash"] = evidence_hash
+    return payload
 
 
-def verify_integrity(stored_sample: Dict[str, Any]) -> Dict[str, Any]:
-    payload = {k: v for k, v in stored_sample.items() if k not in {"evidence_hash", "blockchain", "verification_url_path", "id"}}
-    recomputed = sha256_hex(payload)
-    original = stored_sample.get("evidence_hash")
-    return {
-        "hash_original": original,
-        "hash_recalculado": recomputed,
-        "integro": original == recomputed,
-    }
+def build_demo_evidence(scenario: str = "normal", seed: int | None = 42) -> Dict[str, Any]:
+    sample = sample_to_dict(simulate_spectral_reading(scenario=scenario, seed=seed))
+    analysis = analyze_milk_sample(sample)
+    return build_evidence(sample, analysis)
+
+
+def tamper_check(evidence: Mapping[str, Any]) -> bool:
+    """Verifica se o hash salvo ainda corresponde ao conteúdo da evidência."""
+    expected = evidence.get("evidence_hash")
+    if not expected:
+        return False
+    cloned = dict(evidence)
+    cloned.pop("evidence_hash", None)
+    # Campos adicionados pela camada de persistência/Web3 não participam do hash original.
+    cloned.pop("transaction_hash", None)
+    cloned.pop("blockchain_mode", None)
+    return sha256_payload(cloned) == expected
+
+
+def risk_label(value: float) -> str:
+    if value < 0.20:
+        return "baixo"
+    if value < 0.45:
+        return "moderado"
+    return "alto"
+
+
+def format_percent(value: float) -> str:
+    return f"{value * 100:.1f}%"
+
+
+def spectral_distance(sample: Mapping[str, Any]) -> float:
+    spectral = sample.get("spectral_reading") or {}
+    total = 0.0
+    for key, ref in REFERENCE_PROFILE.items():
+        total += (float(spectral.get(key, ref)) - ref) ** 2
+    return round(math.sqrt(total), 5)

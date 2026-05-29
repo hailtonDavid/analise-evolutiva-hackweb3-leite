@@ -1,88 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Análise Evolutiva Web3 | Cadeia Produtiva do Leite</title>
+  <title>Análise Evolutiva Web3 — Leite</title>
   <style>
-    :root { --bg:#f7fbff; --card:#ffffff; --text:#0f172a; --muted:#475569; --blue:#2563eb; --cyan:#0891b2; --green:#10b981; --border:#dbeafe; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Inter,Arial,sans-serif; background:linear-gradient(180deg,#f7fbff,#eef8ff); color:var(--text); }
-    .wrap { width:min(1180px, calc(100% - 40px)); margin:0 auto; }
-    header { padding:48px 0 28px; }
-    .eyebrow { text-transform:uppercase; letter-spacing:.18em; color:var(--cyan); font-size:.78rem; font-weight:800; }
-    h1 { font-size:clamp(2.1rem,5vw,4.6rem); line-height:1; letter-spacing:-.06em; margin:12px 0 18px; }
-    .lead { max-width:900px; color:var(--muted); font-size:1.1rem; }
-    .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; margin:30px 0; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:22px; padding:20px; box-shadow:0 18px 45px rgba(15,23,42,.08); }
-    .card b { display:block; color:var(--blue); font-size:1.5rem; margin-bottom:8px; }
-    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; }
-    button, .btn { border:0; border-radius:14px; padding:13px 18px; font-weight:800; cursor:pointer; text-decoration:none; }
-    button { background:linear-gradient(135deg,#38bdf8,#34d399); color:#042f2e; }
-    .btn { background:#fff; color:#0f172a; border:1px solid var(--border); }
-    table { width:100%; border-collapse:collapse; background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 18px 45px rgba(15,23,42,.08); }
-    th,td { padding:14px; border-bottom:1px solid #e2e8f0; text-align:left; font-size:.92rem; }
-    th { background:#eff6ff; color:#1e40af; }
-    code { word-break:break-all; }
-    .ok { color:#047857; font-weight:800; }
-    .warn { color:#b45309; font-weight:800; }
-    @media (max-width:900px){ .grid{grid-template-columns:1fr 1fr;} }
-    @media (max-width:620px){ .grid{grid-template-columns:1fr;} th:nth-child(4), td:nth-child(4){display:none;} }
+    :root { --bg:#071827; --card:#0d253a; --line:#1d4a68; --text:#eaf8ff; --muted:#a9c8d8; --accent:#41d3bd; --accent2:#74b7ff; --warn:#ffd166; --bad:#ff6b6b; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Arial, Helvetica, sans-serif; background: radial-gradient(circle at top left, #123a55, var(--bg)); color:var(--text); }
+    header { padding: 40px 24px 20px; max-width: 1100px; margin:auto; }
+    main { max-width:1100px; margin:auto; padding:24px; display:grid; gap:22px; }
+    h1 { font-size: clamp(30px, 5vw, 56px); line-height:1.02; margin:0 0 14px; }
+    h2 { margin:0 0 12px; }
+    p { color:var(--muted); line-height:1.6; }
+    .badge { display:inline-block; border:1px solid var(--line); color:var(--accent); padding:8px 12px; border-radius:999px; font-weight:700; margin-bottom:16px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px; }
+    .card { background: rgba(13,37,58,.88); border:1px solid var(--line); border-radius:22px; padding:20px; box-shadow:0 16px 40px rgba(0,0,0,.25); }
+    .flow { display:flex; flex-wrap:wrap; gap:8px; }
+    .flow span { padding:10px 12px; border:1px solid var(--line); border-radius:12px; color:var(--muted); background:#091f31; }
+    button, select { border:0; border-radius:14px; padding:14px 16px; font-weight:700; }
+    button { background:linear-gradient(90deg, var(--accent), var(--accent2)); color:#062033; cursor:pointer; }
+    select { background:#071827; color:var(--text); border:1px solid var(--line); }
+    table { width:100%; border-collapse:collapse; }
+    th,td { text-align:left; padding:10px; border-bottom:1px solid var(--line); font-size:14px; }
+    a { color:var(--accent); }
+    code { background:#061523; padding:2px 6px; border-radius:6px; color:#d9fff8; }
   </style>
 </head>
 <body>
-  <header class="wrap">
-    <div class="eyebrow">HackWeb 3.0 | Web3 aplicada ao agro</div>
-    <h1>Análise Evolutiva para rastreabilidade da cadeia produtiva do leite.</h1>
-    <p class="lead">MVP funcional que simula a coleta do leite, a leitura multiespectral pelo espectrofotômetro, a análise automatizada, a geração do hash da evidência e o registro Web3 em modo demonstrativo.</p>
-    <div class="actions">
-      <button onclick="simular(false)">Simular lote conforme</button>
-      <button onclick="simular(true)">Simular lote suspeito</button>
-      <a class="btn" href="/api/amostras">Ver API JSON</a>
-    </div>
+  <header>
+    <div class="badge">HackWeb 3.0 • Web3 • Blockchain • Cadeia do Leite</div>
+    <h1>Análise Evolutiva Web3</h1>
+    <p>Rastreabilidade inteligente da cadeia produtiva do leite com espectrofotometria, análise automatizada, hash criptográfico e smart contract.</p>
   </header>
-
-  <main class="wrap">
-    <section class="grid">
-      <div class="card"><b>01</b>Coleta identificada na propriedade.</div>
-      <div class="card"><b>02</b>Leitura espectral AS7341 simulada.</div>
-      <div class="card"><b>03</b>Análise de conformidade do leite.</div>
-      <div class="card"><b>04</b>Hash e registro Web3 verificável.</div>
+  <main>
+    <section class="card">
+      <h2>Fluxo demonstrado pelo MVP</h2>
+      <div class="flow">
+        <span>Produtor</span><span>Coleta</span><span>Transporte resfriado</span><span>Cooperativa</span><span>Espectrofotômetro</span><span>Análise Evolutiva</span><span>Hash</span><span>Smart Contract</span><span>Verificação pública</span>
+      </div>
     </section>
 
-    <section>
-      <h2>Amostras registradas</h2>
+    <section class="grid">
+      <div class="card">
+        <h2>Executar demonstração</h2>
+        <p>Escolha um cenário simulado. O sistema gera a leitura espectrofotométrica, analisa o lote, cria a evidência digital e registra o hash em modo Web3 simulado.</p>
+        <form method="post" action="/demo/run">
+          <p><select name="scenario">
+            <option value="normal">Leite normal</option>
+            <option value="water_adulteration">Suspeita de adição de água</option>
+            <option value="temperature_break">Quebra de temperatura</option>
+            <option value="high_solids">Sólidos elevados</option>
+          </select></p>
+          <button type="submit">Gerar evidência rastreável</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Diferencial Web3</h2>
+        <p>A evidência completa fica off-chain. A blockchain registra o hash da análise, permitindo comprovar integridade sem expor dados sensíveis de produtor, laboratório ou lote.</p>
+        <p><code>off-chain evidence + on-chain hash</code></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Evidências recentes</h2>
+      {% if recent %}
       <table>
-        <thead><tr><th>Amostra</th><th>Lote</th><th>Status</th><th>Hash da evidência</th><th>Verificação</th></tr></thead>
+        <thead><tr><th>Lote</th><th>Status</th><th>Hash</th><th>Verificação</th></tr></thead>
         <tbody>
-        {% for item in samples %}
+        {% for item in recent %}
           <tr>
-            <td>{{ item.sample_id }}</td>
-            <td>{{ item.lot_id }}</td>
-            <td class="{{ 'warn' if 'Suspeita' in item.classification or 'Atencao' in item.classification else 'ok' }}">{{ item.classification }}</td>
-            <td><code>{{ item.evidence_hash }}</code></td>
-            <td><a href="/verificar/{{ item.evidence_hash }}">Abrir</a></td>
+            <td>{{ item.batch_id }}</td>
+            <td>{{ item.status }}</td>
+            <td><code>{{ item.evidence_hash[:18] }}...</code></td>
+            <td><a href="/verify/{{ item.evidence_hash }}">verificar</a></td>
           </tr>
-        {% else %}
-          <tr><td colspan="5">Nenhuma amostra gerada ainda. Use os botões acima para simular o processo.</td></tr>
         {% endfor %}
         </tbody>
       </table>
+      {% else %}
+      <p>Nenhuma evidência registrada ainda. Execute uma demonstração.</p>
+      {% endif %}
     </section>
   </main>
-
-  <script>
-    async function simular(adulterated) {
-      const payload = {
-        adulterated,
-        producer_name: adulterated ? "Produtor com lote em atenção" : "Produtor demonstrativo",
-        farm_name: "Fazenda Piloto do Leite",
-        city: "Goiás"
-      };
-      const res = await fetch('/api/amostras/simular', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
-      if (!res.ok) { alert('Falha ao simular amostra'); return; }
-      location.reload();
-    }
-  </script>
 </body>
 </html>

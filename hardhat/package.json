@@ -1,0 +1,16 @@
+{
+  "name": "analise-evolutiva-hackweb3-leite-contracts",
+  "version": "1.0.0",
+  "description": "Smart contract do MVP Análise Evolutiva Web3 para cadeia produtiva do leite",
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.8"
+  }
+}
